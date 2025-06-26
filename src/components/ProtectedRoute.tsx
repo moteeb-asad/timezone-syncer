@@ -1,9 +1,12 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
-import { AppRoutes } from "./routes";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
-function App() {
-  const { loading } = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -16,11 +19,9 @@ function App() {
     );
   }
 
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  );
-}
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-export default App;
+  return <>{children}</>;
+};
