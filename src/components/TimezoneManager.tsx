@@ -94,6 +94,16 @@ export const TimezoneManager = ({
   );
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
+  // Add state for live current time
+  const [liveTime, setLiveTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const subscription: UserSubscription = {
     isPremium,
     maxTimezones: isPremium ? 20 : FREE_TIER_LIMIT,
@@ -169,7 +179,7 @@ export const TimezoneManager = ({
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">App</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2"></h1>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
             <span>
               {subscription.currentTimezones}/{subscription.maxTimezones}{" "}
@@ -181,6 +191,19 @@ export const TimezoneManager = ({
               </span>
             )}
           </div>
+        </div>
+
+        {/* Live Current Time Display */}
+        <div className="flex justify-center mb-4">
+          <span className="current-time text-lg font-semibold text-gray-700">
+            Current Time:{" "}
+            {liveTime.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
+            })}
+          </span>
         </div>
 
         {/* Base Time Controls */}

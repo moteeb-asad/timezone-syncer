@@ -80,12 +80,14 @@ export const useAuth = () => {
     }
   };
 
+  // For testing only:
   return {
+    // user: { email: "test@example.com" },
     user,
-    loading,
-    login,
-    register,
-    logout,
-    isFirebaseReady,
+    loading: false,
+    login: async () => ({}),
+    register: async () => ({}),
+    logout: async () => ({}),
+    isFirebaseReady: true,
   };
 };

@@ -4,7 +4,6 @@ export const Premium = () => {
     "✅ Custom working hours settings",
     "✅ Meeting time suggestions",
     "✅ Export timezone schedules",
-    "✅ Priority customer support",
     "✅ Advanced time zone analytics",
   ];
 
@@ -74,7 +73,7 @@ export const Premium = () => {
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Premium</h3>
               <div className="text-4xl font-bold text-blue-600 mb-1">
-                $9
+                $5
                 <span className="text-lg font-normal text-gray-500">
                   /month
                 </span>

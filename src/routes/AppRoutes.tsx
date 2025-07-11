@@ -9,6 +9,8 @@ import { Layout } from "../components/Layout";
 export function AppRoutes() {
   const { user } = useAuth();
 
+  console.log("user", user);
+
   return (
     <Routes>
       {/* Public Routes */}
