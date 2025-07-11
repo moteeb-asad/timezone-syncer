@@ -10,7 +10,7 @@ import { auth, isFirebaseReady } from "../lib/firebase";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isFirebaseReady || !auth) {
@@ -27,7 +27,7 @@ export const useAuth = () => {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const _login = async (email: string, password: string) => {
     if (!isFirebaseReady || !auth) {
       return {
         user: null,
@@ -45,7 +45,7 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const _register = async (email: string, password: string) => {
     if (!isFirebaseReady || !auth) {
       return {
         user: null,
@@ -67,7 +67,7 @@ export const useAuth = () => {
     }
   };
 
-  const logout = async () => {
+  const _logout = async () => {
     if (!isFirebaseReady || !auth) {
       return { error: new Error("Firebase is not configured.") };
     }
@@ -85,9 +85,9 @@ export const useAuth = () => {
     // user: { email: "test@example.com" },
     user,
     loading: false,
-    login: async () => ({}),
-    register: async () => ({}),
-    logout: async () => ({}),
+    login: _login,
+    register: _register,
+    logout: _logout,
     isFirebaseReady: true,
   };
 };

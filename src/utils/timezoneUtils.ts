@@ -86,7 +86,7 @@ export const formatTime = (date: Date): string => {
 
 export const getTimeInTimezone = (
   baseTime: string,
-  baseTimezone: string,
+  _baseTimezone: string,
   targetTimezone: string
 ): string => {
   // Create a date object from base time and timezone
