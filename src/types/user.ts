@@ -1,3 +1,4 @@
+// User Interface
 export interface UserState {
   user: {
     uid: string;
