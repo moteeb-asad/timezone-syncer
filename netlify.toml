@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Exclude build output from secrets scanning
+[secrets_scan]
+  omit_paths = [
+    "dist/**/*",
+    "package-lock.json",
+    "package.json"
+  ] 
