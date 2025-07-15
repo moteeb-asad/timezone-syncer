@@ -132,7 +132,7 @@ export const Login = () => {
               <p className="text-sm text-blue-700">
                 Email: demo@timezonesyncer.com
                 <br />
-                Password: demo123
+                Password: demo123456
               </p>
             </div>
           )}

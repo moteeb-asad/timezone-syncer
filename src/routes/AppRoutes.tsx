@@ -1,15 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import { Login } from "../pages/login";
 import { Premium } from "../pages/Premium";
 import { TimezoneManager } from "../components/TimezoneManager";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { Layout } from "../components/Layout";
+import { Account } from "../components/Account";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
 
 export function AppRoutes() {
-  const { user } = useAuth();
-
-  console.log("user", user);
+  const { user } = useSelector((state: RootState) => state.user);
 
   return (
     <Routes>
@@ -19,8 +19,17 @@ export function AppRoutes() {
         element={user ? <Navigate to="/dashboard" replace /> : <Login />}
       />
 
-      {/* Public Routes */}
-      <Route path="/" element={<TimezoneManager isPremium={false} />} />
+      {/* Root Route - redirect to dashboard if authenticated */}
+      <Route
+        path="/"
+        element={
+          user ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <TimezoneManager isPremium={false} />
+          )
+        }
+      />
 
       {/* Protected Routes */}
       <Route
@@ -40,6 +49,17 @@ export function AppRoutes() {
           <ProtectedRoute>
             <Layout>
               <Premium />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Account />
             </Layout>
           </ProtectedRoute>
         }

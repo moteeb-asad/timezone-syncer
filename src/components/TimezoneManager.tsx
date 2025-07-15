@@ -13,6 +13,9 @@ import {
   getStatusColor,
 } from "../utils/timezoneUtils";
 import { FREE_TIER_LIMIT } from "../types/timezone";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { useNavigate } from "react-router-dom";
 
 interface TimezoneManagerProps {
   isPremium?: boolean;
@@ -93,7 +96,8 @@ export const TimezoneManager = ({
     null
   );
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-
+  const { user } = useSelector((state: RootState) => state.user);
+  const navigate = useNavigate();
   // Add state for live current time
   const [liveTime, setLiveTime] = useState(new Date());
 
@@ -174,19 +178,26 @@ export const TimezoneManager = ({
     );
   };
 
+  const handleUpgradeClick = () => {
+    if (user) {
+      navigate("/premium");
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <div className="container-page">
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2"></h1>
-          <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
+          <div className="flex items-center justify-center gap-2 md:gap-4 text-sm text-gray-600">
             <span>
               {subscription.currentTimezones}/{subscription.maxTimezones}{" "}
               timezones
             </span>
             {!isPremium && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs md:text-sm">
                 Free Plan
               </span>
             )}
@@ -194,8 +205,8 @@ export const TimezoneManager = ({
         </div>
 
         {/* Live Current Time Display */}
-        <div className="flex justify-center mb-4">
-          <span className="current-time text-lg font-semibold text-gray-700">
+        <div className="flex justify-center mb-6">
+          <span className="current-time text-base md:text-lg font-semibold text-gray-700">
             Current Time:{" "}
             {liveTime.toLocaleTimeString([], {
               hour: "2-digit",
@@ -207,16 +218,18 @@ export const TimezoneManager = ({
         </div>
 
         {/* Base Time Controls */}
-        <div className="custom-container-max-w container-card mb-6 ml-auto mr-auto w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-label">Base Time:</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Base Time:
+              </label>
               <select
                 value={baseTime.time}
                 onChange={(e) =>
                   setBaseTime({ ...baseTime, time: e.target.value })
                 }
-                className="input-base"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 {timeOptions.map((time) => (
                   <option key={time} value={time}>
@@ -226,13 +239,15 @@ export const TimezoneManager = ({
               </select>
             </div>
             <div>
-              <label className="text-label">Timezone:</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Timezone:
+              </label>
               <select
                 value={baseTime.timezone}
                 onChange={(e) =>
                   setBaseTime({ ...baseTime, timezone: e.target.value })
                 }
-                className="input-base"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 {COMMON_TIMEZONES.map((tz) => (
                   <option key={tz.id} value={tz.name}>
@@ -242,152 +257,132 @@ export const TimezoneManager = ({
               </select>
             </div>
           </div>
+        </div>
 
-          {/* Timezone List Header */}
-          <div className="grid grid-cols-2 gap-4 py-3 border-b border-gray-200 font-semibold text-gray-700">
-            <div>Timezone</div>
-            <div>Local Time</div>
-          </div>
-
-          {/* Timezone List */}
-          <div className="space-y-1">
-            {timezoneSettings.map((setting) => (
-              <div
-                key={setting.id}
-                className="grid grid-cols-2 gap-4 py-3 border-b border-gray-100 last:border-b-0"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{setting.timezone.flag}</span>
-                  <span className="text-gray-800">
-                    {setting.timezone.displayName}
+        {/* Timezone List */}
+        <div className="space-y-4">
+          {timezoneSettings.map((setting) => (
+            <div
+              key={setting.id}
+              className="bg-white rounded-lg shadow-sm p-4 md:p-6"
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{setting.timezone.flag}</span>
+                  <div>
+                    <h3 className="text-base md:text-lg font-medium text-gray-900">
+                      {setting.timezone.displayName}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {setting.timezone.name}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between md:justify-end space-x-4 md:space-x-6">
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                      setting.status
+                    )}`}
+                  >
+                    {setting.status}
+                  </span>
+                  <span className="text-base md:text-lg font-semibold">
+                    {setting.localTime}
                   </span>
                   <button
                     onClick={() => handleRemoveTimezone(setting.id)}
-                    className="ml-auto text-red-500 hover:text-red-700 text-sm"
+                    className="text-red-600 hover:text-red-800"
                   >
                     Remove
                   </button>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-3 h-3 rounded-full ${getStatusColor(
-                      setting.status
-                    )}`}
-                  ></div>
-                  <span className="font-medium">{setting.localTime}</span>
-                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
 
-          {/* Add Timezone Button */}
-          <div className="mt-6">
-            {!showAddTimezone ? (
-              <button
-                onClick={() => setShowAddTimezone(true)}
-                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors"
+        {/* Add Timezone Button */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => setShowAddTimezone(true)}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Add Timezone
+          </button>
+        </div>
+
+        {/* Add Timezone Dialog */}
+        {showAddTimezone && (
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Add New Timezone
+              </h3>
+              <select
+                value={selectedTimezone?.id || ""}
+                onChange={(e) => {
+                  const tz = COMMON_TIMEZONES.find(
+                    (t) => t.id === e.target.value
+                  );
+                  setSelectedTimezone(tz || null);
+                }}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4"
               >
-                + Add Timezone
-              </button>
-            ) : (
-              <div className="space-y-3">
-                <select
-                  value={selectedTimezone?.id || ""}
-                  onChange={(e) => {
-                    const tz = COMMON_TIMEZONES.find(
-                      (t) => t.id === e.target.value
-                    );
-                    setSelectedTimezone(tz || null);
+                <option value="">Select a timezone</option>
+                {COMMON_TIMEZONES.map((tz) => (
+                  <option key={tz.id} value={tz.id}>
+                    {tz.displayName}
+                  </option>
+                ))}
+              </select>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowAddTimezone(false);
+                    setSelectedTimezone(null);
                   }}
-                  className="input-base"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  <option value="">Select a timezone...</option>
-                  {COMMON_TIMEZONES.filter(
-                    (tz) =>
-                      !timezoneSettings.some(
-                        (setting) => setting.timezone.id === tz.id
-                      )
-                  ).map((tz) => (
-                    <option key={tz.id} value={tz.id}>
-                      {tz.flag} {tz.displayName}
-                    </option>
-                  ))}
-                </select>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddTimezone}
-                    disabled={!selectedTimezone}
-                    className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAddTimezone(false);
-                      setSelectedTimezone(null);
-                    }}
-                    className="btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddTimezone}
+                  disabled={!selectedTimezone}
+                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  Add
+                </button>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Working Hours Legend */}
-        <div className="custom-container-max-w container-card ml-auto mr-auto w-full">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Working Hours Highlight:
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span>= 9 AM – 5 PM</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-              <span>= Early</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <span>= Late</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Premium CTA for Free Users */}
-        {!isPremium && (
-          <div className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white text-center">
-            <h3 className="text-xl font-bold mb-2">Upgrade to Premium</h3>
-            <p className="mb-4">
-              Unlock unlimited timezones and advanced features
-            </p>
-            <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Upgrade Now
-            </button>
           </div>
         )}
 
         {/* Upgrade Dialog */}
         {showUpgradeDialog && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Upgrade to Premium
               </h3>
-              <p className="text-gray-600 mb-6">
-                You've reached the 3 timezone limit for free users. Upgrade to
-                Premium to add unlimited timezones and unlock more features!
+              <p className="text-sm text-gray-500 mb-4">
+                You've reached the free tier limit of {FREE_TIER_LIMIT}{" "}
+                timezones. Upgrade to premium for unlimited timezones!
               </p>
-              <div className="flex gap-3">
-                <button className="btn-primary flex-1">Upgrade Now</button>
+              <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowUpgradeDialog(false)}
-                  className="btn-secondary flex-1"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Maybe Later
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowUpgradeDialog(false);
+                    handleUpgradeClick();
+                  }}
+                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Upgrade Now
                 </button>
               </div>
             </div>

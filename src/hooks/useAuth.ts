@@ -1,33 +1,23 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
 } from "firebase/auth";
-import type { User } from "firebase/auth";
 import { auth, isFirebaseReady } from "../lib/firebase";
+import { useDispatch } from "react-redux";
+import { setUser, clearUser } from "../slices/userSlice";
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [_loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!isFirebaseReady || !auth) {
-      // If Firebase isn't ready, just set loading to false
-      setLoading(false);
       return;
     }
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
   }, []);
 
-  const _login = async (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
     if (!isFirebaseReady || !auth) {
       return {
         user: null,
@@ -39,13 +29,23 @@ export const useAuth = () => {
 
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
+      const token = await result.user.getIdToken();
+      dispatch(
+        setUser({
+          user: {
+            uid: result.user.uid,
+            email: result.user.email,
+          },
+          token,
+        })
+      );
       return { user: result.user, error: null };
     } catch (error) {
       return { user: null, error: error as Error };
     }
   };
 
-  const _register = async (email: string, password: string) => {
+  const register = async (email: string, password: string) => {
     if (!isFirebaseReady || !auth) {
       return {
         user: null,
@@ -67,27 +67,30 @@ export const useAuth = () => {
     }
   };
 
-  const _logout = async () => {
+  const logout = async () => {
     if (!isFirebaseReady || !auth) {
       return { error: new Error("Firebase is not configured.") };
     }
 
     try {
+      // Clear Redux state first
+      dispatch(clearUser());
+
+      // Sign out from Firebase
       await signOut(auth);
+
       return { error: null };
     } catch (error) {
+      console.error("Logout error:", error);
       return { error: error as Error };
     }
   };
 
-  // For testing only:
   return {
-    // user: { email: "test@example.com" },
-    user,
     loading: false,
-    login: _login,
-    register: _register,
-    logout: _logout,
+    login: login,
+    register: register,
+    logout: logout,
     isFirebaseReady: true,
   };
 };
