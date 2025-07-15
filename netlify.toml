@@ -5,10 +5,9 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Exclude build output from secrets scanning
-[secrets_scan]
+[secrets_scanning]
   omit_paths = [
     "dist/**/*",
     "package-lock.json",
     "package.json"
-  ] 
+  ]
