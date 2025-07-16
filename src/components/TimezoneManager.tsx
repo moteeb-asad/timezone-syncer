@@ -24,6 +24,7 @@ interface TimezoneManagerProps {
 export const TimezoneManager = ({
   isPremium = false,
 }: TimezoneManagerProps) => {
+  const [popupError, setPopupError] = useState<string | null>(null);
   const [baseTime, setBaseTime] = useState<BaseTime>({
     time: "09:00",
     timezone: "Europe/London",
@@ -143,7 +144,7 @@ export const TimezoneManager = ({
         (setting) => setting.timezone.id === selectedTimezone.id
       )
     ) {
-      alert("This timezone is already added!");
+      setPopupError("This timezone is already added!");
       return;
     }
 
@@ -229,7 +230,7 @@ export const TimezoneManager = ({
                 onChange={(e) =>
                   setBaseTime({ ...baseTime, time: e.target.value })
                 }
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 {timeOptions.map((time) => (
                   <option key={time} value={time}>
@@ -318,6 +319,11 @@ export const TimezoneManager = ({
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Add New Timezone
               </h3>
+              {popupError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative mb-4">
+                  <span className="block sm:inline">{popupError}</span>
+                </div>
+              )}
               <select
                 value={selectedTimezone?.id || ""}
                 onChange={(e) => {
@@ -325,6 +331,7 @@ export const TimezoneManager = ({
                     (t) => t.id === e.target.value
                   );
                   setSelectedTimezone(tz || null);
+                  setPopupError(null);
                 }}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4"
               >
@@ -347,7 +354,7 @@ export const TimezoneManager = ({
                 </button>
                 <button
                   onClick={handleAddTimezone}
-                  disabled={!selectedTimezone}
+                  disabled={!selectedTimezone || !!popupError}
                   className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Add
