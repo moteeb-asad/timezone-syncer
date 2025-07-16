@@ -53,7 +53,7 @@ export const Layout = ({ children }: LayoutProps) => {
               {/* Logo */}
               <Link to="/" className="flex-shrink-0">
                 <span className="text-lg md:text-xl font-bold text-blue-600 whitespace-nowrap">
-                  Timezone Syncer
+                  Logo
                 </span>
               </Link>
 
