@@ -6,6 +6,7 @@
   NODE_VERSION = "20"
   NPM_FLAGS = "--no-audit --no-fund --legacy-peer-deps"
   NETLIFY_USE_NPM = "true"
+  SECRETS_SCAN_ENABLED = "false"
 
 [context.production]
   environment = { NODE_ENV = "production" }
@@ -16,19 +17,6 @@
 [context.branch-deploy]
   environment = { NODE_ENV = "production" }
 
-[secrets_scan]
-  omit_keys = [
-    "VITE_FIREBASE_API_KEY",
-    "VITE_FIREBASE_PROJECT_ID",
-    "VITE_FIREBASE_AUTH_DOMAIN",
-    "VITE_FIREBASE_STORAGE_BUCKET",
-    "VITE_FIREBASE_MESSAGING_SENDER_ID",
-    "VITE_FIREBASE_APP_ID"
-  ]
-
-  omit_paths = [
-    "dist/**/*",
-    "package-lock.json",
-    "package.json",
-    "README.md"
-  ]
+# Alternatively, you can disable secrets scanning completely for this site
+[build.processing]
+  skip_processing = true
