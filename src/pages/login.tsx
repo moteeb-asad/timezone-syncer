@@ -15,6 +15,7 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    console.log(email);
 
     try {
       const result = isRegistering
