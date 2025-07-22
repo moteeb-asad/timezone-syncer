@@ -14,6 +14,14 @@ export const Account = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+          {/* Name Section */}
+          <div className="mb-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-2">Name</h2>
+            <p className="text-gray-600">
+              {user?.firstName} {user?.lastName}
+            </p>
+          </div>
+
           {/* Email Section */}
           <div className="mb-6">
             <h2 className="text-lg font-medium text-gray-900 mb-2">Email</h2>

@@ -2,14 +2,14 @@ export interface Timezone {
   id: string;
   name: string;
   displayName: string;
-  flag?: string;
+  flag: string;
 }
 
 export interface TimezoneSetting {
   id: string;
   timezone: Timezone;
   localTime: string;
-  status: "working" | "early" | "late";
+  status: "early" | "working" | "late";
 }
 
 export interface BaseTime {
@@ -29,4 +29,3 @@ export const WORKING_HOURS = {
 } as const;
 
 export const FREE_TIER_LIMIT = 3;
-export const PREMIUM_TIER_LIMIT = 20;

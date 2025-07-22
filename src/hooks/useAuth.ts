@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 import { auth, isFirebaseReady } from "../lib/firebase";
 import { useDispatch } from "react-redux";
@@ -35,6 +36,8 @@ export const useAuth = () => {
           user: {
             uid: result.user.uid,
             email: result.user.email,
+            firstName: result.user.displayName?.split(" ")[0] || null,
+            lastName: result.user.displayName?.split(" ")[1] || null,
           },
           token,
         })
@@ -45,7 +48,12 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => {
     if (!isFirebaseReady || !auth) {
       return {
         user: null,
@@ -61,6 +69,28 @@ export const useAuth = () => {
         email,
         password
       );
+
+      // Update the user's profile with their full name
+      if (result.user) {
+        await updateProfile(result.user, {
+          displayName: `${firstName} ${lastName}`,
+        });
+
+        // Get the token and dispatch user data
+        const token = await result.user.getIdToken();
+        dispatch(
+          setUser({
+            user: {
+              uid: result.user.uid,
+              email: result.user.email,
+              firstName,
+              lastName,
+            },
+            token,
+          })
+        );
+      }
+
       return { user: result.user, error: null };
     } catch (error) {
       return { user: null, error: error as Error };
@@ -71,14 +101,9 @@ export const useAuth = () => {
     if (!isFirebaseReady || !auth) {
       return { error: new Error("Firebase is not configured.") };
     }
-
     try {
-      // Clear Redux state first
       dispatch(clearUser());
-
-      // Sign out from Firebase
       await signOut(auth);
-
       return { error: null };
     } catch (error) {
       console.error("Logout error:", error);
@@ -86,11 +111,5 @@ export const useAuth = () => {
     }
   };
 
-  return {
-    loading: false,
-    login: login,
-    register: register,
-    logout: logout,
-    isFirebaseReady: true,
-  };
+  return { login, register, logout };
 };

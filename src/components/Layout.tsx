@@ -63,7 +63,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                    className={`px-3 py-2 text-sm font-medium transition-colors hover:underline ${
                       item.current
                         ? "text-blue-600"
                         : "text-gray-500 hover:text-gray-700"
@@ -78,7 +78,7 @@ export const Layout = ({ children }: LayoutProps) => {
             {/* Right side - User info and logout */}
             <div className="flex items-center space-x-2 md:space-x-4">
               <span className="hidden md:block text-sm text-gray-600 truncate max-w-[200px]">
-                {user?.email}
+                {user?.firstName} {user?.lastName}
               </span>
               <button
                 onClick={handleLogout}
@@ -130,7 +130,7 @@ export const Layout = ({ children }: LayoutProps) => {
                   </Link>
                 ))}
                 <div className="px-3 py-2 text-sm text-gray-500">
-                  {user?.email}
+                  {user?.firstName} {user?.lastName}
                 </div>
               </div>
             </div>

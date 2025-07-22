@@ -1,4 +1,4 @@
-import type { Timezone } from "../types/timezone";
+import { type Timezone } from "../types/timezone";
 import { WORKING_HOURS } from "../types/timezone";
 
 export const COMMON_TIMEZONES: Timezone[] = [

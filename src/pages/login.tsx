@@ -5,6 +5,8 @@ import { GLOBAL_STYLES } from "../styles/constants";
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,11 +17,10 @@ export const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    console.log(email);
 
     try {
       const result = isRegistering
-        ? await register(email, password)
+        ? await register(email, password, firstName, lastName)
         : await login(email, password);
 
       if (result.error) {
@@ -39,7 +40,9 @@ export const Login = () => {
         <div className={GLOBAL_STYLES.container.card}>
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className={GLOBAL_STYLES.text.heading}></h1>
+            <h1 className={GLOBAL_STYLES.text.heading}>
+              {isRegistering ? "Create Account" : "Welcome Back"}
+            </h1>
             <p className="text-gray-600">
               {isRegistering
                 ? "Create your account"
@@ -55,7 +58,50 @@ export const Login = () => {
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className={GLOBAL_STYLES.layout.stack}>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Registration Fields */}
+            {isRegistering && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* First Name Field */}
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className={GLOBAL_STYLES.text.label}
+                  >
+                    First Name
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    required
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className={GLOBAL_STYLES.input.base}
+                    placeholder="Enter your first name"
+                  />
+                </div>
+
+                {/* Last Name Field */}
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className={GLOBAL_STYLES.text.label}
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    required
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className={GLOBAL_STYLES.input.base}
+                    placeholder="Enter your last name"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Email Field */}
             <div>
               <label htmlFor="email" className={GLOBAL_STYLES.text.label}>
@@ -98,45 +144,25 @@ export const Login = () => {
               }`}
             >
               {loading
-                ? "Please wait..."
+                ? "Loading..."
                 : isRegistering
                 ? "Create Account"
                 : "Sign In"}
             </button>
-          </form>
 
-          {/* Toggle Register/Login */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              {isRegistering
-                ? "Already have an account?"
-                : "Don't have an account?"}{" "}
+            {/* Toggle Register/Login */}
+            <div className="text-center mt-4">
               <button
                 type="button"
-                onClick={() => {
-                  setIsRegistering(!isRegistering);
-                  setError("");
-                }}
+                onClick={() => setIsRegistering(!isRegistering)}
                 className={GLOBAL_STYLES.button.ghost}
               >
-                {isRegistering ? "Sign in" : "Sign up"}
+                {isRegistering
+                  ? "Already have an account? Sign in"
+                  : "Need an account? Register"}
               </button>
-            </p>
-          </div>
-
-          {/* Demo Credentials */}
-          {!isRegistering && (
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium mb-2">
-                Demo Credentials:
-              </p>
-              <p className="text-sm text-blue-700">
-                Email: demo@timezonesyncer.com
-                <br />
-                Password: demo123456
-              </p>
             </div>
-          )}
+          </form>
         </div>
       </div>
     </div>
