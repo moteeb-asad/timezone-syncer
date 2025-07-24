@@ -52,7 +52,7 @@ export const Layout = ({ children }: LayoutProps) => {
             <div className="flex items-center flex-1">
               {/* Logo */}
               <Link to="/" className="flex-shrink-0">
-                <span className="text-lg md:text-xl font-bold text-blue-600 whitespace-nowrap">
+                <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">
                   Logo
                 </span>
               </Link>
@@ -65,7 +65,7 @@ export const Layout = ({ children }: LayoutProps) => {
                     to={item.href}
                     className={`px-3 py-2 text-sm font-medium transition-colors hover:underline ${
                       item.current
-                        ? "text-blue-600"
+                        ? "text-primary"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -82,7 +82,7 @@ export const Layout = ({ children }: LayoutProps) => {
               </span>
               <button
                 onClick={handleLogout}
-                className="bg-white py-2 px-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap"
+                className="bg-white py-2 px-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary whitespace-nowrap"
               >
                 Logout
               </button>
@@ -90,7 +90,7 @@ export const Layout = ({ children }: LayoutProps) => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
               >
                 <span className="sr-only">Open main menu</span>
                 <svg
@@ -121,7 +121,7 @@ export const Layout = ({ children }: LayoutProps) => {
                     to={item.href}
                     className={`block px-3 py-2 rounded-md text-base font-medium ${
                       item.current
-                        ? "bg-blue-50 text-blue-700"
+                        ? "bg-primary-light text-primary"
                         : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                     }`}
                     onClick={() => setIsMenuOpen(false)}

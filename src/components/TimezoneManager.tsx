@@ -1,21 +1,25 @@
 import { useState, useEffect } from "react";
 import type {
-  Timezone,
   TimezoneSetting,
-  BaseTime,
+  TimezoneOption,
   UserSubscription,
 } from "../types/timezone";
 import {
   COMMON_TIMEZONES,
+  timezoneToOption,
+  optionToTimezone,
   getTimeInTimezone,
   getWorkingHoursStatus,
-  generateTimeOptions,
   getStatusColor,
 } from "../utils/timezoneUtils";
 import { FREE_TIER_LIMIT } from "../types/timezone";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { useNavigate } from "react-router-dom";
+import CurrentTime from "./CurrentTime";
+import TimezoneSelect from "./TimezoneSelect";
+import TimeInput from "./TimeInput";
+import getUnicodeFlagIcon from "country-flag-icons/unicode";
 
 interface TimezoneManagerProps {
   isPremium?: boolean;
@@ -24,98 +28,33 @@ interface TimezoneManagerProps {
 export const TimezoneManager = ({
   isPremium = false,
 }: TimezoneManagerProps) => {
-  const [popupError, setPopupError] = useState<string | null>(null);
-  const [baseTime, setBaseTime] = useState<BaseTime>({
-    time: "09:00",
-    timezone: "Europe/London",
+  const [baseTime, setBaseTime] = useState({
+    time: "10:00",
+    timezone: "America/New_York",
   });
 
-  const [timezoneSettings, setTimezoneSettings] = useState<TimezoneSetting[]>(
-    isPremium
-      ? [
-          {
-            id: "1",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "America/New_York"
-            )!,
-            localTime: "04:00 AM",
-            status: "early",
-          },
-          {
-            id: "2",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "Europe/Paris"
-            )!,
-            localTime: "10:00 AM",
-            status: "working",
-          },
-          {
-            id: "3",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "Asia/Karachi"
-            )!,
-            localTime: "01:00 PM",
-            status: "working",
-          },
-          {
-            id: "4",
-            timezone: COMMON_TIMEZONES.find((tz) => tz.name === "Asia/Tokyo")!,
-            localTime: "06:00 PM",
-            status: "late",
-          },
-        ]
-      : [
-          {
-            id: "1",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "America/New_York"
-            )!,
-            localTime: "04:00 AM",
-            status: "early",
-          },
-          {
-            id: "2",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "Europe/Paris"
-            )!,
-            localTime: "10:00 AM",
-            status: "working",
-          },
-          {
-            id: "3",
-            timezone: COMMON_TIMEZONES.find(
-              (tz) => tz.name === "Asia/Karachi"
-            )!,
-            localTime: "01:00 PM",
-            status: "working",
-          },
-        ]
-  );
+  const [timezoneSettings, setTimezoneSettings] = useState<TimezoneSetting[]>([
+    {
+      id: "1",
+      timezone: COMMON_TIMEZONES.find((tz) => tz.name === "America/New_York")!,
+      localTime: "04:00 AM",
+      status: "early",
+    },
+  ]);
 
   const [showAddTimezone, setShowAddTimezone] = useState(false);
-  const [selectedTimezone, setSelectedTimezone] = useState<Timezone | null>(
-    null
-  );
+  const [selectedTimezone, setSelectedTimezone] =
+    useState<TimezoneOption | null>(null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [popupError, setPopupError] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
-  // Add state for live current time
-  const [liveTime, setLiveTime] = useState(new Date());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const subscription: UserSubscription = {
     isPremium,
     maxTimezones: isPremium ? 20 : FREE_TIER_LIMIT,
     currentTimezones: timezoneSettings.length,
   };
-
-  const timeOptions = generateTimeOptions();
 
   // Update all timezone times when base time changes
   useEffect(() => {
@@ -135,13 +74,24 @@ export const TimezoneManager = ({
     setTimezoneSettings(updatedSettings);
   }, [baseTime]);
 
+  const handleBaseTimezoneChange = (option: TimezoneOption | null) => {
+    console.log("option", option);
+    if (option) {
+      setBaseTime((prev) => ({ ...prev, timezone: option.value }));
+    }
+  };
+
+  const handleBaseTimeChange = (newTime: string) => {
+    setBaseTime((prev) => ({ ...prev, time: newTime }));
+  };
+
   const handleAddTimezone = () => {
     if (!selectedTimezone) return;
 
     // Check if timezone already exists
     if (
       timezoneSettings.some(
-        (setting) => setting.timezone.id === selectedTimezone.id
+        (setting) => setting.timezone.name === selectedTimezone.value
       )
     ) {
       setPopupError("This timezone is already added!");
@@ -154,16 +104,17 @@ export const TimezoneManager = ({
       return;
     }
 
+    const timezone = optionToTimezone(selectedTimezone);
     const localTime = getTimeInTimezone(
       baseTime.time,
       baseTime.timezone,
-      selectedTimezone.name
+      timezone.name
     );
     const status = getWorkingHoursStatus(localTime);
 
     const newSetting: TimezoneSetting = {
       id: Date.now().toString(),
-      timezone: selectedTimezone,
+      timezone,
       localTime,
       status,
     };
@@ -186,9 +137,33 @@ export const TimezoneManager = ({
       navigate("/login");
     }
   };
+
+  const handleTimezoneChange = (option: TimezoneOption | null) => {
+    if (option) {
+      setSelectedTimezone({
+        ...option,
+        id: option.value.toLowerCase().replace("/", "-"),
+        name: option.value,
+        displayName: option.label,
+      });
+    } else {
+      setSelectedTimezone(null);
+    }
+  };
+
+  const foundTimezone = COMMON_TIMEZONES.find(
+    (tz) => tz.name === baseTime.timezone
+  );
+  const baseTimezoneOption = foundTimezone
+    ? timezoneToOption(foundTimezone)
+    : null;
+
   return (
     <div className="container-page">
       <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Live Local Current Time Display */}
+        <CurrentTime />
+
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
@@ -198,64 +173,38 @@ export const TimezoneManager = ({
               timezones
             </span>
             {!isPremium && (
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs md:text-sm">
+              <span className="bg-primary-light text-primary px-2 py-1 rounded text-xs md:text-sm">
                 Free Plan
               </span>
             )}
           </div>
         </div>
 
-        {/* Live Current Time Display */}
-        <div className="flex justify-center mb-6">
-          <span className="current-time text-base md:text-lg font-semibold text-gray-700">
-            Current Time:{" "}
-            {liveTime.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: true,
-            })}
-          </span>
-        </div>
-
         {/* Base Time Controls */}
-        <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <h3 className="text-lg font-medium text-text-primary mb-4">
+            Base Time Settings
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Base Time:
+                Time:
               </label>
-              <select
+              <TimeInput
                 value={baseTime.time}
-                onChange={(e) =>
-                  setBaseTime({ ...baseTime, time: e.target.value })
-                }
-                className="w-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                {timeOptions.map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
+                onChange={handleBaseTimeChange}
+                className="w-full "
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Timezone:
               </label>
-              <select
-                value={baseTime.timezone}
-                onChange={(e) =>
-                  setBaseTime({ ...baseTime, timezone: e.target.value })
-                }
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                {COMMON_TIMEZONES.map((tz) => (
-                  <option key={tz.id} value={tz.name}>
-                    {tz.displayName}
-                  </option>
-                ))}
-              </select>
+              <TimezoneSelect
+                value={baseTimezoneOption}
+                onChange={handleBaseTimezoneChange}
+                className="w-full"
+              />
             </div>
           </div>
         </div>
@@ -269,7 +218,9 @@ export const TimezoneManager = ({
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
                 <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{setting.timezone.flag}</span>
+                  <span className="text-2xl">
+                    {getUnicodeFlagIcon(setting.timezone.countryCode)}
+                  </span>
                   <div>
                     <h3 className="text-base md:text-lg font-medium text-gray-900">
                       {setting.timezone.displayName}
@@ -306,7 +257,7 @@ export const TimezoneManager = ({
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => setShowAddTimezone(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             Add Timezone
           </button>
@@ -324,24 +275,11 @@ export const TimezoneManager = ({
                   <span className="block sm:inline">{popupError}</span>
                 </div>
               )}
-              <select
-                value={selectedTimezone?.id || ""}
-                onChange={(e) => {
-                  const tz = COMMON_TIMEZONES.find(
-                    (t) => t.id === e.target.value
-                  );
-                  setSelectedTimezone(tz || null);
-                  setPopupError(null);
-                }}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4"
-              >
-                <option value="">Select a timezone</option>
-                {COMMON_TIMEZONES.map((tz) => (
-                  <option key={tz.id} value={tz.id}>
-                    {tz.displayName}
-                  </option>
-                ))}
-              </select>
+              <TimezoneSelect
+                value={selectedTimezone}
+                onChange={handleTimezoneChange}
+                className="w-full "
+              />
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => {
@@ -355,7 +293,7 @@ export const TimezoneManager = ({
                 <button
                   onClick={handleAddTimezone}
                   disabled={!selectedTimezone || !!popupError}
-                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                 >
                   Add
                 </button>
@@ -387,7 +325,7 @@ export const TimezoneManager = ({
                     setShowUpgradeDialog(false);
                     handleUpgradeClick();
                   }}
-                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   Upgrade Now
                 </button>

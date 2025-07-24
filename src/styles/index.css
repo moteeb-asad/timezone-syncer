@@ -23,20 +23,20 @@ body {
 @layer components {
   /* Button Styles */
   .btn-primary {
-    @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 
   .btn-ghost {
-    @apply text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200;
+    @apply text-primary hover:text-primary-dark font-medium transition-colors duration-200;
   }
 
   /* Input Styles */
   .input-base {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
   }
 
   .input-error {
@@ -52,17 +52,13 @@ body {
     @apply bg-white rounded-xl shadow-lg border border-gray-200 p-8 w-full max-w-md;
   }
 
-  .custom-container-max-w {
-    @apply max-w-[40rem];
-  }
-
   .container-page {
-    @apply min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100;
+    @apply min-h-screen bg-gradient-to-br from-primary-light to-white;
   }
 
   /* Text Styles */
   .text-heading {
-    @apply text-2xl font-bold text-gray-900 text-center mb-8;
+    @apply text-2xl font-bold text-text-primary text-center mb-8;
   }
 
   .text-label {
@@ -74,36 +70,83 @@ body {
   }
 
   .text-link {
-    @apply text-blue-600 hover:text-blue-700 transition-colors duration-200;
+    @apply text-primary hover:text-primary-dark transition-colors duration-200;
   }
 
   /* Layout Styles */
   .layout-space-between {
     @apply flex items-center justify-between;
   }
+}
 
-  .layout-stack {
-    @apply space-y-4;
-  }
+/* Time Picker Styles */
+.react-time-picker {
+  width: 100%;
+}
 
-  .layout-stack-small {
-    @apply space-y-2;
-  }
+.react-time-picker__wrapper {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.5rem;
+  height: 38px;
+  padding: 0 8px;
+  background-color: white;
+}
 
-  /* Timezone Manager Specific Styles */
-  .timezone-item {
-    @apply grid grid-cols-2 gap-4 py-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors;
-  }
+.react-time-picker__wrapper:hover {
+  border-color: #d1d5db !important;
+}
 
-  .status-indicator {
-    @apply w-3 h-3 rounded-full;
-  }
+.react-time-picker__wrapper:focus-within {
+  border-color: var(--primary-color, #ff6154) !important;
+  box-shadow: 0 0 0 1px var(--primary-color, #ff6154);
+}
 
-  .add-timezone-btn {
-    @apply w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors;
-  }
+.react-time-picker__inputGroup {
+  padding: 0 4px;
+}
 
-  .premium-banner {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white text-center;
-  }
+.react-time-picker__inputGroup__input {
+  font-size: 0.875rem;
+  color: #374151;
+  font-family: inherit;
+}
+
+.react-time-picker__inputGroup__input:focus {
+  outline: none;
+}
+
+.react-time-picker__inputGroup__divider {
+  color: #6b7280;
+}
+
+.react-time-picker__button {
+  padding: 4px;
+  stroke: #6b7280;
+}
+
+.react-time-picker__button:hover {
+  stroke: #374151;
+}
+
+.react-time-picker__button:focus {
+  outline: none;
+}
+
+/* Hide the clock button since we disabled it */
+.react-time-picker__clock-button {
+  display: none;
+}
+
+/* Style the AM/PM select */
+.react-time-picker__inputGroup__amPm {
+  background: transparent;
+  border: none;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.react-time-picker__inputGroup__amPm:focus {
+  outline: none;
+  color: var(--primary-color, #ff6154);
 }

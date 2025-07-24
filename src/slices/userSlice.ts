@@ -16,8 +16,8 @@ const userSlice = createSlice({
         state.user = null;
         state.token = null;
       } else {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
       }
     },
     clearUser: (state) => {

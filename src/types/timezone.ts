@@ -1,9 +1,31 @@
+export interface TimezoneOption {
+  value: string;
+  label: string;
+  offset: number;
+  countryCode: string;
+}
+
 export interface Timezone {
   id: string;
   name: string;
   displayName: string;
-  flag: string;
+  countryCode: string;
 }
+
+// Conversion functions
+export const timezoneToOption = (tz: Timezone): TimezoneOption => ({
+  value: tz.name,
+  label: tz.displayName,
+  offset: 0, // You might want to add offset to your COMMON_TIMEZONES
+  countryCode: tz.countryCode,
+});
+
+export const optionToTimezone = (option: TimezoneOption): Timezone => ({
+  id: option.value.toLowerCase().replace("/", "-"),
+  name: option.value,
+  displayName: option.label,
+  countryCode: option.countryCode,
+});
 
 export interface TimezoneSetting {
   id: string;
