@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { GLOBAL_STYLES } from "../styles/constants";
+import { useSelector, useDispatch } from "react-redux";
+import { setIsRegistering } from "../slices/userSlice";
+import type { RootState } from "../store";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false);
+  const dispatch = useDispatch();
+  const isRegistering = useSelector(
+    (state: RootState) => state.user.isRegistering
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -36,12 +42,16 @@ export const Login = () => {
 
   return (
     <div className={GLOBAL_STYLES.container.page}>
-      <div className={GLOBAL_STYLES.container.center}>
+      <div
+        className={`${GLOBAL_STYLES.container.center} ${
+          isRegistering ? "register-wrapper" : ""
+        }`}
+      >
         <div className={GLOBAL_STYLES.container.card}>
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className={GLOBAL_STYLES.text.heading}>
-              {isRegistering ? "Create Account" : "Welcome Back"}
+            <h1 className={`${GLOBAL_STYLES.text.heading} mb-2`}>
+              {isRegistering ? "Sign Up" : "Login"}
             </h1>
             <p className="text-gray-600">
               {isRegistering
@@ -154,7 +164,7 @@ export const Login = () => {
             <div className="text-center mt-4">
               <button
                 type="button"
-                onClick={() => setIsRegistering(!isRegistering)}
+                onClick={() => dispatch(setIsRegistering(!isRegistering))}
                 className={GLOBAL_STYLES.button.ghost}
               >
                 {isRegistering

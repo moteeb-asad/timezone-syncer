@@ -5,6 +5,7 @@ import type { UserState } from "../types/user";
 const initialState: UserState = {
   user: null,
   token: null,
+  isRegistering: false,
 };
 
 const userSlice = createSlice({
@@ -16,17 +17,20 @@ const userSlice = createSlice({
         state.user = null;
         state.token = null;
       } else {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
       }
     },
     clearUser: (state) => {
       state.user = null;
       state.token = null;
     },
+    setIsRegistering: (state, action) => {
+      state.isRegistering = action.payload;
+    },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, setIsRegistering } = userSlice.actions;
 
 export default userSlice.reducer;

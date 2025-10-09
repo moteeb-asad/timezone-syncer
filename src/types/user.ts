@@ -8,4 +8,5 @@ export interface UserState {
     isPremium?: boolean;
   } | null;
   token: string | null;
+  isRegistering: boolean;
 }

@@ -29,6 +29,7 @@ export const useAuth = () => {
     }
 
     try {
+      console.log("Logging in with email and password");
       const result = await signInWithEmailAndPassword(auth, email, password);
       const token = await result.user.getIdToken();
       dispatch(
@@ -64,6 +65,7 @@ export const useAuth = () => {
     }
 
     try {
+      console.log("Registering with email and password");
       const result = await createUserWithEmailAndPassword(
         auth,
         email,

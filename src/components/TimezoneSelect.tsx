@@ -19,9 +19,25 @@ const TimezoneSelect = ({
 }: TimezoneSelectProps) => {
   const [options, setOptions] = useState<TimezoneOption[]>([]);
 
+  // Load options only once when component mounts
   useEffect(() => {
     setOptions(getAllTimezones());
   }, []);
+
+  // Handle value format synchronization separately
+  useEffect(() => {
+    if (!value || options.length === 0) return;
+
+    const matchingOption = options.find((opt) => opt.value === value.value);
+
+    // Only update if we found a matching option that's different from current value
+    if (
+      matchingOption &&
+      JSON.stringify(matchingOption) !== JSON.stringify(value)
+    ) {
+      onChange(matchingOption);
+    }
+  }, [value, options]);
 
   const getFlag = (countryCode: string) => {
     try {

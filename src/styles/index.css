@@ -150,3 +150,10 @@ body {
   outline: none;
   color: var(--primary-color, #ff6154);
 }
+
+/* Media Queries */
+/* @media (max-width: 600px) {
+  .container-center.register-wrapper {
+    min-height: 130vh;
+  }
+} */

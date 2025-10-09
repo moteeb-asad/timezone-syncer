@@ -5,15 +5,20 @@ import type {
   UserSubscription,
 } from "../types/timezone";
 import {
-  COMMON_TIMEZONES,
-  timezoneToOption,
   optionToTimezone,
   getTimeInTimezone,
   getWorkingHoursStatus,
   getStatusColor,
+  getAllTimezones,
 } from "../utils/timezoneUtils";
+import {
+  setBaseTime,
+  setTimezoneSettings,
+  addTimezoneSetting,
+  removeTimezoneSetting,
+} from "../slices/timezoneSlice";
 import { FREE_TIER_LIMIT } from "../types/timezone";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../store";
 import { useNavigate } from "react-router-dom";
 import CurrentTime from "./CurrentTime";
@@ -28,19 +33,10 @@ interface TimezoneManagerProps {
 export const TimezoneManager = ({
   isPremium = false,
 }: TimezoneManagerProps) => {
-  const [baseTime, setBaseTime] = useState({
-    time: "10:00",
-    timezone: "America/New_York",
-  });
-
-  const [timezoneSettings, setTimezoneSettings] = useState<TimezoneSetting[]>([
-    {
-      id: "1",
-      timezone: COMMON_TIMEZONES.find((tz) => tz.name === "America/New_York")!,
-      localTime: "04:00 AM",
-      status: "early",
-    },
-  ]);
+  const dispatch = useDispatch();
+  const { baseTime, timezoneSettings } = useSelector(
+    (state: RootState) => state.timezone
+  );
 
   const [showAddTimezone, setShowAddTimezone] = useState(false);
   const [selectedTimezone, setSelectedTimezone] =
@@ -58,6 +54,9 @@ export const TimezoneManager = ({
 
   // Update all timezone times when base time changes
   useEffect(() => {
+    // Skip the update if there are no timezone settings
+    if (timezoneSettings.length === 0) return;
+
     const updatedSettings = timezoneSettings.map((setting) => {
       const localTime = getTimeInTimezone(
         baseTime.time,
@@ -65,24 +64,39 @@ export const TimezoneManager = ({
         setting.timezone.name
       );
       const status = getWorkingHoursStatus(localTime);
+
+      // Only update if something has changed
+      if (localTime === setting.localTime && status === setting.status) {
+        return setting;
+      }
+
       return {
         ...setting,
         localTime,
         status,
       };
     });
-    setTimezoneSettings(updatedSettings);
-  }, [baseTime]);
+
+    // Only update state if there are actual changes
+    const hasChanges = updatedSettings.some(
+      (setting, index) =>
+        setting.localTime !== timezoneSettings[index].localTime ||
+        setting.status !== timezoneSettings[index].status
+    );
+
+    if (hasChanges) {
+      dispatch(setTimezoneSettings(updatedSettings));
+    }
+  }, [baseTime.time, baseTime.timezone, timezoneSettings, dispatch]);
 
   const handleBaseTimezoneChange = (option: TimezoneOption | null) => {
-    console.log("option", option);
     if (option) {
-      setBaseTime((prev) => ({ ...prev, timezone: option.value }));
+      dispatch(setBaseTime({ ...baseTime, timezone: option.value }));
     }
   };
 
   const handleBaseTimeChange = (newTime: string) => {
-    setBaseTime((prev) => ({ ...prev, time: newTime }));
+    dispatch(setBaseTime({ ...baseTime, time: newTime }));
   };
 
   const handleAddTimezone = () => {
@@ -119,15 +133,13 @@ export const TimezoneManager = ({
       status,
     };
 
-    setTimezoneSettings([...timezoneSettings, newSetting]);
+    dispatch(addTimezoneSetting(newSetting));
     setSelectedTimezone(null);
     setShowAddTimezone(false);
   };
 
   const handleRemoveTimezone = (id: string) => {
-    setTimezoneSettings(
-      timezoneSettings.filter((setting) => setting.id !== id)
-    );
+    dispatch(removeTimezoneSetting(id));
   };
 
   const handleUpgradeClick = () => {
@@ -139,24 +151,15 @@ export const TimezoneManager = ({
   };
 
   const handleTimezoneChange = (option: TimezoneOption | null) => {
-    if (option) {
-      setSelectedTimezone({
-        ...option,
-        id: option.value.toLowerCase().replace("/", "-"),
-        name: option.value,
-        displayName: option.label,
-      });
-    } else {
-      setSelectedTimezone(null);
-    }
+    setSelectedTimezone(option);
   };
 
-  const foundTimezone = COMMON_TIMEZONES.find(
-    (tz) => tz.name === baseTime.timezone
-  );
-  const baseTimezoneOption = foundTimezone
-    ? timezoneToOption(foundTimezone)
-    : null;
+  // Get all timezones once
+  const [allTimezones] = useState(() => getAllTimezones());
+
+  // Find the matching timezone option
+  const baseTimezoneOption =
+    allTimezones.find((tz) => tz.value === baseTime.timezone) || null;
 
   return (
     <div className="container-page">
@@ -211,46 +214,51 @@ export const TimezoneManager = ({
 
         {/* Timezone List */}
         <div className="space-y-4">
-          {timezoneSettings.map((setting) => (
-            <div
-              key={setting.id}
-              className="bg-white rounded-lg shadow-sm p-4 md:p-6"
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">
-                    {getUnicodeFlagIcon(setting.timezone.countryCode)}
-                  </span>
-                  <div>
-                    <h3 className="text-base md:text-lg font-medium text-gray-900">
-                      {setting.timezone.displayName}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {setting.timezone.name}
-                    </p>
+          {timezoneSettings.map(
+            (setting) => (
+              console.log("setting", setting),
+              (
+                <div
+                  key={setting.id}
+                  className="bg-white rounded-lg shadow-sm p-4 md:p-6"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">
+                        {getUnicodeFlagIcon(setting.timezone.countryCode)}
+                      </span>
+                      <div>
+                        <h3 className="text-base md:text-lg font-medium text-gray-900">
+                          {setting.timezone.displayName}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {setting.timezone.name}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between md:justify-end space-x-4 md:space-x-6">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                          setting.status
+                        )}`}
+                      >
+                        {setting.status}
+                      </span>
+                      <span className="text-base md:text-lg font-semibold">
+                        {setting.localTime}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveTimezone(setting.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between md:justify-end space-x-4 md:space-x-6">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                      setting.status
-                    )}`}
-                  >
-                    {setting.status}
-                  </span>
-                  <span className="text-base md:text-lg font-semibold">
-                    {setting.localTime}
-                  </span>
-                  <button
-                    onClick={() => handleRemoveTimezone(setting.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+              )
+            )
+          )}
         </div>
 
         {/* Add Timezone Button */}
@@ -286,14 +294,14 @@ export const TimezoneManager = ({
                     setShowAddTimezone(false);
                     setSelectedTimezone(null);
                   }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="mt-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddTimezone}
                   disabled={!selectedTimezone || !!popupError}
-                  className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+                  className="px-4 py-2 mt-4 text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                 >
                   Add
                 </button>

@@ -3,6 +3,7 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 import userReducer from "./slices/userSlice";
+import timezoneReducer from "./slices/timezoneSlice";
 
 const persistConfig = {
   key: "root",
@@ -12,6 +13,7 @@ const persistConfig = {
 
 const reducer = combineReducers({
   user: userReducer,
+  timezone: timezoneReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducer);
