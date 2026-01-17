@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import type { StylesConfig, GroupBase } from "react-select";
-import type { TimezoneOption } from "../types/timezone";
-import { getAllTimezones } from "../utils/timezoneUtils";
+import type { TimezoneOption } from "../../types/timezone";
+import { getAllTimezones } from "../../utils/timezoneUtils";
 import getUnicodeFlagIcon from "country-flag-icons/unicode";
 
 interface TimezoneSelectProps {

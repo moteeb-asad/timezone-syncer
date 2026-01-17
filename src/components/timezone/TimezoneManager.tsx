@@ -3,23 +3,23 @@ import type {
   TimezoneSetting,
   TimezoneOption,
   UserSubscription,
-} from "../types/timezone";
+} from "../../types/timezone";
 import {
   optionToTimezone,
   getTimeInTimezone,
   getWorkingHoursStatus,
   getStatusColor,
   getAllTimezones,
-} from "../utils/timezoneUtils";
+} from "../../utils/timezoneUtils";
 import {
   setBaseTime,
   setTimezoneSettings,
   addTimezoneSetting,
   removeTimezoneSetting,
-} from "../slices/timezoneSlice";
-import { FREE_TIER_LIMIT } from "../types/timezone";
+} from "../../slices/timezoneSlice";
+import { FREE_TIER_LIMIT } from "../../types/timezone";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../store";
+import type { RootState } from "../../store";
 import { useNavigate } from "react-router-dom";
 import CurrentTime from "./CurrentTime";
 import TimezoneSelect from "./TimezoneSelect";

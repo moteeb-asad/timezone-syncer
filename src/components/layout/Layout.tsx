@@ -1,9 +1,9 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../store";
-import { useAuth } from "../hooks/useAuth";
+import type { RootState } from "../../store";
+import { useAuth } from "../../hooks/useAuth";
 import { useState, useMemo } from "react";
-import { clearUser, setIsRegistering } from "../slices/userSlice";
+import { clearUser, setIsRegistering } from "../../slices/userSlice";
 
 interface LayoutProps {
   children: React.ReactNode;

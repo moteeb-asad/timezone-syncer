@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "../pages/login";
 import { Premium } from "../pages/Premium";
-import { TimezoneManager } from "../components/TimezoneManager";
-import { ProtectedRoute } from "../components/ProtectedRoute";
-import { Layout } from "../components/Layout";
-import { Account } from "../components/Account";
+import {
+  TimezoneManager,
+  ProtectedRoute,
+  Layout,
+  Account,
+} from "../components";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 

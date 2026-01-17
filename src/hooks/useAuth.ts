@@ -8,6 +8,8 @@ import {
 import { auth, isFirebaseReady } from "../lib/firebase";
 import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "../slices/userSlice";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrors";
+import { FirebaseError } from "firebase/app";
 
 export const useAuth = () => {
   const dispatch = useDispatch();
@@ -29,7 +31,6 @@ export const useAuth = () => {
     }
 
     try {
-      console.log("Logging in with email and password");
       const result = await signInWithEmailAndPassword(auth, email, password);
       const token = await result.user.getIdToken();
       dispatch(
@@ -44,8 +45,12 @@ export const useAuth = () => {
         })
       );
       return { user: result.user, error: null };
-    } catch (error) {
-      return { user: null, error: error as Error };
+    } catch (error: unknown) {
+      const firebaseError = error as FirebaseError;
+      const errorMessage = firebaseError.code
+        ? getFirebaseErrorMessage(firebaseError.code)
+        : "An unexpected error occurred. Please try again.";
+      return { user: null, error: new Error(errorMessage) };
     }
   };
 
@@ -65,7 +70,6 @@ export const useAuth = () => {
     }
 
     try {
-      console.log("Registering with email and password");
       const result = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -94,8 +98,12 @@ export const useAuth = () => {
       }
 
       return { user: result.user, error: null };
-    } catch (error) {
-      return { user: null, error: error as Error };
+    } catch (error: unknown) {
+      const firebaseError = error as FirebaseError;
+      const errorMessage = firebaseError.code
+        ? getFirebaseErrorMessage(firebaseError.code)
+        : "An unexpected error occurred. Please try again.";
+      return { user: null, error: new Error(errorMessage) };
     }
   };
 
@@ -107,9 +115,13 @@ export const useAuth = () => {
       dispatch(clearUser());
       await signOut(auth);
       return { error: null };
-    } catch (error) {
-      console.error("Logout error:", error);
-      return { error: error as Error };
+    } catch (error: unknown) {
+      const firebaseError = error as FirebaseError;
+      console.error("Logout error:", firebaseError);
+      const errorMessage = firebaseError.code
+        ? getFirebaseErrorMessage(firebaseError.code)
+        : "An unexpected error occurred during logout. Please try again.";
+      return { error: new Error(errorMessage) };
     }
   };
 
