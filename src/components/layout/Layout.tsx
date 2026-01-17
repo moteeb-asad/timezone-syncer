@@ -1,22 +1,12 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/auth/useAuth";
 import { useState, useMemo } from "react";
 import { clearUser, setIsRegistering } from "../../slices/userSlice";
+import type { NavigationItem } from "../../types/layout";
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-interface NavigationItem {
-  name: string;
-  href: string;
-  current: boolean;
-  requiresAuth: boolean;
-}
-
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const location = useLocation();
   const navigate = useNavigate();
@@ -81,7 +71,7 @@ export const Layout = ({ children }: LayoutProps) => {
               {/* Logo */}
               <Link to="/" className="flex-shrink-0">
                 <span className="text-lg md:text-xl font-bold text-primary whitespace-nowrap">
-                  TZS
+                  Timezone Syncer
                 </span>
               </Link>
 
@@ -206,7 +196,9 @@ export const Layout = ({ children }: LayoutProps) => {
       </nav>
 
       {/* Main Content with top padding for fixed header */}
-      <main className="flex-1 pt-16">{children}</main>
+      <main className="flex-1 pt-16">
+        <Outlet />
+      </main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 py-4 mt-auto">

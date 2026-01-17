@@ -1,60 +1,50 @@
 # Timezone Syncer
 
-A lightweight, modern web app to manage and compare multiple timezones for remote teams and global collaboration.
+Manage and compare timezones for remote teams, with working-hours cues and premium unlocks.
 
-## Features
+## How it works
 
-- Add, remove, and compare up to 3 timezones for free
-- Upgrade to Premium for unlimited timezones
-- Working hours highlighting (green/orange/red)
-- Responsive, beautiful UI (Tailwind CSS)
-- Firebase authentication (for premium features)
-- Built with React + Vite + TypeScript
+- Public routes (home/login) and protected routes (dashboard/premium/account) via `ProtectedRoute`/`PublicRoute` guards.
+- `Layout` wraps routes with a shared navbar/footer; content renders through `Outlet`.
+- `TimezoneManager` handles base time, timezone list, add/remove, upgrade prompts; logic lives in `hooks/timezone/useTimezoneManager`.
+- Auth (login/register/logout) via Firebase in `hooks/auth/useAuth`; redirects back to the originally requested page after login.
 
-## Tech Stack
+## Stack
 
-- **React** (with hooks)
-- **TypeScript**
-- **Vite** (blazing fast dev/build)
-- **Tailwind CSS** (utility-first styling)
-- **Firebase** (authentication)
-- **React Router** (routing)
+- React + TypeScript + Vite
+- React Router v7 guards
+- Redux Toolkit store
+- Tailwind CSS
+- Firebase Auth
 
-## Getting Started
+## Setup
 
-1. **Clone the repo:**
+1. Install deps: `npm install`
+2. Env: create `.env.local` with your Firebase keys:
 
-   ```bash
-   git clone https://github.com/your-username/timezone-syncer.git
-   cd timezone-syncer
-   ```
+```
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+```
 
-2. **Install dependencies:**
+3. Run dev server: `npm run dev` (Node 20.19+ recommended for Vite 7.3+)
+4. Build: `npm run build` · Lint: `npm run lint`
 
-   ```bash
-   npm install
-   ```
+## Folders (high level)
 
-3. **Start the development server:**
+- `src/components/`
+  - `auth/` (guards) · `layout/` (shell) · `timezone/` (UI pieces)
+- `src/hooks/` → `auth/`, `timezone/`
+- `src/routes/` (route config)
+- `src/pages/` (Login, Premium)
+- `src/slices/` (Redux)
+- `src/types/`, `src/utils/`, `src/styles/`
 
-   ```bash
-   npm run dev
-   ```
+## What problem it solves
 
-   The app will be available at [http://localhost:5173](http://localhost:5173) (or another port if 5173 is in use).
-
-4. **(Optional) Configure Firebase:**
-   - Copy `.env.example` to `.env` and add your Firebase project keys for authentication features.
-
-## Folder Structure
-
-- `src/components/` — UI components (TimezoneManager, Layout, etc.)
-- `src/pages/` — Page-level components (Login, Premium)
-- `src/routes/` — Routing logic
-- `src/styles/` — Tailwind and custom CSS
-- `src/utils/` — Utility functions
-- `src/types/` — TypeScript types
-
-## License
-
-MIT
+Quickly see multiple teammates’ timezones, track working hours, and share a simple dashboard—reducing back-and-forth when scheduling across regions.

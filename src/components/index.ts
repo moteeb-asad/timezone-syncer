@@ -1,6 +1,7 @@
 // Auth components
 export { Account } from "./auth/Account";
 export { ProtectedRoute } from "./auth/ProtectedRoute";
+export { PublicRoute } from "./auth/PublicRoute";
 
 // Layout components
 export { Layout } from "./layout/Layout";

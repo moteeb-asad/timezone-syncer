@@ -1,17 +1,23 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import type { RootState } from "../../store";
 import { useSelector } from "react-redux";
+import type { ProtectedRouteProps } from "../../types/auth";
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  redirectTo = "/login",
+}: ProtectedRouteProps) => {
   const { user } = useSelector((state: RootState) => state.user);
+  const location = useLocation();
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to={redirectTo}
+        replace
+        state={{ from: location.pathname || "/" }}
+      />
+    );
   }
 
-  return <>{children}</>;
+  return <Outlet />;
 };

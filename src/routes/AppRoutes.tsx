@@ -4,6 +4,7 @@ import { Premium } from "../pages/Premium";
 import {
   TimezoneManager,
   ProtectedRoute,
+  PublicRoute,
   Layout,
   Account,
 } from "../components";
@@ -14,60 +15,30 @@ export function AppRoutes() {
   const { user } = useSelector((state: RootState) => state.user);
 
   return (
-    <Layout>
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/dashboard" replace /> : <Login />}
-        />
+    <Routes>
+      <Route element={<Layout />}>
+        {/* Public-only routes */}
+        <Route element={<PublicRoute redirectTo="/dashboard" />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<TimezoneManager isPremium={false} />} />
+        </Route>
 
-        {/* Root Route - redirect to dashboard if authenticated */}
-        <Route
-          path="/"
-          element={
-            user ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <TimezoneManager isPremium={false} />
-            )
-          }
-        />
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute redirectTo="/login" />}>
+          <Route
+            path="/dashboard"
+            element={<TimezoneManager isPremium={false} />}
+          />
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/account" element={<Account />} />
+        </Route>
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <TimezoneManager isPremium={false} />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/premium"
-          element={
-            <ProtectedRoute>
-              <Premium />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/account"
-          element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Catch all - redirect to login if not authenticated, dashboard if authenticated */}
+        {/* Catch-all */}
         <Route
           path="*"
           element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
         />
-      </Routes>
-    </Layout>
+      </Route>
+    </Routes>
   );
 }

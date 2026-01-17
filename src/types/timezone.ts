@@ -51,3 +51,45 @@ export const WORKING_HOURS = {
 } as const;
 
 export const FREE_TIER_LIMIT = 3;
+
+// Hook Return Types
+export interface UseTimezoneManagerReturn {
+  baseTime: { time: string; timezone: string };
+  timezoneSettings: TimezoneSetting[];
+  subscription: UserSubscription;
+  showAddTimezone: boolean;
+  selectedTimezone: TimezoneOption | null;
+  showUpgradeDialog: boolean;
+  popupError: string | null;
+  allTimezones: TimezoneOption[];
+  baseTimezoneOption: TimezoneOption | null;
+  user: any;
+  handleBaseTimezoneChange: (option: TimezoneOption | null) => void;
+  handleBaseTimeChange: (newTime: string) => void;
+  handleAddTimezone: () => void;
+  handleRemoveTimezone: (id: string) => void;
+  handleUpgradeClick: () => void;
+  handleTimezoneChange: (option: TimezoneOption | null) => void;
+  setShowAddTimezone: (show: boolean) => void;
+  setSelectedTimezone: (option: TimezoneOption | null) => void;
+  setShowUpgradeDialog: (show: boolean) => void;
+  setPopupError: (error: string | null) => void;
+}
+
+// Component Props
+export interface TimezoneManagerProps {
+  isPremium?: boolean;
+}
+
+export interface TimeInputProps {
+  value: string;
+  onChange: (newTime: string) => void;
+  className?: string;
+}
+
+export interface TimezoneSelectProps {
+  value?: TimezoneOption | null;
+  onChange: (option: TimezoneOption | null) => void;
+  className?: string;
+  setBaseTimezone?: (option: TimezoneOption | null) => void;
+}

@@ -5,10 +5,10 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-import { auth, isFirebaseReady } from "../lib/firebase";
+import { auth, isFirebaseReady } from "../../lib/firebase";
 import { useDispatch } from "react-redux";
-import { setUser, clearUser } from "../slices/userSlice";
-import { getFirebaseErrorMessage } from "../utils/firebaseErrors";
+import { setUser, clearUser } from "../../slices/userSlice";
+import { getFirebaseErrorMessage } from "../../utils/firebaseErrors";
 import { FirebaseError } from "firebase/app";
 
 export const useAuth = () => {

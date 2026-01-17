@@ -1,16 +1,9 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import type { StylesConfig, GroupBase } from "react-select";
-import type { TimezoneOption } from "../../types/timezone";
+import type { TimezoneOption, TimezoneSelectProps } from "../../types/timezone";
 import { getAllTimezones } from "../../utils/timezoneUtils";
 import getUnicodeFlagIcon from "country-flag-icons/unicode";
-
-interface TimezoneSelectProps {
-  value?: TimezoneOption | null;
-  onChange: (option: TimezoneOption | null) => void;
-  className?: string;
-  setBaseTimezone?: (option: TimezoneOption | null) => void;
-}
 
 const TimezoneSelect = ({
   value,

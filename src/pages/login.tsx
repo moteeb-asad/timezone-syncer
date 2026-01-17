@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/auth/useAuth";
 import { GLOBAL_STYLES } from "../styles/constants";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsRegistering } from "../slices/userSlice";
@@ -11,6 +12,10 @@ export const Login = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from =
+    (location.state as { from?: string } | undefined)?.from || "/dashboard";
   const isRegistering = useSelector(
     (state: RootState) => state.user.isRegistering
   );
@@ -31,6 +36,9 @@ export const Login = () => {
 
       if (result.error) {
         setError(result.error.message);
+      } else {
+        // Redirect to intended page after successful auth
+        navigate(from, { replace: true });
       }
     } catch (err) {
       console.error(err);

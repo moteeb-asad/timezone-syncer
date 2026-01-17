@@ -1,10 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-
-interface TimeInputProps {
-  value: string;
-  onChange: (newTime: string) => void;
-  className?: string;
-}
+import type { TimeInputProps } from "../../types/timezone";
 
 const TimeInput = ({ value, onChange, className = "" }: TimeInputProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
