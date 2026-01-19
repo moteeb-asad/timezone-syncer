@@ -140,6 +140,7 @@ export const useTimezoneManager = (
 
   const handleTimezoneChange = (option: TimezoneOption | null) => {
     setSelectedTimezone(option);
+    setPopupError(null); // Clear error when timezone selection changes
   };
 
   const baseTimezoneOption =

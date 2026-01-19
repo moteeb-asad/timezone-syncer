@@ -61,6 +61,9 @@ const CurrentTime = () => {
           </div>
         </div>
       </div>
+      <p className="text-sm text-gray-500 mt-3 text-center">
+        Compare your time with teammates across different regions
+      </p>
     </div>
   );
 };

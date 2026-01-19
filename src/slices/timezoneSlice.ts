@@ -1,14 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { TimezoneSetting } from "../types/timezone";
-
-interface TimezoneState {
-  baseTime: {
-    time: string;
-    timezone: string;
-  };
-  timezoneSettings: TimezoneSetting[];
-}
+import type { TimezoneSetting, TimezoneState } from "../types/timezone";
 
 // Try to load initial state from localStorage
 const loadFromLocalStorage = (): TimezoneState => {

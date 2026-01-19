@@ -93,3 +93,18 @@ export interface TimezoneSelectProps {
   className?: string;
   setBaseTimezone?: (option: TimezoneOption | null) => void;
 }
+
+export interface AddTimezoneDialogProps {
+  isOpen: boolean;
+  selectedTimezone: TimezoneOption | null;
+  popupError: string | null;
+  onSelectTimezone: (option: TimezoneOption | null) => void;
+  onAdd: () => void;
+  onClose: () => void;
+}
+
+// Redux State Types
+export interface TimezoneState {
+  baseTime: BaseTime;
+  timezoneSettings: TimezoneSetting[];
+}

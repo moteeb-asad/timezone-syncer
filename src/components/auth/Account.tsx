@@ -3,6 +3,7 @@ import type { RootState } from "../../store";
 
 export const Account = () => {
   const { user } = useSelector((state: RootState) => state.user);
+  console.log("User data in Account component:", user);
 
   return (
     <div className="container-page">

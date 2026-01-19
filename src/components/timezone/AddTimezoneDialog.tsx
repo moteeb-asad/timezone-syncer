@@ -1,14 +1,5 @@
-import type { TimezoneOption } from "../../types/timezone";
+import type { AddTimezoneDialogProps } from "../../types/timezone";
 import TimezoneSelect from "./TimezoneSelect";
-
-interface AddTimezoneDialogProps {
-  isOpen: boolean;
-  selectedTimezone: TimezoneOption | null;
-  popupError: string | null;
-  onSelectTimezone: (option: TimezoneOption | null) => void;
-  onAdd: () => void;
-  onClose: () => void;
-}
 
 export const AddTimezoneDialog = ({
   isOpen,

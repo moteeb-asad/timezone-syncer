@@ -40,17 +40,6 @@ export const TimezoneManager = ({
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
-          <div className="flex items-center justify-center gap-2 md:gap-4 text-sm text-gray-600">
-            <span>
-              {subscription.currentTimezones}/{subscription.maxTimezones}{" "}
-              timezones
-            </span>
-            {!isPremium && (
-              <span className="bg-primary-light text-primary px-2 py-1 rounded text-xs md:text-sm">
-                Free Plan
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Base Time Controls */}
@@ -89,13 +78,38 @@ export const TimezoneManager = ({
         />
 
         {/* Add Timezone Button */}
-        <div className="mt-6 flex justify-center">
-          <button
-            onClick={() => setShowAddTimezone(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-          >
-            Add Timezone
-          </button>
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>
+              {subscription.currentTimezones}/{subscription.maxTimezones}{" "}
+              timezones
+            </span>
+            {!isPremium && (
+              <span className="bg-primary-light text-primary px-2 py-1 rounded text-xs">
+                Free Plan
+              </span>
+            )}
+          </div>
+          <div className="relative group">
+            <button
+              onClick={() => setShowAddTimezone(true)}
+              disabled={
+                subscription.currentTimezones >= subscription.maxTimezones
+              }
+              className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
+                subscription.currentTimezones >= subscription.maxTimezones
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-primary hover:bg-primary-dark"
+              }`}
+            >
+              Add Timezone
+            </button>
+            {subscription.currentTimezones >= subscription.maxTimezones && (
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Upgrade to Premium to add more timezones
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Add Timezone Dialog */}
