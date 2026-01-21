@@ -21,6 +21,7 @@ body {
 
 /* Custom Component Classes */
 @layer components {
+
   /* Button Styles */
   .btn-primary {
     @apply w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
@@ -150,10 +151,3 @@ body {
   outline: none;
   color: var(--primary-color, #ff6154);
 }
-
-/* Media Queries */
-/* @media (max-width: 600px) {
-  .container-center.register-wrapper {
-    min-height: 130vh;
-  }
-} */

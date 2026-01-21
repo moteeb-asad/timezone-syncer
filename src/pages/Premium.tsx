@@ -55,7 +55,7 @@ export const Premium = () => {
             </div>
             <div className="mt-4">
               <div className="text-4xl font-bold text-primary mb-1">
-                $6
+                $10
                 <span className="text-lg font-normal text-gray-500">
                   /month
                 </span>

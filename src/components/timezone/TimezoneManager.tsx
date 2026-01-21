@@ -5,7 +5,6 @@ import TimezoneSelect from "./TimezoneSelect";
 import TimeInput from "./TimeInput";
 import { TimezoneList } from "./TimezoneList";
 import { AddTimezoneDialog } from "./AddTimezoneDialog";
-import { UpgradeDialog } from "./UpgradeDialog";
 
 export const TimezoneManager = ({
   isPremium = false,
@@ -16,18 +15,15 @@ export const TimezoneManager = ({
     subscription,
     showAddTimezone,
     selectedTimezone,
-    showUpgradeDialog,
     popupError,
     baseTimezoneOption,
     handleBaseTimezoneChange,
     handleBaseTimeChange,
     handleAddTimezone,
     handleRemoveTimezone,
-    handleUpgradeClick,
     handleTimezoneChange,
     setShowAddTimezone,
     setSelectedTimezone,
-    setShowUpgradeDialog,
     setPopupError,
   } = useTimezoneManager(isPremium);
 
@@ -85,9 +81,12 @@ export const TimezoneManager = ({
               timezones
             </span>
             {!isPremium && (
-              <span className="bg-primary-light text-primary px-2 py-1 rounded text-xs">
-                Free Plan
-              </span>
+              <a
+                href="/premium"
+                className="bg-primary-light text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white transition-colors cursor-pointer"
+              >
+                Free Plan - Upgrade
+              </a>
             )}
           </div>
           <div className="relative group">
@@ -105,8 +104,10 @@ export const TimezoneManager = ({
               Add Timezone
             </button>
             {subscription.currentTimezones >= subscription.maxTimezones && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                Upgrade to Premium to add more timezones
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto z-10">
+                <a href="/premium" className="hover:underline">
+                  Upgrade to Premium to add more timezones →
+                </a>
               </div>
             )}
           </div>
@@ -123,16 +124,6 @@ export const TimezoneManager = ({
             setShowAddTimezone(false);
             setSelectedTimezone(null);
             setPopupError(null);
-          }}
-        />
-
-        {/* Upgrade Dialog */}
-        <UpgradeDialog
-          isOpen={showUpgradeDialog}
-          onClose={() => setShowUpgradeDialog(false)}
-          onUpgrade={() => {
-            setShowUpgradeDialog(false);
-            handleUpgradeClick();
           }}
         />
       </div>

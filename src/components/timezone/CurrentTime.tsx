@@ -10,6 +10,7 @@ const CurrentTime = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <div className="flex flex-col items-center mb-8">
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">

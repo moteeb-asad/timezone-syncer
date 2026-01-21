@@ -39,6 +39,11 @@ export interface BaseTime {
   timezone: string;
 }
 
+export interface TimezoneListProps {
+  settings: TimezoneSetting[];
+  onRemove: (id: string) => void;
+}
+
 export interface UserSubscription {
   isPremium: boolean;
   maxTimezones: number;
@@ -59,7 +64,6 @@ export interface UseTimezoneManagerReturn {
   subscription: UserSubscription;
   showAddTimezone: boolean;
   selectedTimezone: TimezoneOption | null;
-  showUpgradeDialog: boolean;
   popupError: string | null;
   allTimezones: TimezoneOption[];
   baseTimezoneOption: TimezoneOption | null;
@@ -72,7 +76,6 @@ export interface UseTimezoneManagerReturn {
   handleTimezoneChange: (option: TimezoneOption | null) => void;
   setShowAddTimezone: (show: boolean) => void;
   setSelectedTimezone: (option: TimezoneOption | null) => void;
-  setShowUpgradeDialog: (show: boolean) => void;
   setPopupError: (error: string | null) => void;
 }
 

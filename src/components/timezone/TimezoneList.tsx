@@ -1,10 +1,5 @@
-import type { TimezoneSetting } from "../../types/timezone";
+import type { TimezoneListProps } from "../../types/timezone";
 import { TimezoneCard } from "./TimezoneCard";
-
-interface TimezoneListProps {
-  settings: TimezoneSetting[];
-  onRemove: (id: string) => void;
-}
 
 export const TimezoneList = ({ settings, onRemove }: TimezoneListProps) => {
   return (

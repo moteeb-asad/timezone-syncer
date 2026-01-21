@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "../pages/login";
 import { Premium } from "../pages/Premium";
+import { About } from "../pages/About";
 import {
   TimezoneManager,
   ProtectedRoute,
@@ -13,30 +14,34 @@ import type { RootState } from "../store";
 
 export function AppRoutes() {
   const { user } = useSelector((state: RootState) => state.user);
+  const isPremium = user?.isPremium ?? false;
 
   return (
     <Routes>
       <Route element={<Layout />}>
-        {/* Public-only routes */}
+        {/* Public-only routes (redirect if authenticated) */}
         <Route element={<PublicRoute redirectTo="/dashboard" />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<TimezoneManager isPremium={false} />} />
         </Route>
 
-        {/* Protected routes */}
+        {/* Public routes (accessible to everyone) */}
+        <Route path="/" element={<TimezoneManager isPremium={isPremium} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/premium" element={<Premium />} />
+
+        {/* Protected routes (require authentication) */}
         <Route element={<ProtectedRoute redirectTo="/login" />}>
           <Route
             path="/dashboard"
-            element={<TimezoneManager isPremium={false} />}
+            element={<TimezoneManager isPremium={isPremium} />}
           />
-          <Route path="/premium" element={<Premium />} />
           <Route path="/account" element={<Account />} />
         </Route>
 
         {/* Catch-all */}
         <Route
           path="*"
-          element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+          element={<Navigate to={user ? "/dashboard" : "/"} replace />}
         />
       </Route>
     </Routes>
