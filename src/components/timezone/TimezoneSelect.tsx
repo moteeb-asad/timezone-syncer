@@ -3,7 +3,7 @@ import Select from "react-select";
 import type { StylesConfig, GroupBase } from "react-select";
 import type { TimezoneOption, TimezoneSelectProps } from "../../types/timezone";
 import { getAllTimezones } from "../../utils/timezoneUtils";
-import getUnicodeFlagIcon from "country-flag-icons/unicode";
+import * as flags from "country-flag-icons/react/3x2";
 
 const TimezoneSelect = ({
   value,
@@ -32,12 +32,14 @@ const TimezoneSelect = ({
     }
   }, [value, options]);
 
-  const getFlag = (countryCode: string) => {
-    try {
-      return getUnicodeFlagIcon(countryCode);
-    } catch {
-      return "🌐"; // Fallback to globe emoji if country code is invalid
+  const FlagIcon = ({ countryCode }: { countryCode: string }) => {
+    const FlagComponent = (flags as any)[countryCode];
+
+    if (!FlagComponent) {
+      return <span className="text-lg">🌐</span>;
     }
+
+    return <FlagComponent className="w-5 h-4" />;
   };
 
   const customStyles: StylesConfig<
@@ -68,8 +70,8 @@ const TimezoneSelect = ({
       backgroundColor: isSelected
         ? "var(--primary-color, #ff6154)"
         : isFocused
-        ? "var(--primary-light, #fff4ed)"
-        : "white",
+          ? "var(--primary-light, #fff4ed)"
+          : "white",
       color: isSelected ? "white" : "#374151",
     }),
     singleValue: (provided) => ({
@@ -91,12 +93,8 @@ const TimezoneSelect = ({
       isSearchable={true}
       formatOptionLabel={(option: TimezoneOption) => (
         <div className="flex items-center">
-          <span
-            className="mr-2"
-            role="img"
-            aria-label={`Flag for ${option.label}`}
-          >
-            {getFlag(option.countryCode)}
+          <span className="mr-2 flex items-center">
+            <FlagIcon countryCode={option.countryCode} />
           </span>
           <span>{option.label}</span>
         </div>
