@@ -11,59 +11,40 @@ const CurrentTime = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const parts = new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  }).formatToParts(liveTime);
+
+  const hour = parts.find((p) => p.type === "hour")?.value ?? "";
+  const minute = parts.find((p) => p.type === "minute")?.value ?? "";
+  const second = parts.find((p) => p.type === "second")?.value ?? "";
+  const period = (parts.find((p) => p.type === "dayPeriod")?.value ?? "")
+    .toUpperCase()
+    .trim();
+
   return (
-    <div className="flex flex-col items-center mb-8">
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-        <div className="text-center">
-          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-2">
-            Local Time
-          </h2>
-          <div className="flex items-center justify-center space-x-1">
-            <div className="bg-primary-light rounded-lg px-3 py-2">
-              <span className="text-md md:text-3xl font-bold text-primary uppercase">
-                {liveTime.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  hour12: true,
-                })}
-              </span>
-            </div>
-            <span className="text-2xl md:text-3xl font-bold text-primary">
-              :
-            </span>
-            <div className="bg-primary-light rounded-lg px-3 py-2">
-              <span className="text-md md:text-3xl font-bold text-primary">
-                {liveTime
-                  .toLocaleTimeString([], {
-                    minute: "2-digit",
-                  })
-                  .slice(-2)}
-              </span>
-            </div>
-            <span className="text-2xl md:text-3xl font-bold text-primary">
-              :
-            </span>
-            <div className="bg-primary-light rounded-lg px-3 py-2">
-              <span className="text-md md:text-3xl font-bold text-primary">
-                {liveTime
-                  .toLocaleTimeString([], {
-                    second: "2-digit",
-                  })
-                  .slice(-2)}
-              </span>
-            </div>
-          </div>
-          <div className="mt-2 text-sm text-gray-500">
-            {liveTime.toLocaleDateString([], {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </div>
-        </div>
+    <div className="flex flex-col items-center text-center space-y-3">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        Your Local Time
+      </p>
+      <div className="flex items-baseline gap-3">
+        <span className="text-6xl font-bold text-slate-900">
+          {hour}:{minute}
+        </span>
+        <span className="text-2xl font-semibold text-slate-400">
+          {second} {period}
+        </span>
       </div>
-      <p className="text-sm text-gray-500 mt-3 text-center">
-        Compare your time with teammates across different regions
+      <p className="text-sm text-slate-500 font-medium">
+        {liveTime.toLocaleDateString([], {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
       </p>
     </div>
   );

@@ -4,7 +4,7 @@ import type { NavigationProps } from "../../types/layout";
 
 const Navigation = memo(({ items, user }: NavigationProps) => {
   return (
-    <div className="hidden md:flex md:items-center md:ml-8 space-x-4">
+    <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
       {items.map((item) => {
         // Skip "Home" when user is logged in
         if (user && item.name === "Home") return null;
@@ -13,10 +13,10 @@ const Navigation = memo(({ items, user }: NavigationProps) => {
           <Link
             key={item.name}
             to={item.href}
-            className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`pb-1 ${
               item.current
-                ? "bg-primary-light text-primary"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                ? "text-primary-accent border-primary-accent border-b-2"
+                : "hover:text-primary-accent transition-colors"
             }`}
           >
             {item.name}

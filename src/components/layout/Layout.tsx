@@ -10,10 +10,10 @@ import Footer from "./Footer";
 
 export const Layout = () => {
   const { user } = useSelector((state: RootState) => state.user);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dispatch = useDispatch();
 
   const navigation = useNavigation(location.pathname, user);
@@ -33,7 +33,7 @@ export const Layout = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header
         user={user}
         navigation={navigation}
@@ -42,7 +42,7 @@ export const Layout = () => {
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 pt-16">
+      <main className="flex-1 p-6 md:p-12">
         <Outlet />
       </main>
 

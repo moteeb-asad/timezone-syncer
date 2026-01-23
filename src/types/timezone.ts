@@ -97,6 +97,11 @@ export interface TimezoneSelectProps {
   setBaseTimezone?: (option: TimezoneOption | null) => void;
 }
 
+export interface TimezoneCardProps {
+  setting: TimezoneSetting;
+  onRemove: (id: string) => void;
+}
+
 export interface AddTimezoneDialogProps {
   isOpen: boolean;
   selectedTimezone: TimezoneOption | null;

@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 :root {
-  font-family: "DM Sans", sans-serif;
+  /* font-family: "DM Sans", sans-serif; */
+  font-family: "Inter", sans-serif;
 }
 
 * {
@@ -150,4 +151,22 @@ body {
 .react-time-picker__inputGroup__amPm:focus {
   outline: none;
   color: var(--primary-color, #ff6154);
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+.day-night-gradient {
+  background: linear-gradient(
+    90deg,
+    #1e293b 0%,
+    #3b82f6 30%,
+    #fbbf24 50%,
+    #3b82f6 70%,
+    #1e293b 100%
+  );
 }

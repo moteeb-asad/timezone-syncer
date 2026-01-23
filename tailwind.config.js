@@ -4,17 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#ff6154",
-          light: "#fff4ed",
-          dark: "#e54b3e",
-        },
-        "text-primary": {
-          DEFAULT: "#101828",
-        },
+        primary: "#ff6b57",
+        "primary-dark": "#e55a47",
+        "primary-accent": "#ff6b57",
+        "primary-light": "#fff4ed",
+        "bg-main": "#fcfaf9",
+        "card-border": "#e2e8f0",
+        "text-primary": "#1f2937",
       },
       fontFamily: {
-        sans: ["DM Sans", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+      },
+      borderRadius: {
+        DEFAULT: "0.375rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        full: "9999px",
       },
     },
   },

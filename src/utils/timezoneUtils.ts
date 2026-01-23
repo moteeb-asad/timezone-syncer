@@ -300,17 +300,76 @@ export const generateTimeOptions = (): string[] => {
   return times;
 };
 
-export const getStatusColor = (
-  status: "working" | "early" | "late"
-): string => {
+export const getStatusIcon = (status: string) => {
   switch (status) {
-    case "working":
-      return "bg-green-500 text-white";
     case "early":
-      return "bg-orange-500 text-white";
+      return "wb_twilight";
+    case "working":
+      return "work";
     case "late":
-      return "bg-red-500 text-white";
+      return "bedtime";
     default:
-      return "bg-gray-500 text-white";
+      return "schedule";
+  }
+};
+
+export const getStatusStyles = (status: string) => {
+  switch (status) {
+    case "early":
+      return {
+        badge: "bg-amber-50 text-amber-700",
+        bar: "bg-amber-400",
+      };
+    case "working":
+      return {
+        badge: "bg-emerald-50 text-emerald-700",
+        bar: "bg-emerald-400",
+      };
+    case "late":
+      return {
+        badge: "bg-indigo-50 text-indigo-700",
+        bar: "bg-indigo-400",
+      };
+    default:
+      return {
+        badge: "bg-slate-50 text-slate-700",
+        bar: "bg-slate-400",
+      };
+  }
+};
+
+export const calculateTimeDiff = (timezone: string): string => {
+  try {
+    const now = new Date();
+
+    // Local offset (convert minutes → hours, invert sign)
+    const localOffset = -now.getTimezoneOffset() / 60;
+
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      timeZoneName: "short",
+    });
+
+    const parts = formatter.formatToParts(now);
+    const tzName = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+
+    // Match GMT+5, GMT+5:30, GMT-3, etc.
+    const match = tzName.match(/GMT([+-])(\d+)(?::(\d+))?/);
+
+    if (!match) return "";
+
+    const sign = match[1] === "+" ? 1 : -1;
+    const hours = Number(match[2]);
+    const minutes = Number(match[3] ?? 0);
+
+    const tzOffset = sign * (hours + minutes / 60);
+    const diff = tzOffset - localOffset;
+
+    if (diff === 0) return "Same time";
+
+    return `${Math.abs(diff)}h ${diff > 0 ? "ahead" : "behind"}`;
+  } catch (err) {
+    console.error("Time diff error:", err);
+    return "";
   }
 };

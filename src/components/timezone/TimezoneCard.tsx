@@ -1,43 +1,71 @@
-import type { TimezoneSetting } from "../../types/timezone";
-import { getStatusColor } from "../../utils/timezoneUtils";
-import getUnicodeFlagIcon from "country-flag-icons/unicode";
-
-interface TimezoneCardProps {
-  setting: TimezoneSetting;
-  onRemove: (id: string) => void;
-}
+import type { TimezoneCardProps } from "../../types/timezone";
+import {
+  calculateTimeDiff,
+  getStatusIcon,
+  getStatusStyles,
+} from "../../utils/timezoneUtils";
 
 export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
+  const styles = getStatusStyles(setting.status);
+  const icon = getStatusIcon(setting.status);
+  const timeDiff = calculateTimeDiff(setting.timezone.name);
+
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
-        <div className="flex items-center space-x-3">
-          <span className="text-2xl">
-            {getUnicodeFlagIcon(setting.timezone.countryCode)}
-          </span>
+    <div className="bg-white border border-slate-200 rounded-xl p-5 group hover:border-slate-300 transition-colors">
+      <div className="flex items-center justify-between gap-6">
+        {/* Left: Flag & Name */}
+        <div className="flex items-center gap-4 min-w-[200px]">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-xs font-bold text-slate-400 border border-slate-100">
+            {setting.timezone.countryCode}
+          </div>
           <div>
-            <h3 className="text-base md:text-lg font-medium text-gray-900">
+            <h3 className="font-bold text-slate-900">
               {setting.timezone.displayName}
             </h3>
-            <p className="text-sm text-gray-500">{setting.timezone.name}</p>
+            <p className="text-xs text-slate-500 font-medium">
+              {setting.timezone.name}
+            </p>
           </div>
         </div>
-        <div className="flex items-center justify-between md:justify-end space-x-4 md:space-x-6">
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-              setting.status
-            )}`}
-          >
-            {setting.status}
-          </span>
-          <span className="text-base md:text-lg font-semibold">
-            {setting.localTime}
-          </span>
+
+        {/* Middle: Gradient Bar & Status (hidden on mobile) */}
+        <div className="flex-1 hidden md:block">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
+              <div className="absolute inset-0 day-night-gradient opacity-20"></div>
+              <div
+                className={`absolute left-[30%] w-[35%] h-full ${styles.bar} opacity-60 rounded-full`}
+              ></div>
+              <div className="absolute left-[45%] top-0 w-1 h-full bg-slate-800 z-10"></div>
+            </div>
+            <div
+              className={`flex items-center gap-1.5 px-2.5 py-1 ${styles.badge} rounded-full`}
+            >
+              <span className="material-symbols-outlined text-xs font-bold">
+                {icon}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wide">
+                {setting.status}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Time & Remove Button */}
+        <div className="flex items-center gap-8">
+          <div className="text-right">
+            <p className="text-lg font-bold text-slate-900">
+              {setting.localTime}
+            </p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase">
+              {timeDiff}
+            </p>
+          </div>
           <button
             onClick={() => onRemove(setting.id)}
-            className="text-red-600 hover:text-red-800"
+            className="text-slate-300 hover:text-rose-500 transition-colors"
           >
-            Remove
+            <span className="material-symbols-outlined">delete</span>
           </button>
         </div>
       </div>
