@@ -7,7 +7,7 @@ import Navigation from "./Navigation";
 import MobileMenu from "./MobileMenu";
 
 const Header = memo(
-  ({ user, navigation, isMenuOpen, onToggleMenu, onLogout }: HeaderProps) => {
+  ({ user, navigation, isMenuOpen, onToggleMenu }: HeaderProps) => {
     const dispatch = useDispatch();
 
     const handleLoginClick = useCallback(() => {

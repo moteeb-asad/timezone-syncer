@@ -36,7 +36,7 @@ export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
               <div
                 className={`absolute left-[30%] w-[35%] h-full ${styles.bar} opacity-60 rounded-full`}
               ></div>
-              <div className="absolute left-[45%] top-0 w-1 h-full bg-slate-800 z-10"></div>
+              <div className="absolute left-[45%] top-0 w-1 h-full bg-slate-800"></div>
             </div>
             <div
               className={`flex items-center gap-1.5 px-2.5 py-1 ${styles.badge} rounded-full`}

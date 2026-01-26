@@ -38,30 +38,33 @@ export const TimezoneManager = ({
       </div>
 
       {/* Base Time Controls */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <h3 className="text-lg font-medium text-text-primary mb-4">
-          Base Time Settings
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time:
-            </label>
-            <TimeInput
-              value={baseTime.time}
-              onChange={handleBaseTimeChange}
-              className="w-full "
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Timezone:
-            </label>
+      <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+        <div className="flex items-center gap-2 flex-1 w-full">
+          <span className="material-symbols-outlined text-slate-400 text-lg">
+            language
+          </span>
+          <span className="text-xs font-bold text-slate-400 uppercase shrink-0">
+            Base Time
+          </span>
+          <div className="h-4 w-px bg-slate-200 mx-2 hidden md:block"></div>
+          <div className="flex-1 flex gap-3">
+            <TimeInput value={baseTime.time} onChange={handleBaseTimeChange} />
             <TimezoneSelect
               value={baseTimezoneOption}
               onChange={handleBaseTimezoneChange}
-              className="w-full"
             />
+          </div>
+          <div className="w-full md:w-auto">
+            <button
+              onClick={() => setShowAddTimezone(true)}
+              disabled={
+                subscription.currentTimezones >= subscription.maxTimezones
+              }
+              className="w-full md:w-auto px-6 py-2 bg-primary-accent text-white text-sm font-bold rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-lg">add</span>
+              Add Timezone
+            </button>
           </div>
         </div>
       </div>
@@ -71,46 +74,6 @@ export const TimezoneManager = ({
         settings={timezoneSettings}
         onRemove={handleRemoveTimezone}
       />
-
-      {/* Add Timezone Button */}
-      <div className="mt-6 flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span>
-            {subscription.currentTimezones}/{subscription.maxTimezones}{" "}
-            timezones
-          </span>
-          {!isPremium && (
-            <a
-              href="/premium"
-              className="bg-primary-light text-primary px-2 py-1 rounded text-xs hover:bg-primary hover:text-white transition-colors cursor-pointer"
-            >
-              Free Plan - Upgrade
-            </a>
-          )}
-        </div>
-        <div className="relative group">
-          <button
-            onClick={() => setShowAddTimezone(true)}
-            disabled={
-              subscription.currentTimezones >= subscription.maxTimezones
-            }
-            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${
-              subscription.currentTimezones >= subscription.maxTimezones
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-primary hover:bg-primary-dark"
-            }`}
-          >
-            Add Timezone
-          </button>
-          {subscription.currentTimezones >= subscription.maxTimezones && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-auto z-10">
-              <a href="/premium" className="hover:underline">
-                Upgrade to Premium to add more timezones →
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Add Timezone Dialog */}
       <AddTimezoneDialog

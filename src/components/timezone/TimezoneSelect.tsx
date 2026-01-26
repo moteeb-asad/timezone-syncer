@@ -5,11 +5,7 @@ import type { TimezoneOption, TimezoneSelectProps } from "../../types/timezone";
 import { getAllTimezones } from "../../utils/timezoneUtils";
 import * as flags from "country-flag-icons/react/3x2";
 
-const TimezoneSelect = ({
-  value,
-  onChange,
-  className = "",
-}: TimezoneSelectProps) => {
+const TimezoneSelect = ({ value, onChange }: TimezoneSelectProps) => {
   const [options, setOptions] = useState<TimezoneOption[]>([]);
 
   // Load options only once when component mounts
@@ -51,8 +47,8 @@ const TimezoneSelect = ({
       ...provided,
       height: "38px",
       borderRadius: "0.5rem",
-      backgroundColor: "white",
-      borderColor: "#E5E7EB",
+      backgroundColor: "#f8fafc",
+      border: "none",
       "&:hover": {
         borderColor: "#D1D5DB",
       },
@@ -82,24 +78,25 @@ const TimezoneSelect = ({
   };
 
   return (
-    <Select<TimezoneOption, false, GroupBase<TimezoneOption>>
-      className={className}
-      options={options}
-      value={value}
-      onChange={onChange}
-      styles={customStyles}
-      placeholder="Select a timezone..."
-      isClearable={true}
-      isSearchable={true}
-      formatOptionLabel={(option: TimezoneOption) => (
-        <div className="flex items-center">
-          <span className="mr-2 flex items-center">
-            <FlagIcon countryCode={option.countryCode} />
-          </span>
-          <span>{option.label}</span>
-        </div>
-      )}
-    />
+    <div className="flex-[1.5] relative">
+      <Select<TimezoneOption, false, GroupBase<TimezoneOption>>
+        options={options}
+        value={value}
+        onChange={onChange}
+        styles={customStyles}
+        placeholder="Select a timezone..."
+        isClearable={true}
+        isSearchable={true}
+        formatOptionLabel={(option: TimezoneOption) => (
+          <div className="flex items-center">
+            <span className="mr-2 flex items-center ">
+              <FlagIcon countryCode={option.countryCode} />
+            </span>
+            <span>{option.label}</span>
+          </div>
+        )}
+      />
+    </div>
   );
 };
 

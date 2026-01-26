@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { TimeInputProps } from "../../types/timezone";
 
-const TimeInput = ({ value, onChange, className = "" }: TimeInputProps) => {
+const TimeInput = ({ value, onChange }: TimeInputProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -63,14 +63,14 @@ const TimeInput = ({ value, onChange, className = "" }: TimeInputProps) => {
   const periods = ["AM", "PM"];
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div className={`flex-1 relative `} ref={dropdownRef}>
       {/* Input display */}
       <input
         type="text"
         readOnly
         value={displayTime}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full cursor-pointer bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="w-full text-sm font-semibold border-none bg-slate-50 rounded-[0.5rem] focus:ring-1 focus:ring-primary-accent px-3 py-2 outline-none"
       />
 
       {/* Dropdown */}

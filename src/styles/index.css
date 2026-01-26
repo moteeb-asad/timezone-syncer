@@ -170,3 +170,7 @@ body {
     #1e293b 100%
   );
 }
+
+.pro-badge-gradient {
+  background: linear-gradient(135deg, #ff6b57 0%, #ff8e7e 100%);
+}
