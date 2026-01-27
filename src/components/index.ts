@@ -1,5 +1,4 @@
 // Auth components
-export { Account } from "./auth/Account";
 export { ProtectedRoute } from "./auth/ProtectedRoute";
 export { PublicRoute } from "./auth/PublicRoute";
 
@@ -11,3 +10,6 @@ export { default as CurrentTime } from "./timezone/CurrentTime";
 export { default as TimeInput } from "./timezone/TimeInput";
 export { default as TimezoneSelect } from "./timezone/TimezoneSelect";
 export { TimezoneManager } from "./timezone/TimezoneManager";
+
+// Account components
+export { Account } from "../pages/Account";
