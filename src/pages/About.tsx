@@ -6,222 +6,231 @@ export const About = () => {
   const { user } = useSelector((state: RootState) => state.user);
 
   return (
-    <div className="container-page">
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
-            Sync Time Across the Globe
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Timezone Syncer helps remote teams, freelancers, and global
-            businesses coordinate across time zones effortlessly.
-          </p>
-        </div>
-
-        {/* Core Purpose */}
-        <div className="bg-white rounded-xl border border-gray-200 p-8 mb-12">
-          <h2 className="text-2xl font-bold text-text-primary mb-4">
-            Why Timezone Syncer?
+    <>
+      <section className="pt-6 pb-16 px-6 bg-gradient-to-b from-slate-50/50 to-transparent">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+            Sync Every Moment, Across Every Border.
           </h2>
-          <p className="text-gray-600 mb-4 leading-relaxed">
-            In today's globalized world, working with people across different
-            time zones is the norm. But coordinating meeting times,
-            understanding when colleagues are available, and avoiding late-night
-            calls can be challenging.
-          </p>
-          <p className="text-gray-600 leading-relaxed">
-            Timezone Syncer eliminates the guesswork by providing instant,
-            visual time comparisons. Set your base time, add the time zones you
-            work with, and see at a glance when everyone is available—no more
-            mental math or timezone conversion tools needed.
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+            The simplest way for distributed teams and global nomads to
+            coordinate across time zones with zero friction.
           </p>
         </div>
-
-        {/* Key Features */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
+      </section>
+      <section className="py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-10 md:p-12 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">
+              Why Timezone Syncer?
+            </h3>
+            <div className="space-y-4 text-slate-600 leading-relaxed text-base">
+              <p>
+                Coordinating across the globe shouldn’t feel like a math
+                problem. We built Timezone Syncer to bridge the gap between
+                distributed teams, eliminating meeting fatigue and late-night
+                scheduling errors. No more mental math—just instant clarity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold text-slate-900 text-center mb-12">
             Key Features
-          </h2>
+          </h3>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="text-3xl mb-3">🌍</div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
-                Visual Time Comparison
-              </h3>
-              <p className="text-gray-600">
-                Compare multiple time zones side-by-side with a clean,
-                easy-to-read interface. See everyone's local time at a glance.
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+              <div className="mb-4">
+                <span className="material-symbols-outlined text-primary-accent text-3xl">
+                  public
+                </span>
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">
+                Visual Comparison
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Experience a side-by-side view of global clocks, designed for
+                instant clarity.
               </p>
             </div>
-
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="text-3xl mb-3">⏰</div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
-                Working Hours Status
-              </h3>
-              <p className="text-gray-600">
-                Instantly identify if it's working hours, early morning, or late
-                evening in each timezone with color-coded status indicators.
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+              <div className="mb-4">
+                <span className="material-symbols-outlined text-primary-accent text-3xl">
+                  alarm_on
+                </span>
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">
+                Working Status
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Know at a glance who’s online with intuitive, color-coded
+                work-day indicators.
               </p>
             </div>
-
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="text-3xl mb-3">🔄</div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
-                Real-Time Updates
-              </h3>
-              <p className="text-gray-600">
-                Your local time updates every second, keeping you in sync with
-                the current moment across all time zones.
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+              <div className="mb-4">
+                <span className="material-symbols-outlined text-primary-accent text-3xl">
+                  sync
+                </span>
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">
+                Real-Time Precision
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Stay perfectly synced with live-updating clocks that never skip
+                a second.
               </p>
             </div>
-
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="text-3xl mb-3">💾</div>
-              <h3 className="text-lg font-semibold text-text-primary mb-2">
-                Persistent Settings
-              </h3>
-              <p className="text-gray-600">
-                Your timezone preferences are saved automatically, so you don't
-                have to set them up every time you visit.
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+              <div className="mb-4">
+                <span className="material-symbols-outlined text-primary-accent text-3xl">
+                  save
+                </span>
+              </div>
+              <h4 className="text-lg font-bold text-slate-900 mb-2">
+                Smart Persistence
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Your preferences are saved automatically. Pick up exactly where
+                you left off.
               </p>
             </div>
           </div>
         </div>
-
-        {/* Use Cases */}
-        <div className="bg-gradient-to-br from-primary-light to-white rounded-xl border border-primary p-8 mb-12">
-          <h2 className="text-2xl font-bold text-text-primary mb-6">
-            Perfect For
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <span className="text-primary font-bold mr-3">✓</span>
-              <div>
-                <strong className="text-text-primary">Remote Teams:</strong>
-                <span className="text-gray-600 ml-2">
-                  Coordinate meetings and collaboration across distributed teams
+      </section>
+      <section className="py-16 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-10 rounded-2xl border border-primary-accent/20 shadow-sm">
+            <h3 className="text-2xl font-bold text-slate-900 mb-8">
+              Perfect For
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-primary-accent font-bold">
+                  check_circle
                 </span>
+                <div className="space-y-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    Remote Teams
+                  </p>
+                  <p className="text-sm text-slate-600 leading-snug">
+                    Bridge the gap between distributed colleagues effortlessly.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start">
-              <span className="text-primary font-bold mr-3">✓</span>
-              <div>
-                <strong className="text-text-primary">Freelancers:</strong>
-                <span className="text-gray-600 ml-2">
-                  Schedule calls with international clients at convenient times
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-primary-accent font-bold">
+                  check_circle
                 </span>
+                <div className="space-y-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    Freelancers
+                  </p>
+                  <p className="text-sm text-slate-600 leading-snug">
+                    Maintain professional timing with international clients.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start">
-              <span className="text-primary font-bold mr-3">✓</span>
-              <div>
-                <strong className="text-text-primary">Project Managers:</strong>
-                <span className="text-gray-600 ml-2">
-                  Plan sprints and standups across multiple time zones
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-primary-accent font-bold">
+                  check_circle
                 </span>
+                <div className="space-y-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    Project Leads
+                  </p>
+                  <p className="text-sm text-slate-600 leading-snug">
+                    Strategize global sprints with zero scheduling friction.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start">
-              <span className="text-primary font-bold mr-3">✓</span>
-              <div>
-                <strong className="text-text-primary">Travel Planning:</strong>
-                <span className="text-gray-600 ml-2">
-                  Keep track of time zones when traveling for business or
-                  pleasure
+              <div className="flex items-start gap-4">
+                <span className="material-symbols-outlined text-primary-accent font-bold">
+                  check_circle
                 </span>
+                <div className="space-y-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    Global Travelers
+                  </p>
+                  <p className="text-sm text-slate-600 leading-snug">
+                    Stay connected with home and business while on the move.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* How It Works */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-text-primary mb-6 text-center">
+      </section>
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold text-slate-900 text-center mb-16">
             How It Works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          </h3>
+          <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <div className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+              <div className="w-12 h-12 bg-primary-accent text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">
                 1
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">
-                Set Your Base Time
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Choose a time and your local timezone as the reference point
+              <h4 className="text-base font-bold text-slate-900 mb-2">
+                Set Reference
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Lock in your local time as the anchor for all comparisons.
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+              <div className="w-12 h-12 bg-primary-accent text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">
                 2
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">
-                Add Time Zones
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Select the time zones of your colleagues, clients, or
-                destinations
+              <h4 className="text-base font-bold text-slate-900 mb-2">
+                Populate Cities
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Add the global locations you need to monitor.
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+              <div className="w-12 h-12 bg-primary-accent text-white rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-6">
                 3
               </div>
-              <h3 className="font-semibold text-text-primary mb-2">
-                Compare & Coordinate
-              </h3>
-              <p className="text-gray-600 text-sm">
-                See all times instantly and find the perfect meeting window
+              <h4 className="text-base font-bold text-slate-900 mb-2">
+                Sync &amp; Schedule
+              </h4>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Identify perfect meeting windows in seconds.
               </p>
             </div>
           </div>
         </div>
-
-        {/* CTA Section */}
-        <div className="text-center bg-white rounded-xl border border-gray-200 p-8">
-          <h2 className="text-2xl font-bold text-text-primary mb-4">
-            Ready to Simplify Global Coordination?
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Start comparing time zones for free—no credit card required.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!user ? (
-              <>
-                <Link
-                  to="/"
-                  className="inline-block bg-primary text-white hover:bg-primary-dark px-6 py-3 rounded-md font-medium transition-colors"
-                >
-                  Try It Now
-                </Link>
-                <Link
-                  to="/premium"
-                  className="inline-block bg-white text-primary hover:bg-gray-50 px-6 py-3 rounded-md font-medium border border-primary transition-colors"
-                >
-                  View Premium Plans
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/dashboard"
-                  className="inline-block bg-primary text-white hover:bg-primary-dark px-6 py-3 rounded-md font-medium transition-colors"
-                >
-                  Go to Dashboard
-                </Link>
-                <Link
-                  to="/premium"
-                  className="inline-block bg-white text-primary hover:bg-gray-50 px-6 py-3 rounded-md font-medium border border-primary transition-colors"
-                >
-                  Upgrade to Premium
-                </Link>
-              </>
-            )}
+      </section>
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-lg">
+            <h3 className="text-3xl font-bold text-slate-900 mb-4">
+              Ready to Simplify Global Coordination?
+            </h3>
+            <p className="text-slate-500 mb-10 text-base">
+              Start comparing time zones for free—no credit card required.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to={user ? "/dashboard" : "/"}
+                className="w-full sm:w-auto px-10 py-4 bg-primary-accent text-white font-bold rounded-lg hover:bg-orange-600 transition-all shadow-lg shadow-primary-accent/25 text-center"
+              >
+                Try It Now
+              </Link>
+              <Link
+                to="/premium"
+                className="w-full sm:w-auto px-10 py-4 bg-white text-primary-accent font-bold border border-primary-accent rounded-lg hover:bg-orange-50 transition-colors text-center"
+              >
+                View Premium Plans
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };

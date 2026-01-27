@@ -60,7 +60,11 @@ export const TimezoneManager = ({
               disabled={
                 subscription.currentTimezones >= subscription.maxTimezones
               }
-              className="w-full md:w-auto px-6 py-2 bg-primary-accent text-white text-sm font-bold rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+              className={`w-full md:w-auto px-6 py-2 text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+                subscription.currentTimezones >= subscription.maxTimezones
+                  ? "bg-slate-300 cursor-not-allowed"
+                  : "bg-primary-accent hover:bg-opacity-90"
+              }`}
             >
               <span className="material-symbols-outlined text-lg">add</span>
               Add Timezone
@@ -72,6 +76,7 @@ export const TimezoneManager = ({
       {/* Timezone List */}
       <TimezoneList
         settings={timezoneSettings}
+        subscription={subscription}
         onRemove={handleRemoveTimezone}
       />
 

@@ -7,7 +7,7 @@ import Navigation from "./Navigation";
 import MobileMenu from "./MobileMenu";
 
 const Header = memo(
-  ({ user, navigation, isMenuOpen, onToggleMenu }: HeaderProps) => {
+  ({ user, navigation, isMenuOpen, onToggleMenu, onLogout }: HeaderProps) => {
     const dispatch = useDispatch();
 
     const handleLoginClick = useCallback(() => {
@@ -35,17 +35,43 @@ const Header = memo(
                 {/* Desktop Navigation */}
                 <Navigation items={navigation} user={user} />
               </div>
-              <div className="flex items-center gap-3 pl-6 md:border-l border-slate-200">
+              <div className="relative flex items-center gap-3 pl-6 md:border-l border-slate-200">
                 {user ? (
                   <>
-                    <span className="hidden md:block text-sm font-semibold text-slate-700">
-                      {user?.firstName} {user?.lastName}
-                    </span>
-                    <img
-                      alt="Profile"
-                      className="h-9 w-9 hidden md:block rounded-full border-2 border-slate-100 object-cover"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKTR3-3K-UFgEMq9QdDhWNkfBdR2DMhHVv9bVASKfTKrD-MrbPGr6XAga6WEsRVJn1EAT2ITTyIhbgfNZ7HDut5DcsXoyXREH97wOQf4MvYWETNfC1m24q9qJQ8CSy-5SATxRQLOGU9W7UjChJ0k-cyI6rvoVT1UVaJmikgb_3fUQKzNAh2CL2QKzHNrDR6bNPjQSe3DxAmn8f2ogGzRm7_oUP1InkBW-7Bp_nYuSZAGLU0TUZfDII2uEfiBEL88vrSDOydMB90YrM"
-                    />
+                    <details className="group">
+                      <summary className="flex items-center gap-3 cursor-pointer list-none outline-none">
+                        <span className="text-sm font-semibold text-slate-700 select-none">
+                          {user?.firstName} {user?.lastName}
+                        </span>
+                        <span className="material-symbols-outlined text-slate-400 text-sm transition-transform group-open:rotate-180">
+                          expand_more
+                        </span>
+                      </summary>
+                      <div className="absolute right-0 mt-3 w-48 bg-white border border-slate-200 rounded-lg shadow-xl py-1 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <Link
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+                          to="/account"
+                        >
+                          <span className="material-symbols-outlined text-slate-400 text-[20px]">
+                            person
+                          </span>
+                          Account Settings
+                        </Link>
+                        <div className="h-px bg-slate-100 my-1"></div>
+                        <Link
+                          className="flex items-center justify-between px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors font-medium"
+                          to="/"
+                          onClick={onLogout}
+                        >
+                          <span className="flex items-center gap-3">
+                            <span className="material-symbols-outlined text-rose-500 text-[20px]">
+                              logout
+                            </span>
+                            Logout
+                          </span>
+                        </Link>
+                      </div>
+                    </details>
                   </>
                 ) : (
                   <>
@@ -58,7 +84,7 @@ const Header = memo(
                     </Link>
                     <Link
                       to="/signup"
-                      className="bg-primary text-white hover:bg-primary-dark px-4 py-2 rounded-md text-sm font-medium"
+                      className="bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
                       onClick={handleSignUpClick}
                     >
                       Sign Up

@@ -88,7 +88,7 @@ const TimezoneSelect = ({ value, onChange }: TimezoneSelectProps) => {
         isClearable={true}
         isSearchable={true}
         formatOptionLabel={(option: TimezoneOption) => (
-          <div className="flex items-center">
+          <div className="flex items-center text-sm font-semibold">
             <span className="mr-2 flex items-center ">
               <FlagIcon countryCode={option.countryCode} />
             </span>

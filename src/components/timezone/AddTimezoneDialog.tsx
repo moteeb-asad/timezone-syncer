@@ -1,4 +1,7 @@
-import type { AddTimezoneDialogProps } from "../../types/timezone";
+import type {
+  AddTimezoneDialogProps,
+  TimezoneOption,
+} from "../../types/timezone";
 import TimezoneSelect from "./TimezoneSelect";
 
 export const AddTimezoneDialog = ({
@@ -11,11 +14,22 @@ export const AddTimezoneDialog = ({
 }: AddTimezoneDialogProps) => {
   if (!isOpen) return null;
 
-  const popularCities = ["London", "New York", "Tokyo", "Paris", "Dubai"];
+  const popularCities: TimezoneOption[] = [
+    { value: "Europe/London", label: "London", offset: 0, countryCode: "GB" },
+    {
+      value: "America/New_York",
+      label: "New York",
+      offset: -5,
+      countryCode: "US",
+    },
+    { value: "Asia/Tokyo", label: "Tokyo", offset: 9, countryCode: "JP" },
+    { value: "Europe/Paris", label: "Paris", offset: 1, countryCode: "FR" },
+    { value: "Asia/Dubai", label: "Dubai", offset: 4, countryCode: "AE" },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-visible transform transition-all">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
           <h2 className="text-lg font-bold text-slate-900">Add New Timezone</h2>
@@ -36,11 +50,13 @@ export const AddTimezoneDialog = ({
           )}
 
           {/* Timezone Select */}
-          <TimezoneSelect
-            value={selectedTimezone}
-            onChange={onSelectTimezone}
-            className="w-full"
-          />
+          <div className="relative z-20">
+            <TimezoneSelect
+              value={selectedTimezone}
+              onChange={onSelectTimezone}
+              className="w-full"
+            />
+          </div>
 
           {/* Popular Cities */}
           <div className="space-y-3">
@@ -50,10 +66,11 @@ export const AddTimezoneDialog = ({
             <div className="flex flex-wrap gap-2">
               {popularCities.map((city) => (
                 <button
-                  key={city}
+                  key={city.value}
+                  onClick={() => onSelectTimezone(city)}
                   className="px-4 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-600 hover:border-primary-accent hover:text-primary-accent transition-all"
                 >
-                  {city}
+                  {city.label}
                 </button>
               ))}
             </div>

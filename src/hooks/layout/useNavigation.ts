@@ -40,13 +40,6 @@ export const useNavigation = (pathname: string, user: User | null) => {
         current: pathname === "/dashboard",
         requiresAuth: true,
       });
-
-      items.push({
-        name: "Account",
-        href: "/account",
-        current: pathname === "/account",
-        requiresAuth: true,
-      });
     }
 
     return items;

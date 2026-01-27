@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/auth/useAuth";
 
-export const Login = () => {
+const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -13,15 +14,16 @@ export const Login = () => {
   const from =
     (location.state as { from?: string } | undefined)?.from || "/dashboard";
 
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
     try {
-      const result = await login(email, password);
+      const result = await register(email, password, firstName, lastName);
 
       if (result.error) {
         setError(result.error.message);
@@ -57,11 +59,11 @@ export const Login = () => {
         {/* Form Card */}
         <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-8 md:p-10">
           {/* Title */}
-          <h2 className="text-xl font-bold text-slate-900 mb-2">
-            Welcome back
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">
+            Create your account
           </h2>
           <p className="text-sm text-slate-500 mb-8">
-            Please enter your details to sign in.
+            Join thousands of developers syncing across borders.
           </p>
 
           {/* Error Message */}
@@ -72,7 +74,55 @@ export const Login = () => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* First Name Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="firstName"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-400"
+              >
+                First Name
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[20px]">
+                  person
+                </span>
+                <input
+                  id="firstName"
+                  type="text"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  placeholder="Alex"
+                />
+              </div>
+            </div>
+
+            {/* Last Name Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="lastName"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-400"
+              >
+                Last Name
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[20px]">
+                  person
+                </span>
+                <input
+                  id="lastName"
+                  type="text"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  placeholder="Rivera"
+                />
+              </div>
+            </div>
+
             {/* Email Field */}
             <div className="space-y-2">
               <label
@@ -82,7 +132,7 @@ export const Login = () => {
                 Email Address
               </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
+                <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[20px]">
                   mail
                 </span>
                 <input
@@ -91,30 +141,22 @@ export const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                  placeholder="moteeb@example.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  placeholder="alex@example.com"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label
-                  htmlFor="password"
-                  className="block text-xs font-bold uppercase tracking-wider text-slate-400"
-                >
-                  Password
-                </label>
-                <a
-                  href="#"
-                  className="text-xs font-semibold text-primary hover:underline"
-                >
-                  Forgot Password?
-                </a>
-              </div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-400"
+              >
+                Create Password
+              </label>
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
+                <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[20px]">
                   lock
                 </span>
                 <input
@@ -123,38 +165,21 @@ export const Login = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                   placeholder="••••••••"
                   minLength={6}
                 />
               </div>
             </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center gap-2">
-              <input
-                id="remember"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary cursor-pointer"
-              />
-              <label
-                htmlFor="remember"
-                className="text-sm text-slate-600 font-medium select-none cursor-pointer"
-              >
-                Keep me logged in
-              </label>
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-opacity-90 transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded-lg shadow-sm shadow-primary/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Loading..." : "Log In"}
-              <span className="material-symbols-outlined text-lg">
+              {loading ? "Creating account..." : "Sign Up"}
+              <span className="material-symbols-outlined text-[18px]">
                 arrow_forward
               </span>
             </button>
@@ -166,13 +191,13 @@ export const Login = () => {
               <div className="w-full border-t border-slate-100"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-slate-400 font-bold tracking-widest">
+              <span className="bg-white px-3 text-slate-400 font-medium">
                 Or continue with
               </span>
             </div>
           </div>
 
-          {/* Social Button */}
+          {/* Social Buttons */}
           <div className="grid gap-4">
             <button
               type="button"
@@ -193,17 +218,28 @@ export const Login = () => {
           </div>
         </div>
 
-        {/* Toggle to Signup */}
+        {/* Toggle to Login */}
         <p className="mt-8 text-center text-sm text-slate-500 font-medium">
-          Don't have an account?
+          Already have an account?
           <Link
-            to="/signup"
+            to="/login"
             className="text-primary font-bold hover:underline ml-1"
           >
-            Create an Account
+            Sign In
           </Link>
         </p>
+
+        {/* Footer Text */}
+        <div className="mt-8 text-center">
+          <div className="mt-8 pt-8 border-t border-slate-200/60">
+            <p className="text-xs text-slate-400 font-medium">
+              © 2026 Timezone Syncer. All rights reserved.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
+export default Signup;

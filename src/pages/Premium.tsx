@@ -1,10 +1,10 @@
 export const Premium = () => {
-  // const features = [
-  //   "✅ Unlimited timezone tracking",
-  //   "✅ Custom working hours settings",
-  //   "✅ Meeting time suggestions",
-  //   "✅ Export timezone schedules",
-  // ];
+  const features = [
+    "Unlimited timezone tracking",
+    "Custom working hours settings",
+    "Meeting time suggestions",
+    "Export timezone schedules",
+  ];
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -33,46 +33,14 @@ export const Premium = () => {
             </p>
           </div>
           <div className="space-y-4 mb-8">
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-emerald-500 font-bold">
-                check_circle
-              </span>
-              <span className="text-slate-700 font-medium">
-                Unlimited Timezones
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-emerald-500 font-bold">
-                check_circle
-              </span>
-              <span className="text-slate-700 font-medium">
-                Team Collaboration (up to 10 members)
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-emerald-500 font-bold">
-                check_circle
-              </span>
-              <span className="text-slate-700 font-medium">
-                Custom Working Hours
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-emerald-500 font-bold">
-                check_circle
-              </span>
-              <span className="text-slate-700 font-medium">
-                Calendar Integration (Google/Outlook)
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-emerald-500 font-bold">
-                check_circle
-              </span>
-              <span className="text-slate-700 font-medium">
-                Priority Support
-              </span>
-            </div>
+            {features.map((feature) => (
+              <div className="flex items-start gap-3" key={feature}>
+                <span className="material-symbols-outlined text-emerald-500 font-bold">
+                  check_circle
+                </span>
+                <span className="text-slate-700 font-medium">{feature}</span>
+              </div>
+            ))}
           </div>
           <button className="w-full bg-primary-accent text-white font-bold py-4 rounded-lg hover:bg-opacity-90 transition-all shadow-lg shadow-orange-100 flex items-center justify-center gap-2 group">
             Upgrade to Pro
@@ -81,7 +49,7 @@ export const Premium = () => {
             </span>
           </button>
           <p className="text-[10px] text-center text-slate-400 mt-4 uppercase font-bold tracking-tighter">
-            Cancel anytime • 14-day money back guarantee
+            Cancel anytime
           </p>
         </div>
       </div>
@@ -109,7 +77,7 @@ export const Premium = () => {
             <tbody className="divide-y divide-slate-100">
               <tr>
                 <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  Timezones
+                  Timezone Tracking
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-500 text-center">
                   3 Max
@@ -120,18 +88,7 @@ export const Premium = () => {
               </tr>
               <tr>
                 <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  Working Hours
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-500 text-center">
-                  Default (9-5)
-                </td>
-                <td className="px-6 py-4 text-sm font-bold text-slate-900 text-center">
-                  Customizable
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  Team Sharing
+                  Custom Working Hours
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className="material-symbols-outlined text-slate-300">
@@ -146,7 +103,7 @@ export const Premium = () => {
               </tr>
               <tr>
                 <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  Ad-Free Experience
+                  Meeting Time Suggestions
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className="material-symbols-outlined text-slate-300">
@@ -161,13 +118,17 @@ export const Premium = () => {
               </tr>
               <tr>
                 <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  Support
+                  Export Schedules
                 </td>
-                <td className="px-6 py-4 text-sm text-slate-500 text-center">
-                  Community
+                <td className="px-6 py-4 text-center">
+                  <span className="material-symbols-outlined text-slate-300">
+                    remove
+                  </span>
                 </td>
-                <td className="px-6 py-4 text-sm font-bold text-slate-900 text-center">
-                  Priority
+                <td className="px-6 py-4 text-center">
+                  <span className="material-symbols-outlined text-emerald-500 font-bold">
+                    check
+                  </span>
                 </td>
               </tr>
             </tbody>

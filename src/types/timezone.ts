@@ -41,6 +41,7 @@ export interface BaseTime {
 
 export interface TimezoneListProps {
   settings: TimezoneSetting[];
+  subscription: UserSubscription;
   onRemove: (id: string) => void;
 }
 

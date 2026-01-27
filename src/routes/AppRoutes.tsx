@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "../pages/login";
+import Signup from "../pages/signup";
 import { Premium } from "../pages/Premium";
 import { About } from "../pages/About";
 import {
@@ -18,12 +19,14 @@ export function AppRoutes() {
 
   return (
     <Routes>
-      <Route element={<Layout />}>
-        {/* Public-only routes (redirect if authenticated) */}
-        <Route element={<PublicRoute redirectTo="/dashboard" />}>
-          <Route path="/login" element={<Login />} />
-        </Route>
+      {/* Auth routes (without Layout) */}
+      <Route element={<PublicRoute redirectTo="/dashboard" />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Route>
 
+      {/* All other routes with Layout */}
+      <Route element={<Layout />}>
         {/* Public routes (accessible to everyone) */}
         <Route path="/" element={<TimezoneManager isPremium={isPremium} />} />
         <Route path="/about" element={<About />} />
