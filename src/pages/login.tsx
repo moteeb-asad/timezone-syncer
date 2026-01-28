@@ -13,7 +13,7 @@ export const Login = () => {
   const from =
     (location.state as { from?: string } | undefined)?.from || "/dashboard";
 
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +25,28 @@ export const Login = () => {
 
       if (result.error) {
         setError(result.error.message);
+      } else {
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await signInWithGoogle();
+
+      if (result.error) {
+        setError(
+          typeof result.error === "string" ? result.error : result.error.message
+        );
       } else {
         navigate(from, { replace: true });
       }
@@ -176,7 +198,9 @@ export const Login = () => {
           <div className="grid gap-4">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg
                 className="w-4 h-4"

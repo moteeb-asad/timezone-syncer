@@ -19,12 +19,12 @@ export const Layout = () => {
   const navigation = useNavigation(location.pathname, user);
 
   const handleLogout = useCallback(async () => {
-    const result = await logout();
-    if (!result.error) {
+    try {
+      await logout();
       dispatch(clearUser());
-      navigate("/");
-    } else {
-      console.error("Logout failed:", result.error);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   }, [logout, dispatch, navigate]);
 
