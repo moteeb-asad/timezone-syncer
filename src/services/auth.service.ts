@@ -23,7 +23,15 @@ export const authService = {
     if (!auth) throw new Error("Firebase not initialized");
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
-    return signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+
+    // Capture the credential for manual account linking if needed
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+
+    return {
+      ...result,
+      credential, // Include the credential in the result
+    };
   },
 
   linkGoogleCredential(user: any, credential: any) {

@@ -40,6 +40,37 @@ export const useNavigation = (pathname: string, user: User | null) => {
         current: pathname === "/dashboard",
         requiresAuth: true,
       });
+
+      // Account Settings - available to authenticated users
+      items.push({
+        name: "Account Settings",
+        href: "/account",
+        current: pathname === "/account",
+        requiresAuth: true,
+        mobileOnly: true,
+      });
+    }
+
+    // Login - only for non-authenticated users, mobile only
+    if (!user) {
+      items.push({
+        name: "Login",
+        href: "/login",
+        current: pathname === "/login",
+        requiresAuth: false,
+        mobileOnly: true,
+      });
+    }
+
+    // Signup - only for non-authenticated users, mobile only
+    if (!user) {
+      items.push({
+        name: "Signup",
+        href: "/signup",
+        current: pathname === "/signup",
+        requiresAuth: false,
+        mobileOnly: true,
+      });
     }
 
     return items;

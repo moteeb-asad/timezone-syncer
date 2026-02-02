@@ -42,7 +42,7 @@ export const Layout = () => {
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 p-6 md:p-12">
+      <main className="flex-1 p-4 md:p-12">
         <Outlet />
       </main>
 

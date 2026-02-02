@@ -7,21 +7,21 @@ export const About = () => {
 
   return (
     <>
-      <section className="pt-6 pb-16 px-6 bg-gradient-to-b from-slate-50/50 to-transparent">
+      <section className="pt-4 md:pt-8 pb-8 md:pb-16 px-4 md:px-6 bg-gradient-to-b from-slate-50/50 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight mb-4 md:mb-6">
             Sync Every Moment, Across Every Border.
           </h2>
-          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-base md:text-lg lg:text-xl text-slate-500 max-w-2xl mx-auto font-normal leading-relaxed">
             The simplest way for distributed teams and global nomads to
             coordinate across time zones with zero friction.
           </p>
         </div>
       </section>
-      <section className="py-12 px-6">
+      <section className="py-6 md:py-12 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white p-10 md:p-12 rounded-2xl border border-slate-100 shadow-sm">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">
+          <div className="bg-white p-6 md:p-10 lg:p-12 rounded-2xl border border-slate-100 shadow-sm">
+            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-4 md:mb-6">
               Why Timezone Syncer?
             </h3>
             <div className="space-y-4 text-slate-600 leading-relaxed text-base">
@@ -35,13 +35,13 @@ export const About = () => {
           </div>
         </div>
       </section>
-      <section className="py-16 px-6">
+      <section className="py-8 md:py-16 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-slate-900 text-center mb-12">
+          <h3 className="text-xl md:text-2xl font-bold text-slate-900 text-center mb-8 md:mb-12">
             Key Features
           </h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+            <div className="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
               <div className="mb-4">
                 <span className="material-symbols-outlined text-primary-accent text-3xl">
                   public
@@ -55,13 +55,13 @@ export const About = () => {
                 instant clarity.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+            <div className="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
               <div className="mb-4">
                 <span className="material-symbols-outlined text-primary-accent text-3xl">
                   alarm_on
                 </span>
               </div>
-              <h4 className="text-lg font-bold text-slate-900 mb-2">
+              <h4 className="text-base md:text-lg font-bold text-slate-900 mb-2">
                 Working Status
               </h4>
               <p className="text-slate-500 text-sm leading-relaxed">
@@ -69,13 +69,13 @@ export const About = () => {
                 work-day indicators.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+            <div className="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
               <div className="mb-4">
                 <span className="material-symbols-outlined text-primary-accent text-3xl">
                   sync
                 </span>
               </div>
-              <h4 className="text-lg font-bold text-slate-900 mb-2">
+              <h4 className="text-base md:text-lg font-bold text-slate-900 mb-2">
                 Real-Time Precision
               </h4>
               <p className="text-slate-500 text-sm leading-relaxed">
@@ -83,13 +83,13 @@ export const About = () => {
                 a second.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
+            <div className="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm hover:border-primary-accent/30 transition-colors">
               <div className="mb-4">
                 <span className="material-symbols-outlined text-primary-accent text-3xl">
                   save
                 </span>
               </div>
-              <h4 className="text-lg font-bold text-slate-900 mb-2">
+              <h4 className="text-base md:text-lg font-bold text-slate-900 mb-2">
                 Smart Persistence
               </h4>
               <p className="text-slate-500 text-sm leading-relaxed">
@@ -100,10 +100,10 @@ export const About = () => {
           </div>
         </div>
       </section>
-      <section className="py-16 px-6">
+      <section className="py-8 md:py-16 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white p-10 rounded-2xl border border-primary-accent/20 shadow-sm">
-            <h3 className="text-2xl font-bold text-slate-900 mb-8">
+          <div className="bg-white p-6 md:p-10 rounded-2xl border border-primary-accent/20 shadow-sm">
+            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-6 md:mb-8">
               Perfect For
             </h3>
             <div className="grid sm:grid-cols-2 gap-6">
@@ -163,9 +163,9 @@ export const About = () => {
           </div>
         </div>
       </section>
-      <section className="py-20 px-6">
+      <section className="py-8 md:py-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-slate-900 text-center mb-16">
+          <h3 className="text-xl md:text-2xl font-bold text-slate-900 text-center mb-10 md:mb-16">
             How It Works
           </h3>
           <div className="grid md:grid-cols-3 gap-12">
@@ -205,16 +205,16 @@ export const About = () => {
           </div>
         </div>
       </section>
-      <section className="py-20 px-6">
+      <section className="py-8 md:py-20 px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white border border-slate-100 rounded-2xl p-12 text-center shadow-lg">
-            <h3 className="text-3xl font-bold text-slate-900 mb-4">
+          <div className="bg-white border border-slate-100 rounded-2xl p-6 md:p-12 text-center shadow-lg">
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3 md:mb-4">
               Ready to Simplify Global Coordination?
             </h3>
-            <p className="text-slate-500 mb-10 text-base">
+            <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-10">
               Start comparing time zones for free—no credit card required.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
               <Link
                 to={user ? "/dashboard" : "/"}
                 className="w-full sm:w-auto px-10 py-4 bg-primary-accent text-white font-bold rounded-lg hover:bg-orange-600 transition-all shadow-lg shadow-primary-accent/25 text-center"

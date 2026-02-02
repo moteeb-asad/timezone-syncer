@@ -30,15 +30,15 @@ const CurrentTime = () => {
       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
         Your Local Time
       </p>
-      <div className="flex items-baseline gap-3">
-        <span className="text-6xl font-bold text-slate-900">
+      <div className="flex items-baseline gap-3 !mt-[8px] md:mt-[16px]">
+        <span className="text-4xl md:text-6xl font-bold text-slate-900">
           {hour}:{minute}
         </span>
-        <span className="text-2xl font-semibold text-slate-400">
+        <span className="text-lg md:text-2xl font-semibold text-slate-400">
           {second} {period}
         </span>
       </div>
-      <p className="text-sm text-slate-500 font-medium">
+      <p className="text-sm text-slate-500 font-medium !mt-[4px] md:mt-[8px]">
         {liveTime.toLocaleDateString([], {
           weekday: "long",
           year: "numeric",

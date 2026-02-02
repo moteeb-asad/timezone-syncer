@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { FREE_TIER_LIMIT } from "../types/timezone";
+import { auth } from "../lib/firebase";
 
 export const Account = () => {
   const { user } = useSelector((state: RootState) => state.user);
@@ -11,6 +12,18 @@ export const Account = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "subscription">(
     "profile"
   );
+
+  // Compute provider status from current user
+  const { hasGoogleLinked, hasPasswordAuth } = useMemo(() => {
+    const currentUser = auth?.currentUser;
+    if (!currentUser) return { hasGoogleLinked: false, hasPasswordAuth: false };
+
+    const providerIds = currentUser.providerData.map((p) => p.providerId);
+    return {
+      hasGoogleLinked: providerIds.includes("google.com"),
+      hasPasswordAuth: providerIds.includes("password"),
+    };
+  }, [user]);
 
   const planLabel = useMemo(() => (user?.isPremium ? "Pro" : "Free"), [user]);
   const planPrice = user?.isPremium ? "$9" : "$0";
@@ -102,6 +115,81 @@ export const Account = () => {
                     Save Changes
                   </button>
                 </div>
+              </div>
+
+              {/* Provider Status Section */}
+              <div className="mt-8 pt-8 border-t border-slate-200">
+                <div className="mb-6">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Connected Accounts
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    View and manage your authentication methods
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  {/* Email/Password Provider */}
+                  <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-xl text-slate-500">
+                        lock
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          Email & Password
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {hasPasswordAuth ? "Connected" : "Not connected"}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        hasPasswordAuth ? "bg-emerald-500" : "bg-slate-300"
+                      }`}
+                    ></div>
+                  </div>
+
+                  {/* Google Provider */}
+                  <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <svg
+                        className="w-5 h-5 text-slate-500"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M12.48 10.92v3.28h7.84c-.24 1.84-.909 3.292-2.09 4.213-1.217.956-2.909 1.787-5.75 1.787-4.434 0-8.036-3.602-8.036-8.037 0-4.434 3.602-8.036 8.036-8.036 2.422 0 4.19.95 5.58 2.27l2.29-2.29C18.28 2.02 15.64 1 12.48 1 6.36 1 1.5 5.86 1.5 12s4.86 11 10.98 11c3.31 0 5.8-1.09 7.79-3.15 2-2.07 2.63-4.96 2.63-7.29 0-.46-.04-.9-.11-1.29h-8.32z"
+                          fill="currentColor"
+                        ></path>
+                      </svg>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          Google
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {hasGoogleLinked ? "Connected" : "Not connected"}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        hasGoogleLinked ? "bg-emerald-500" : "bg-slate-300"
+                      }`}
+                    ></div>
+                  </div>
+                </div>
+
+                {!hasGoogleLinked && hasPasswordAuth && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-xs text-blue-700">
+                      <strong>Tip:</strong> Link your Google account to quickly
+                      sign in without entering your password. Go to the Login
+                      page and click "Google" to link.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

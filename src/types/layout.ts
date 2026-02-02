@@ -5,6 +5,7 @@ export interface NavigationItem {
   href: string;
   current: boolean;
   requiresAuth: boolean;
+  mobileOnly?: boolean;
 }
 
 export interface HeaderProps {

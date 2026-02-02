@@ -39,15 +39,15 @@ export const TimezoneManager = ({
 
       {/* Base Time Controls */}
       <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col md:flex-row items-center gap-4 shadow-sm">
-        <div className="flex items-center gap-2 flex-1 w-full">
-          <span className="material-symbols-outlined text-slate-400 text-lg">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-2 flex-1 w-full">
+          <span className="hidden md:block material-symbols-outlined text-slate-400 text-lg">
             language
           </span>
           <span className="text-xs font-bold text-slate-400 uppercase shrink-0">
             Base Time
           </span>
           <div className="h-4 w-px bg-slate-200 mx-2 hidden md:block"></div>
-          <div className="flex-1 flex gap-3">
+          <div className="w-full flex-1 flex flex-col md:flex-row gap-3">
             <TimeInput value={baseTime.time} onChange={handleBaseTimeChange} />
             <TimezoneSelect
               value={baseTimezoneOption}

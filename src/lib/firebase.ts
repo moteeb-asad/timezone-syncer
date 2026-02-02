@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import type { Auth } from "firebase/auth";
 
 // Firebase configuration
@@ -13,7 +14,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID ?? undefined,
 };
 
-// Remove undefined values from config
+// Remove undefined values
 const cleanConfig = Object.fromEntries(
   Object.entries(firebaseConfig).filter(([_, value]) => value !== undefined)
 );
@@ -21,14 +22,15 @@ const cleanConfig = Object.fromEntries(
 // Check if Firebase is configured
 const isFirebaseConfigured = Object.keys(cleanConfig).length === 6;
 
-// Initialize Firebase only if configured
 let app;
 let auth: Auth | undefined;
+let db: Firestore | undefined;
 
 if (isFirebaseConfigured) {
   try {
     app = initializeApp(cleanConfig);
     auth = getAuth(app);
+    db = getFirestore(app); // ✅ Firestore initialized
   } catch (error) {
     console.warn("Firebase initialization failed:", error);
   }
@@ -38,6 +40,6 @@ if (isFirebaseConfigured) {
   );
 }
 
-export { auth };
+export { auth, db };
 export const isFirebaseReady = !!auth;
 export default app;

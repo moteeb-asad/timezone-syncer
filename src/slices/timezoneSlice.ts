@@ -2,6 +2,24 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { TimezoneSetting, TimezoneState } from "../types/timezone";
 
+// Track if user is logged in to decide localStorage usage
+let isUserLoggedIn = false;
+
+export const setTimezoneStorageMode = (loggedIn: boolean) => {
+  isUserLoggedIn = loggedIn;
+};
+
+// Helper to conditionally save to localStorage (only for anonymous users)
+const saveToLocalStorageIfNeeded = (state: TimezoneState) => {
+  if (!isUserLoggedIn) {
+    try {
+      localStorage.setItem("timezoneState", JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }
+};
+
 // Try to load initial state from localStorage
 const loadFromLocalStorage = (): TimezoneState => {
   try {
@@ -34,25 +52,31 @@ const timezoneSlice = createSlice({
       action: PayloadAction<{ time: string; timezone: string }>
     ) => {
       state.baseTime = action.payload;
-      localStorage.setItem("timezoneState", JSON.stringify(state));
+      saveToLocalStorageIfNeeded(state);
     },
     setTimezoneSettings: (state, action: PayloadAction<TimezoneSetting[]>) => {
       state.timezoneSettings = action.payload;
-      localStorage.setItem("timezoneState", JSON.stringify(state));
+      saveToLocalStorageIfNeeded(state);
     },
     addTimezoneSetting: (state, action: PayloadAction<TimezoneSetting>) => {
       state.timezoneSettings.push(action.payload);
-      localStorage.setItem("timezoneState", JSON.stringify(state));
+      saveToLocalStorageIfNeeded(state);
     },
     removeTimezoneSetting: (state, action: PayloadAction<string>) => {
       state.timezoneSettings = state.timezoneSettings.filter(
         (setting) => setting.id !== action.payload
       );
-      localStorage.setItem("timezoneState", JSON.stringify(state));
+      saveToLocalStorageIfNeeded(state);
     },
     clearTimezoneSettings: (state) => {
       state.timezoneSettings = [];
-      localStorage.setItem("timezoneState", JSON.stringify(state));
+      saveToLocalStorageIfNeeded(state);
+    },
+    // Load entire state from Firestore (used after login)
+    loadTimezoneState: (state, action: PayloadAction<TimezoneState>) => {
+      state.baseTime = action.payload.baseTime;
+      state.timezoneSettings = action.payload.timezoneSettings;
+      // Don't save to localStorage when loading from Firestore
     },
   },
 });
@@ -63,6 +87,7 @@ export const {
   addTimezoneSetting,
   removeTimezoneSetting,
   clearTimezoneSettings,
+  loadTimezoneState,
 } = timezoneSlice.actions;
 
 export default timezoneSlice.reducer;

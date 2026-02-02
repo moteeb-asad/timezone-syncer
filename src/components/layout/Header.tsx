@@ -20,13 +20,13 @@ const Header = memo(
 
     return (
       <>
-        <nav className="bg-white border-b border-slate-200 px-6 py-4">
+        <nav className="bg-white border-b border-slate-200 px-4 md:px-6 py-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary-accent text-3xl font-bold">
+              <span className="material-symbols-outlined text-primary-accent text-2xl md:text-3xl font-bold">
                 schedule
               </span>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-lg md:text-xl font-bold tracking-tight text-slate-900">
                 Timezone Syncer
               </h1>
             </div>
@@ -38,7 +38,7 @@ const Header = memo(
               <div className="relative flex items-center gap-3 pl-6 md:border-l border-slate-200">
                 {user ? (
                   <>
-                    <details className="group">
+                    <details className="group hidden md:inline-block relative">
                       <summary className="flex items-center gap-3 cursor-pointer list-none outline-none">
                         <span className="text-sm font-semibold text-slate-700 select-none">
                           {user?.firstName} {user?.lastName}
@@ -77,14 +77,14 @@ const Header = memo(
                   <>
                     <Link
                       to="/login"
-                      className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+                      className="hidden md:block text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
                       onClick={handleLoginClick}
                     >
                       Login
                     </Link>
                     <Link
                       to="/signup"
-                      className="bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
+                      className="hidden md:block bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
                       onClick={handleSignUpClick}
                     >
                       Sign Up
@@ -95,7 +95,7 @@ const Header = memo(
                 {/* Mobile menu button */}
                 <button
                   onClick={onToggleMenu}
-                  className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                  className="md:hidden inline-flex items-center justify-center p-0 md:p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
                 >
                   <span className="sr-only">Open main menu</span>
                   <svg
