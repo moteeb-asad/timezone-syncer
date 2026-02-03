@@ -6,9 +6,9 @@ import type { PublicRouteProps } from "../../types/auth";
 export const PublicRoute = ({
   redirectTo = "/dashboard",
 }: PublicRouteProps) => {
-  const { user } = useSelector((state: RootState) => state.user);
+  const { status } = useSelector((state: RootState) => state.user);
 
-  if (user) {
+  if (status === "authenticated") {
     return <Navigate to={redirectTo} replace />;
   }
 

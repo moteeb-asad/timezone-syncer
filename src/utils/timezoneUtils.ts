@@ -3,8 +3,15 @@ import { WORKING_HOURS } from "../types/timezone";
 import { getTimeZones, type TimeZone as TzdbTimeZone } from "@vvo/tzdb";
 import ISO31661 from "iso-3166-1-alpha-2";
 
+type DatePartType = "year" | "month" | "day" | "hour" | "minute" | "second";
+
+const getNumberFromParts = (
+  parts: Intl.DateTimeFormatPart[],
+  type: DatePartType
+) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+
 // Mapping of timezone names to ISO country codes
-const timezoneCountryMap: { [key: string]: string } = {
+const timezoneCountryMap: Record<string, string> = {
   // North America
   "America/New_York": "US",
   "America/Chicago": "US",
@@ -78,6 +85,7 @@ const timezoneCountryMap: { [key: string]: string } = {
   "Africa/Casablanca": "MA",
 };
 
+// ===== Labels & country metadata =====
 export const formatTimezoneLabel = (name: string): string => {
   const parts = name.split("/");
   const city = parts[parts.length - 1].replace(/_/g, " ");
@@ -125,6 +133,7 @@ export const getTimezoneFlag = (name: string): string => {
   return countryName ? `${countryCode}` : "UN";
 };
 
+// ===== Options & lists =====
 export const timezoneToOption = (tz: Timezone): TimezoneOption => ({
   value: tz.name,
   label: formatTimezoneLabel(tz.name),
@@ -149,6 +158,7 @@ export const getAllTimezones = (): TimezoneOption[] => {
   }));
 };
 
+// ===== Common presets =====
 export const COMMON_TIMEZONES: Timezone[] = [
   {
     id: "america-new-york",
@@ -224,6 +234,7 @@ export const COMMON_TIMEZONES: Timezone[] = [
   },
 ];
 
+// ===== Time calculations =====
 export const formatTime = (date: Date): string => {
   return date.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -232,24 +243,66 @@ export const formatTime = (date: Date): string => {
   });
 };
 
-export const getTimeInTimezone = (
-  baseTime: string,
-  _baseTimezone: string,
-  targetTimezone: string
-): string => {
-  // Create a date object from base time and timezone
-  const today = new Date().toISOString().split("T")[0]; // Get today's date
-  const dateTimeString = `${today}T${baseTime}:00`;
+const getTimeZoneOffset = (date: Date, timeZone: string): number => {
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
 
-  // Create date in base timezone
-  const baseDate = new Date(dateTimeString);
+  const parts = formatter.formatToParts(date);
 
-  // Get the time in target timezone
-  const targetDate = new Date(
-    baseDate.toLocaleString("en-US", { timeZone: targetTimezone })
+  const asUtc = Date.UTC(
+    getNumberFromParts(parts, "year"),
+    getNumberFromParts(parts, "month") - 1,
+    getNumberFromParts(parts, "day"),
+    getNumberFromParts(parts, "hour"),
+    getNumberFromParts(parts, "minute"),
+    getNumberFromParts(parts, "second")
   );
 
-  return formatTime(targetDate);
+  return (asUtc - date.getTime()) / 60000;
+};
+
+export const getTimeInTimezone = (
+  baseTime: string,
+  baseTimezone: string,
+  targetTimezone: string
+): string => {
+  const baseDateParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: baseTimezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+
+  const [hours, minutes] = baseTime.split(":").map(Number);
+  const naiveUtc = new Date(
+    Date.UTC(
+      getNumberFromParts(baseDateParts, "year"),
+      getNumberFromParts(baseDateParts, "month") - 1,
+      getNumberFromParts(baseDateParts, "day"),
+      hours,
+      minutes,
+      0
+    )
+  );
+  const baseOffset = getTimeZoneOffset(naiveUtc, baseTimezone);
+  const baseUtcDate = new Date(naiveUtc.getTime() - baseOffset * 60000);
+
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: targetTimezone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  return formatter.format(baseUtcDate);
 };
 
 export const getCurrentTimeInTimezone = (timezone: string): string => {
@@ -264,6 +317,7 @@ export const getCurrentTimeInTimezone = (timezone: string): string => {
   return formatter.format(now);
 };
 
+// ===== Status helpers =====
 export const getWorkingHoursStatus = (
   timeString: string
 ): "working" | "early" | "late" => {
@@ -287,6 +341,7 @@ export const getWorkingHoursStatus = (
   }
 };
 
+// ===== UI helpers =====
 export const generateTimeOptions = (): string[] => {
   const times: string[] = [];
   for (let hour = 0; hour < 24; hour++) {

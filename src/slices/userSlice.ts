@@ -3,8 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { UserState } from "../types/user";
 
 const initialState: UserState = {
+  status: "loading", // important on app boot
   user: null,
   token: null,
+  plan: "free",
+  limits: {
+    maxTimezones: 3,
+  },
   isRegistering: false,
 };
 
@@ -12,25 +17,41 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action) => {
-      if (action.payload === null) {
-        state.user = null;
-        state.token = null;
-      } else {
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-      }
-    },
-    clearUser: (state) => {
+    setGuest(state) {
+      state.status = "guest";
       state.user = null;
       state.token = null;
+      state.plan = "free";
+      state.limits = { maxTimezones: 3 };
     },
-    setIsRegistering: (state, action) => {
+
+    setAuthenticated(state, action) {
+      const { user, token, plan, maxTimezones } = action.payload;
+
+      state.status = "authenticated";
+      state.user = user;
+      state.token = token;
+      state.plan = plan ?? "free";
+      state.limits = {
+        maxTimezones: maxTimezones ?? (plan === "premium" ? 20 : 3),
+      };
+    },
+
+    clearUser(state) {
+      state.status = "guest";
+      state.user = null;
+      state.token = null;
+      state.plan = "free";
+      state.limits = { maxTimezones: 3 };
+    },
+
+    setIsRegistering(state, action) {
       state.isRegistering = action.payload;
     },
   },
 });
 
-export const { setUser, clearUser, setIsRegistering } = userSlice.actions;
+export const { setGuest, setAuthenticated, clearUser, setIsRegistering } =
+  userSlice.actions;
 
 export default userSlice.reducer;

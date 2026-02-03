@@ -43,6 +43,11 @@ export interface TimezoneListProps {
   settings: TimezoneSetting[];
   subscription: UserSubscription;
   onRemove: (id: string) => void;
+  onAdd: () => void;
+}
+
+export interface EmptyTimezoneStateProps {
+  onAdd: () => void;
 }
 
 export interface UserSubscription {
@@ -68,7 +73,6 @@ export interface UseTimezoneManagerReturn {
   popupError: string | null;
   allTimezones: TimezoneOption[];
   baseTimezoneOption: TimezoneOption | null;
-  user: any;
   handleBaseTimezoneChange: (option: TimezoneOption | null) => void;
   handleBaseTimeChange: (newTime: string) => void;
   handleAddTimezone: () => void;
@@ -82,7 +86,7 @@ export interface UseTimezoneManagerReturn {
 
 // Component Props
 export interface TimezoneManagerProps {
-  isPremium?: boolean;
+  // Props interface kept for future extensibility
 }
 
 export interface TimeInputProps {

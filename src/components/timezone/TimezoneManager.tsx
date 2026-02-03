@@ -5,10 +5,9 @@ import TimezoneSelect from "./TimezoneSelect";
 import TimeInput from "./TimeInput";
 import { TimezoneList } from "./TimezoneList";
 import { AddTimezoneDialog } from "./AddTimezoneDialog";
+import { MeetingTimeSuggestions } from "./MeetingTimeSuggestions";
 
-export const TimezoneManager = ({
-  isPremium = false,
-}: TimezoneManagerProps) => {
+export const TimezoneManager = ({}: TimezoneManagerProps) => {
   const {
     baseTime,
     timezoneSettings,
@@ -25,17 +24,12 @@ export const TimezoneManager = ({
     setShowAddTimezone,
     setSelectedTimezone,
     setPopupError,
-  } = useTimezoneManager(isPremium);
+  } = useTimezoneManager();
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
       {/* Live Local Current Time Display */}
       <CurrentTime />
-
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2"></h1>
-      </div>
 
       {/* Base Time Controls */}
       <div className="bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col md:flex-row items-center gap-4 shadow-sm">
@@ -54,22 +48,6 @@ export const TimezoneManager = ({
               onChange={handleBaseTimezoneChange}
             />
           </div>
-          <div className="w-full md:w-auto">
-            <button
-              onClick={() => setShowAddTimezone(true)}
-              disabled={
-                subscription.currentTimezones >= subscription.maxTimezones
-              }
-              className={`w-full md:w-auto px-6 py-2 text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
-                subscription.currentTimezones >= subscription.maxTimezones
-                  ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-primary-accent hover:bg-opacity-90"
-              }`}
-            >
-              <span className="material-symbols-outlined text-lg">add</span>
-              Add Timezone
-            </button>
-          </div>
         </div>
       </div>
 
@@ -78,6 +56,13 @@ export const TimezoneManager = ({
         settings={timezoneSettings}
         subscription={subscription}
         onRemove={handleRemoveTimezone}
+        onAdd={() => setShowAddTimezone(true)}
+      />
+
+      {/* Meeting Time Suggestions (Premium Only) */}
+      <MeetingTimeSuggestions
+        isPremium={subscription.isPremium}
+        timezoneCount={timezoneSettings.length}
       />
 
       {/* Add Timezone Dialog */}

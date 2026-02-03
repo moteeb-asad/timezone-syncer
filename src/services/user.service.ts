@@ -1,4 +1,4 @@
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export const createOrUpdateUser = async (user: any, timezones?: any) => {
@@ -10,20 +10,26 @@ export const createOrUpdateUser = async (user: any, timezones?: any) => {
 
   const ref = doc(db, "users", user.uid);
 
+  // Check if user document exists
+  const existingDoc = await getDoc(ref);
+  const isNewUser = !existingDoc.exists();
+
   const userData: any = {
     uid: user.uid,
     email: user.email,
     displayName: user.displayName ?? null,
     provider: user.providerData?.map((p: any) => p.providerId),
-
-    plan: "free",
-    limits: {
-      maxTimezones: 3,
-    },
-
     updatedAt: serverTimestamp(),
     lastLoginAt: serverTimestamp(),
   };
+
+  // Only set default plan/limits for new users
+  if (isNewUser) {
+    userData.plan = "free";
+    userData.limits = {
+      maxTimezones: 3,
+    };
+  }
 
   // Only include timezones and createdAt if timezones provided (for merge operation)
   if (timezones !== undefined) {
@@ -32,4 +38,23 @@ export const createOrUpdateUser = async (user: any, timezones?: any) => {
   }
 
   await setDoc(ref, userData, { merge: true });
+};
+
+export const getUserPlan = async (uid: string) => {
+  if (!db) {
+    console.warn("Firestore is not initialized. Returning default plan.");
+    return { plan: "free", maxTimezones: 3 };
+  }
+
+  const userDoc = await getDoc(doc(db, "users", uid));
+
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+    return {
+      plan: data.plan || "free",
+      maxTimezones: data.limits?.maxTimezones || 3,
+    };
+  }
+
+  return { plan: "free", maxTimezones: 3 };
 };

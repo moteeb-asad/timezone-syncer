@@ -6,10 +6,10 @@ import type { ProtectedRouteProps } from "../../types/auth";
 export const ProtectedRoute = ({
   redirectTo = "/login",
 }: ProtectedRouteProps) => {
-  const { user } = useSelector((state: RootState) => state.user);
+  const { status } = useSelector((state: RootState) => state.user);
   const location = useLocation();
 
-  if (!user) {
+  if (status !== "authenticated") {
     return (
       <Navigate
         to={redirectTo}

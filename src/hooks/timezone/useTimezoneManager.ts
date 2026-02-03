@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type {
   TimezoneSetting,
   TimezoneOption,
@@ -7,7 +7,7 @@ import type {
 } from "../../types/timezone";
 import {
   optionToTimezone,
-  getCurrentTimeInTimezone,
+  getTimeInTimezone,
   getWorkingHoursStatus,
   getAllTimezones,
 } from "../../utils/timezoneUtils";
@@ -17,19 +17,16 @@ import {
   addTimezoneSetting,
   removeTimezoneSetting,
 } from "../../slices/timezoneSlice";
-import { FREE_TIER_LIMIT } from "../../types/timezone";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../store";
 import { useNavigate } from "react-router-dom";
 
-export const useTimezoneManager = (
-  isPremium: boolean
-): UseTimezoneManagerReturn => {
+export const useTimezoneManager = (): UseTimezoneManagerReturn => {
   const dispatch = useDispatch<AppDispatch>();
   const { baseTime, timezoneSettings } = useSelector(
     (state: RootState) => state.timezone
   );
-  const { user } = useSelector((state: RootState) => state.user);
+  const { plan, limits } = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
 
   const [showAddTimezone, setShowAddTimezone] = useState(false);
@@ -38,53 +35,66 @@ export const useTimezoneManager = (
   const [popupError, setPopupError] = useState<string | null>(null);
   const [allTimezones] = useState(() => getAllTimezones());
 
+  const isPremium = plan === "premium";
+  const maxTimezones = limits?.maxTimezones ?? 3;
+
   const subscription: UserSubscription = {
     isPremium,
-    maxTimezones: isPremium ? 20 : FREE_TIER_LIMIT,
+    maxTimezones,
     currentTimezones: timezoneSettings.length,
   };
 
-  // Update timezone cards with current time every minute
-  useEffect(() => {
-    const updateCurrentTimes = () => {
-      dispatch((dispatch: AppDispatch, getState: () => RootState) => {
-        const currentSettings = getState().timezone.timezoneSettings;
+  const updateCurrentTimes = useCallback(() => {
+    dispatch((dispatch: AppDispatch, getState: () => RootState) => {
+      const { timezoneSettings: currentSettings, baseTime: currentBaseTime } =
+        getState().timezone;
 
-        if (currentSettings.length === 0) return;
+      if (currentSettings.length === 0) return;
 
-        const updatedSettings = currentSettings.map((setting) => {
-          const localTime = getCurrentTimeInTimezone(setting.timezone.name);
-          const status = getWorkingHoursStatus(localTime);
-
-          return {
-            ...setting,
-            localTime,
-            status,
-          };
-        });
-
-        const hasChanges = updatedSettings.some(
-          (setting, index) =>
-            setting.localTime !== currentSettings[index].localTime ||
-            setting.status !== currentSettings[index].status
+      const updatedSettings = currentSettings.map((setting) => {
+        const localTime = getTimeInTimezone(
+          currentBaseTime.time,
+          currentBaseTime.timezone,
+          setting.timezone.name
         );
+        const status = getWorkingHoursStatus(localTime);
 
-        if (hasChanges) {
-          dispatch(setTimezoneSettings(updatedSettings));
-        }
+        return {
+          ...setting,
+          localTime,
+          status,
+        };
       });
-    };
 
-    // Update immediately on mount
+      const hasChanges = updatedSettings.some(
+        (setting, index) =>
+          setting.localTime !== currentSettings[index].localTime ||
+          setting.status !== currentSettings[index].status
+      );
+
+      if (hasChanges) {
+        dispatch(setTimezoneSettings(updatedSettings));
+      }
+    });
+  }, [dispatch]);
+
+  // Update timezone cards instantly when base time changes
+  useEffect(() => {
     if (timezoneSettings.length > 0) {
       updateCurrentTimes();
     }
+  }, [
+    baseTime.time,
+    baseTime.timezone,
+    timezoneSettings.length,
+    updateCurrentTimes,
+  ]);
 
-    // Update every minute
+  // Keep cards in sync periodically
+  useEffect(() => {
     const interval = setInterval(updateCurrentTimes, 60000);
-
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [updateCurrentTimes]);
 
   // Note: Using getState() inside the effect to always get current timezoneSettings
   // This avoids stale closure issues and infinite loops
@@ -112,7 +122,11 @@ export const useTimezoneManager = (
     }
 
     const timezone = optionToTimezone(selectedTimezone);
-    const localTime = getCurrentTimeInTimezone(timezone.name);
+    const localTime = getTimeInTimezone(
+      baseTime.time,
+      baseTime.timezone,
+      timezone.name
+    );
     const status = getWorkingHoursStatus(localTime);
 
     const newSetting: TimezoneSetting = {
@@ -132,11 +146,7 @@ export const useTimezoneManager = (
   };
 
   const handleUpgradeClick = () => {
-    if (user) {
-      navigate("/premium");
-    } else {
-      navigate("/login");
-    }
+    navigate(isPremium ? "/premium" : "/login");
   };
 
   const handleTimezoneChange = (option: TimezoneOption | null) => {
@@ -157,7 +167,6 @@ export const useTimezoneManager = (
     popupError,
     allTimezones,
     baseTimezoneOption,
-    user,
     handleBaseTimezoneChange,
     handleBaseTimeChange,
     handleAddTimezone,

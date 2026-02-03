@@ -1,12 +1,15 @@
 import { useDispatch } from "react-redux";
-import { setUser, clearUser } from "../../slices/userSlice";
+import { setAuthenticated, setGuest } from "../../slices/userSlice";
 import {
   clearTimezoneSettings,
   setTimezoneStorageMode,
   loadTimezoneState,
 } from "../../slices/timezoneSlice";
 import { authService } from "../../services/auth.service";
-import { mapFirebaseUser } from "../../utils/mapFirebaseUser";
+import {
+  mapFirebaseUser,
+  fetchUserPlanData,
+} from "../../utils/mapFirebaseUser";
 import { mapFirebaseError } from "../../utils/mapFirebaseError";
 import { auth } from "../../lib/firebase";
 import { createOrUpdateUser } from "../../services/user.service";
@@ -85,10 +88,12 @@ export const useAuth = () => {
 
       await createOrUpdateUser(result.user, mergedTimezones);
 
+      const planData = await fetchUserPlanData(result.user.uid);
       dispatch(
-        setUser({
-          user: mapFirebaseUser(result.user),
+        setAuthenticated({
+          user: await mapFirebaseUser(result.user),
           token,
+          ...planData,
         })
       );
 
@@ -120,9 +125,10 @@ export const useAuth = () => {
       const token = await result.user.getIdToken();
 
       dispatch(
-        setUser({
-          user: mapFirebaseUser(result.user),
+        setAuthenticated({
+          user: await mapFirebaseUser(result.user),
           token,
+          ...(await fetchUserPlanData(result.user.uid)),
         })
       );
 
@@ -214,10 +220,12 @@ export const useAuth = () => {
 
       await createOrUpdateUser(result.user, mergedTimezones);
 
+      const planData = await fetchUserPlanData(result.user.uid);
       dispatch(
-        setUser({
-          user: mapFirebaseUser(result.user),
+        setAuthenticated({
+          user: await mapFirebaseUser(result.user),
           token,
+          ...planData,
         })
       );
 
@@ -266,9 +274,10 @@ export const useAuth = () => {
 
       const token = await result.user.getIdToken();
       dispatch(
-        setUser({
-          user: mapFirebaseUser(result.user),
+        setAuthenticated({
+          user: await mapFirebaseUser(result.user),
           token,
+          ...(await fetchUserPlanData(result.user.uid)),
         })
       );
     } catch (error) {
@@ -284,8 +293,8 @@ export const useAuth = () => {
     // Reset storage mode to anonymous (enable localStorage writes)
     setTimezoneStorageMode(false);
 
-    // Clear user from Redux
-    dispatch(clearUser());
+    // Reset user to guest state
+    dispatch(setGuest());
 
     // Sign out from Firebase
     if (auth) {

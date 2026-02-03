@@ -5,7 +5,7 @@ import { FREE_TIER_LIMIT } from "../types/timezone";
 import { auth } from "../lib/firebase";
 
 export const Account = () => {
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, plan, limits } = useSelector((state: RootState) => state.user);
   const { timezoneSettings } = useSelector(
     (state: RootState) => state.timezone
   );
@@ -25,17 +25,22 @@ export const Account = () => {
     };
   }, [user]);
 
-  const planLabel = useMemo(() => (user?.isPremium ? "Pro" : "Free"), [user]);
-  const planPrice = user?.isPremium ? "$9" : "$0";
-  const planCaption = user?.isPremium ? "per month" : "/mo";
+  const planLabel = useMemo(
+    () => (plan === "premium" ? "Pro" : "Free"),
+    [plan]
+  );
+  const planPrice = plan === "premium" ? "$9" : "$0";
+  const planCaption = plan === "premium" ? "per month" : "/mo";
 
   const currentTimezones = timezoneSettings.length;
-  const usageLabel = user?.isPremium
-    ? "Unlimited"
-    : `${currentTimezones} / ${FREE_TIER_LIMIT} Used`;
-  const usagePercent = user?.isPremium
-    ? 100
-    : Math.min(100, (currentTimezones / FREE_TIER_LIMIT) * 100);
+  const usageLabel =
+    plan === "premium"
+      ? "Unlimited"
+      : `${currentTimezones} / ${limits.maxTimezones} Used`;
+  const usagePercent =
+    plan === "premium"
+      ? 100
+      : Math.min(100, (currentTimezones / limits.maxTimezones) * 100);
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -203,7 +208,7 @@ export const Account = () => {
                       Current Plan
                     </h2>
                     <p className="text-sm text-slate-500">
-                      {user?.isPremium
+                      {plan === "premium"
                         ? "You are enjoying unlimited timezone tracking and premium support."
                         : "You are currently using the limited version of Timezone Syncer."}
                     </p>
@@ -216,18 +221,20 @@ export const Account = () => {
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${
-                          user?.isPremium ? "bg-emerald-500" : "bg-primary"
+                          plan === "premium"
+                            ? "bg-emerald-500"
+                            : "bg-primary"
                         } rounded-full`}
                         style={{ width: `${usagePercent}%` }}
                       ></div>
                     </div>
                     <p className="text-xs text-slate-400">
-                      {user?.isPremium
+                      {plan === "premium"
                         ? "Thank you for being a Pro member."
                         : "Upgrade to Pro for unlimited timezone tracking and calendar syncing."}
                     </p>
                     <p className="text-xs font-semibold text-slate-500">
-                      {user?.isPremium
+                      {plan === "premium"
                         ? "Unlimited timezone slots"
                         : `Free tier includes ${FREE_TIER_LIMIT} slots`}
                     </p>
@@ -248,7 +255,7 @@ export const Account = () => {
                   <button
                     className="w-full px-6 py-3 border border-primary text-primary hover:bg-primary hover:text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2"
                     aria-label={
-                      user?.isPremium
+                      plan === "premium"
                         ? "Manage subscription plan"
                         : "Upgrade to Pro plan"
                     }
@@ -256,7 +263,7 @@ export const Account = () => {
                     <span className="material-symbols-outlined text-lg">
                       upgrade
                     </span>
-                    {user?.isPremium ? "Manage Plan" : "Upgrade to Pro"}
+                    {plan === "premium" ? "Manage Plan" : "Upgrade to Pro"}
                   </button>
                 </div>
               </div>
