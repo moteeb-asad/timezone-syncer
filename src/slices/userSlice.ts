@@ -48,10 +48,21 @@ const userSlice = createSlice({
     setIsRegistering(state, action) {
       state.isRegistering = action.payload;
     },
+
+    updatePlan(state, action) {
+      const { plan, maxTimezones } = action.payload;
+      state.plan = plan;
+      state.limits = { maxTimezones };
+    },
   },
 });
 
-export const { setGuest, setAuthenticated, clearUser, setIsRegistering } =
-  userSlice.actions;
+export const {
+  setGuest,
+  setAuthenticated,
+  clearUser,
+  setIsRegistering,
+  updatePlan,
+} = userSlice.actions;
 
 export default userSlice.reducer;

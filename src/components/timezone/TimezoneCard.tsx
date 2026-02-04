@@ -3,12 +3,14 @@ import {
   calculateTimeDiff,
   getStatusIcon,
   getStatusStyles,
+  getGMTOffset,
 } from "../../utils/timezoneUtils";
 
 export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
   const styles = getStatusStyles(setting.status);
   const icon = getStatusIcon(setting.status);
   const timeDiff = calculateTimeDiff(setting.timezone.name);
+  const gmtOffset = getGMTOffset(setting.timezone.name);
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 group hover:border-slate-300 transition-colors">
@@ -78,7 +80,7 @@ export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
               {setting.timezone.displayName}
             </h3>
             <p className="text-xs text-slate-500 font-medium">
-              {setting.timezone.name}
+              {setting.timezone.name} (GMT{gmtOffset})
             </p>
           </div>
         </div>

@@ -1,4 +1,10 @@
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  onSnapshot,
+} from "firebase/firestore";
 import { db } from "../lib/firebase";
 
 export const createOrUpdateUser = async (user: any, timezones?: any) => {
@@ -29,6 +35,14 @@ export const createOrUpdateUser = async (user: any, timezones?: any) => {
     userData.limits = {
       maxTimezones: 3,
     };
+    // Set default baseTime for new users
+    userData.timezones = {
+      baseTime: {
+        time: "09:00",
+        timezone: "UTC",
+      },
+      timezoneSettings: [],
+    };
   }
 
   // Only include timezones and createdAt if timezones provided (for merge operation)
@@ -57,4 +71,36 @@ export const getUserPlan = async (uid: string) => {
   }
 
   return { plan: "free", maxTimezones: 3 };
+};
+
+export const subscribeToUserPlan = (
+  uid: string,
+  callback: (plan: string, maxTimezones: number) => void
+) => {
+  if (!db) {
+    console.warn("Firestore is not initialized.");
+    return () => {};
+  }
+
+  const userRef = doc(db, "users", uid);
+
+  const unsubscribe = onSnapshot(
+    userRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const plan = data.plan || "free";
+        const maxTimezones = data.limits?.maxTimezones || 3;
+        callback(plan, maxTimezones);
+      } else {
+        callback("free", 3);
+      }
+    },
+    (error) => {
+      console.error("Error listening to user plan:", error);
+      callback("free", 3);
+    }
+  );
+
+  return unsubscribe;
 };

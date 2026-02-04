@@ -158,82 +158,6 @@ export const getAllTimezones = (): TimezoneOption[] => {
   }));
 };
 
-// ===== Common presets =====
-export const COMMON_TIMEZONES: Timezone[] = [
-  {
-    id: "america-new-york",
-    name: "America/New_York",
-    displayName: "New York",
-    countryCode: "US",
-  },
-  {
-    id: "europe-london",
-    name: "Europe/London",
-    displayName: "Europe/London",
-    countryCode: "GB",
-  },
-  {
-    id: "europe-paris",
-    name: "Europe/Paris",
-    displayName: "Europe/Paris",
-    countryCode: "FR",
-  },
-  {
-    id: "asia-tokyo",
-    name: "Asia/Tokyo",
-    displayName: "Asia/Tokyo",
-    countryCode: "JP",
-  },
-  {
-    id: "asia-karachi",
-    name: "Asia/Karachi",
-    displayName: "Asia/Karachi",
-    countryCode: "PK",
-  },
-  {
-    id: "asia-dubai",
-    name: "Asia/Dubai",
-    displayName: "Asia/Dubai",
-    countryCode: "AE",
-  },
-  {
-    id: "asia-singapore",
-    name: "Asia/Singapore",
-    displayName: "Asia/Singapore",
-    countryCode: "SG",
-  },
-  {
-    id: "australia-sydney",
-    name: "Australia/Sydney",
-    displayName: "Australia/Sydney",
-    countryCode: "AU",
-  },
-  {
-    id: "america-los-angeles",
-    name: "America/Los_Angeles",
-    displayName: "America/Los_Angeles",
-    countryCode: "US",
-  },
-  {
-    id: "america-chicago",
-    name: "America/Chicago",
-    displayName: "America/Chicago",
-    countryCode: "US",
-  },
-  {
-    id: "europe-berlin",
-    name: "Europe/Berlin",
-    displayName: "Europe/Berlin",
-    countryCode: "DE",
-  },
-  {
-    id: "asia-mumbai",
-    name: "Asia/Kolkata",
-    displayName: "Asia/Mumbai",
-    countryCode: "IN",
-  },
-];
-
 // ===== Time calculations =====
 export const formatTime = (date: Date): string => {
   return date.toLocaleTimeString("en-US", {
@@ -425,6 +349,33 @@ export const calculateTimeDiff = (timezone: string): string => {
     return `${Math.abs(diff)}h ${diff > 0 ? "ahead" : "behind"}`;
   } catch (err) {
     console.error("Time diff error:", err);
+    return "";
+  }
+};
+
+export const getGMTOffset = (timezone: string): string => {
+  try {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      timeZoneName: "shortOffset",
+    });
+
+    const parts = formatter.formatToParts(now);
+    const tzName = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+
+    // Match GMT+5, GMT+5:30, GMT-3, etc.
+    const match = tzName.match(/GMT([+-])(\d+)(?::(\d+))?/);
+
+    if (!match) return "";
+
+    const sign = match[1];
+    const hours = match[2];
+    const minutes = match[3];
+
+    return minutes ? `${sign}${hours}:${minutes}` : `${sign}${hours}`;
+  } catch (err) {
+    console.error("GMT offset error:", err);
     return "";
   }
 };
