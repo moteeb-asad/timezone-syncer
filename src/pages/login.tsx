@@ -184,7 +184,7 @@ export const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={!!pendingLinking}
                   className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none disabled:opacity-60 disabled:cursor-not-allowed"
-                  placeholder="moteeb@example.com"
+                  placeholder="user@example.com"
                 />
               </div>
             </div>
