@@ -15,12 +15,12 @@ export const TimezoneList = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between p-0 md:px-2">
         <div className="flex items-center gap-4">
           <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">
             Compared Timezones
           </h2>
-          <span className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded font-bold uppercase">
+          <span className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded font-bold uppercase text-center md:text-left">
             {subscription.currentTimezones}/{subscription.maxTimezones} Slots
           </span>
           <div className="h-1 w-1 rounded-full bg-slate-300"></div>
@@ -30,7 +30,7 @@ export const TimezoneList = ({
               disabled={
                 subscription.currentTimezones >= subscription.maxTimezones
               }
-              className={`flex items-center gap-1.5 transition-colors ${
+              className={`flex items-center gap-0 md:gap-1.5 transition-colors flex-col md:flex-row ${
                 subscription.currentTimezones >= subscription.maxTimezones
                   ? "text-slate-300 cursor-not-allowed"
                   : "text-primary-accent hover:text-slate-900"
@@ -39,19 +39,19 @@ export const TimezoneList = ({
               <span className="material-symbols-outlined text-lg">
                 add_circle
               </span>
-              <span className="text-xs font-bold uppercase tracking-tight">
+              <span className="text-xs font-bold uppercase tracking-tight text-nowrap">
                 Add Timezone
               </span>
             </button>
             {subscription.currentTimezones >= subscription.maxTimezones && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded shadow-lg whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 max-w-[220px] px-3 py-2 bg-slate-900 text-white text-xs text-center leading-snug rounded shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
                 Free plan limit reached. Upgrade to Pro to add more.
                 <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
               </div>
             )}
           </div>
         </div>
-        <span className="text-[10px] text-slate-400 font-medium italic">
+        <span className="text-[10px] text-slate-400 font-medium italic hidden md:block">
           {subscription.isPremium ? "Pro Plan" : "Free Plan"}
         </span>
       </div>
