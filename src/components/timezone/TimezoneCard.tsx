@@ -1,10 +1,10 @@
 import type { TimezoneCardProps } from "../../types/timezone";
 import {
   calculateTimeDiff,
+  getGMTOffset,
   getStatusIcon,
   getStatusStyles,
-  getGMTOffset,
-} from "../../utils/timezoneUtils";
+} from "../../utils/timezone";
 
 export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
   const styles = getStatusStyles(setting.status);

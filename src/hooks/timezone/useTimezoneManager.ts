@@ -10,7 +10,7 @@ import {
   getTimeInTimezone,
   getWorkingHoursStatus,
   getAllTimezones,
-} from "../../utils/timezoneUtils";
+} from "../../utils/timezone";
 import {
   setBaseTime,
   setTimezoneSettings,

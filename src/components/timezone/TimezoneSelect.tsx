@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Select from "react-select";
 import type { StylesConfig, GroupBase } from "react-select";
 import type { TimezoneOption, TimezoneSelectProps } from "../../types/timezone";
-import { getAllTimezones } from "../../utils/timezoneUtils";
+import { getAllTimezones } from "../../utils/timezone";
 import * as flags from "country-flag-icons/react/3x2";
 
 const TimezoneSelect = ({ value, onChange }: TimezoneSelectProps) => {
