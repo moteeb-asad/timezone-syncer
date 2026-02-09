@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import type { PublicRouteProps } from "../../types/auth";
+import type { PublicRouteProps } from "../../features/auth/types";
 
 export const PublicRoute = ({
   redirectTo = "/dashboard",

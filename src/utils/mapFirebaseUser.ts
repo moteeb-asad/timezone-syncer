@@ -1,4 +1,4 @@
-import { getUserPlan } from "../services/user.service";
+import { getUserPlan } from "../features/user/services/user.service";
 
 export const mapFirebaseUser = async (user: any) => {
   const [firstName, ...rest] = (user.displayName || "").split(" ");

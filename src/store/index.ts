@@ -2,8 +2,8 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-import userReducer from "../slices/userSlice";
-import timezoneReducer from "../slices/timezoneSlice";
+import userReducer from "../features/user/slice";
+import timezoneReducer from "../features/timezone/slice";
 
 const persistConfig = {
   key: "root",

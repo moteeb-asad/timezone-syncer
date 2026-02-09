@@ -1,10 +1,10 @@
 import { memo } from "react";
-import { useAuth } from "../../hooks/auth/useAuth";
+import { useLogin } from "../../features/auth/hooks/useLogin";
 import Navigation from "./Navigation";
 import type { MobileMenuProps } from "../../types/layout";
 
 const MobileMenu = memo(({ isOpen, items, user, onClose }: MobileMenuProps) => {
-  const { logout } = useAuth();
+  const { logout } = useLogin();
 
   const handleLogout = async () => {
     await logout();

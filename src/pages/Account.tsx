@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
-import { FREE_TIER_LIMIT } from "../types/timezone";
+import { FREE_TIER_LIMIT } from "../features/timezone/types";
 import { auth } from "../lib/firebase";
 
 export const Account = () => {
@@ -221,9 +221,7 @@ export const Account = () => {
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${
-                          plan === "premium"
-                            ? "bg-emerald-500"
-                            : "bg-primary"
+                          plan === "premium" ? "bg-emerald-500" : "bg-primary"
                         } rounded-full`}
                         style={{ width: `${usagePercent}%` }}
                       ></div>

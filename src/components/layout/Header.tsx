@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import type { HeaderProps } from "../../types/layout";
-import { setIsRegistering } from "../../slices/userSlice";
+import { setIsRegistering } from "../../features/user/slice";
 import Navigation from "./Navigation";
 import MobileMenu from "./MobileMenu";
 

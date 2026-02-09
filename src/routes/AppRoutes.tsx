@@ -3,13 +3,8 @@ import { Login } from "../pages/login";
 import Signup from "../pages/signup";
 import { Premium } from "../pages/Premium";
 import { About } from "../pages/About";
-import {
-  TimezoneManager,
-  ProtectedRoute,
-  PublicRoute,
-  Layout,
-  Account,
-} from "../components";
+import { ProtectedRoute, PublicRoute, Layout, Account } from "../components";
+import { TimezoneManager } from "../features/timezone/components";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 

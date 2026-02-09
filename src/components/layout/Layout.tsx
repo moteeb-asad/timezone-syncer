@@ -1,9 +1,9 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store";
-import { useAuth } from "../../hooks/auth/useAuth";
+import { useLogin } from "../../features/auth/hooks/useLogin";
 import { useState, useCallback } from "react";
-import { clearUser } from "../../slices/userSlice";
+import { clearUser } from "../../features/user/slice";
 import { useNavigation } from "../../hooks/layout/useNavigation";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -11,7 +11,7 @@ import Footer from "./Footer";
 export const Layout = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout } = useLogin();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();

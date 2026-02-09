@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { NavigationItem } from "../../types/layout";
-import type { User } from "../../types/user";
+import type { User } from "../../features/user/types";
 
 export const useNavigation = (pathname: string, user: User | null) => {
   return useMemo(() => {

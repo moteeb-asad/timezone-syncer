@@ -1,17 +1,12 @@
-// Auth components
+// Auth components (layout/routing guards)
 export { ProtectedRoute } from "./auth/ProtectedRoute";
 export { PublicRoute } from "./auth/PublicRoute";
 
 // Layout components
 export { Layout } from "./layout/Layout";
 
-// Timezone components
-export { default as CurrentTime } from "./timezone/CurrentTime";
-export { default as TimeInput } from "./timezone/TimeInput";
-export { default as TimezoneSelect } from "./timezone/TimezoneSelect";
-export { TimezoneManager } from "./timezone/TimezoneManager";
-export { EmptyTimezoneState } from "./timezone/EmptyTimezoneState";
-export { MeetingTimeSuggestions } from "./timezone/MeetingTimeSuggestions";
+// Timezone components have been moved to features/timezone
+// Import from: import { TimezoneManager } from '../features/timezone/components';
 
 // Account components
 export { Account } from "../pages/Account";

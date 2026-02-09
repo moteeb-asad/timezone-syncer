@@ -1,7 +1,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppRoutes } from "./routes";
-import { useTimezoneSync } from "./hooks/timezone/useTimezoneSync";
-import { useAuthBootstrap } from "./hooks/auth/useAuthBootstrap";
+import { useTimezoneSync } from "./features/timezone/hooks/useTimezoneSync";
+import { useAuthBootstrap } from "./features/auth/hooks/useAuthBootstrap";
 
 function App() {
   // Bootstrap authentication state on app load
