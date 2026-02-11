@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin } from "../hooks/useLogin";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { loginSchema, type LoginSchema } from "../schemas/authSchemas";
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -14,12 +20,10 @@ export const LoginForm = ({
   initialMessage = "",
   pendingCredential,
 }: LoginFormProps) => {
-  const [email, setEmail] = useState(initialEmail);
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState(initialMessage);
+  const [rememberMe, setRememberMe] = useState(false);
   const [pendingLinking, setPendingLinking] = useState<{
     email: string;
     credential: any;
@@ -31,12 +35,25 @@ export const LoginForm = ({
 
   const { loginWithEmail, signInWithGoogle, linkGoogleProvider } = useLogin();
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: initialEmail,
+      password: "",
+    },
+  });
+
   useEffect(() => {
     if (initialMessage) {
       setInfoMessage(initialMessage);
     }
     if (initialEmail) {
-      setEmail(initialEmail);
+      setValue("email", initialEmail);
     }
     if (pendingCredential && initialEmail) {
       setPendingLinking({
@@ -44,10 +61,9 @@ export const LoginForm = ({
         credential: pendingCredential,
       });
     }
-  }, [initialEmail, initialMessage, pendingCredential]);
+  }, [initialEmail, initialMessage, pendingCredential, setValue]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: LoginSchema) => {
     setLoading(true);
     setError("");
     setInfoMessage("");
@@ -56,13 +72,13 @@ export const LoginForm = ({
       if (pendingLinking) {
         await linkGoogleProvider(
           pendingLinking.email,
-          password,
+          values.password,
           pendingLinking.credential
         );
         setPendingLinking(null);
         onSuccess();
       } else {
-        const result = await loginWithEmail(email, password);
+        const result = await loginWithEmail(values.email, values.password);
 
         if (result.error) {
           setError(result.error.message);
@@ -97,7 +113,7 @@ export const LoginForm = ({
           email: result.email,
           credential: result.credential,
         });
-        setEmail(result.email);
+        setValue("email", result.email);
         setInfoMessage(
           `An account with ${result.email} already exists. Please enter your password to link your Google account.`
         );
@@ -143,63 +159,44 @@ export const LoginForm = ({
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
         {/* Email Field */}
-        <div className="space-y-2">
-          <label
-            htmlFor="email"
-            className="block text-xs font-bold uppercase tracking-wider text-slate-400"
-          >
-            Email Address
-          </label>
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
-              mail
-            </span>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={!!pendingLinking}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none disabled:opacity-60 disabled:cursor-not-allowed"
-              placeholder="user@example.com"
-            />
-          </div>
-        </div>
+        <Input
+          id="email"
+          type="text"
+          inputMode="email"
+          autoComplete="email"
+          label="Email Address"
+          placeholder="user@example.com"
+          disabled={!!pendingLinking}
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
         {/* Password Field */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
+        <div>
+          <div className="flex justify-between items-center mb-2">
             <label
               htmlFor="password"
               className="block text-xs font-bold uppercase tracking-wider text-slate-400"
             >
               Password
             </label>
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-xs font-semibold text-primary hover:underline"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">
-              lock
-            </span>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-              placeholder="••••••••"
-              minLength={6}
-            />
-          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            autoComplete="current-password"
+            error={errors.password?.message}
+            {...register("password")}
+          />
         </div>
 
         {/* Remember Me */}
@@ -220,10 +217,10 @@ export const LoginForm = ({
         </div>
 
         {/* Submit Button */}
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full py-3.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-opacity-90 transition-all shadow-md shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3.5 text-sm"
         >
           {loading
             ? "Loading..."
@@ -233,23 +230,24 @@ export const LoginForm = ({
           <span className="material-symbols-outlined text-lg">
             arrow_forward
           </span>
-        </button>
+        </Button>
 
         {/* Cancel Link Button */}
         {pendingLinking && (
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={() => {
               setPendingLinking(null);
               setInfoMessage("");
               setError("");
-              setEmail("");
-              setPassword("");
+              setValue("email", "");
+              setValue("password", "");
             }}
-            className="w-full border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-lg hover:bg-slate-50 transition-all"
+            className="w-full py-3"
           >
             Cancel
-          </button>
+          </Button>
         )}
       </form>
 
@@ -269,11 +267,12 @@ export const LoginForm = ({
 
           {/* Social Button */}
           <div className="grid gap-4">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="flex items-center justify-center gap-2 py-2.5 px-4 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="py-2.5 px-4 text-sm"
             >
               <svg
                 className="w-4 h-4"
@@ -286,7 +285,7 @@ export const LoginForm = ({
                 ></path>
               </svg>
               Google
-            </button>
+            </Button>
           </div>
         </>
       )}
