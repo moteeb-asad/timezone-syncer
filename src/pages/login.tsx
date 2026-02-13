@@ -2,15 +2,21 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { LoginForm } from "../features/auth/components/LoginForm";
 
+type LoginLocationState = {
+  from?: string;
+  email?: string;
+  message?: string;
+  pendingCredential?: unknown; // Replace with actual type if known
+};
+
 export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const from =
-    (location.state as { from?: string } | undefined)?.from || "/dashboard";
+  const state = location.state as LoginLocationState | null;
 
-  const state = location.state as any;
-  const initialEmail = state?.email || "";
-  const initialMessage = state?.message || "";
+  const from = state?.from ?? "/dashboard";
+  const initialEmail = state?.email ?? "";
+  const initialMessage = state?.message ?? "";
   const pendingCredential = state?.pendingCredential;
 
   const handleSuccess = () => {

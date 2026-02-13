@@ -7,6 +7,8 @@ import { ProtectedRoute, PublicRoute, Layout, Account } from "../components";
 import { TimezoneManager } from "../features/timezone/components";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 export function AppRoutes() {
   const { status } = useSelector((state: RootState) => state.user);
@@ -17,6 +19,8 @@ export function AppRoutes() {
       <Route element={<PublicRoute redirectTo="/dashboard" />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* All other routes with Layout */}
