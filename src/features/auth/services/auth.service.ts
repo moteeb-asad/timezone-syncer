@@ -5,6 +5,8 @@ import {
   GoogleAuthProvider,
   updateProfile,
   linkWithCredential,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
 } from "firebase/auth";
 import { auth } from "../../../lib/firebase";
 
@@ -17,6 +19,19 @@ export const authService = {
   registerWithEmail(email: string, password: string) {
     if (!auth) throw new Error("Firebase not initialized");
     return createUserWithEmailAndPassword(auth, email, password);
+  },
+
+  requestPasswordReset(email: string) {
+    if (!auth) throw new Error("Firebase not initialized");
+    return sendPasswordResetEmail(auth, email, {
+      url: `${window.location.origin}/reset-password`,
+      handleCodeInApp: false,
+    });
+  },
+
+  confirmPasswordReset(oobCode: string, newPassword: string) {
+    if (!auth) throw new Error("Firebase not initialized");
+    return confirmPasswordReset(auth, oobCode, newPassword);
   },
 
   async loginWithGoogle() {
