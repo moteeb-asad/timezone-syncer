@@ -85,6 +85,7 @@ export interface UseTimezoneManagerReturn {
 }
 
 // Component Props
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface TimezoneManagerProps {
   // Props interface kept for future extensibility
 }

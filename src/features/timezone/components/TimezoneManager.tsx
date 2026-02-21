@@ -6,8 +6,9 @@ import TimeInput from "./TimeInput";
 import { TimezoneList } from "./TimezoneList";
 import { AddTimezoneDialog } from "./AddTimezoneDialog";
 import { MeetingTimeSuggestions } from "@/features/scheduler/components/MeetingTimeSuggestions";
+import { PremiumFeature } from "@/components/premium/PremiumFeature";
 
-export const TimezoneManager = ({}: TimezoneManagerProps) => {
+export const TimezoneManager = (_props: TimezoneManagerProps) => {
   const {
     baseTime,
     timezoneSettings,
@@ -60,10 +61,13 @@ export const TimezoneManager = ({}: TimezoneManagerProps) => {
       />
 
       {/* Meeting Time Suggestions (Premium Only) */}
-      <MeetingTimeSuggestions
+      <PremiumFeature
         isPremium={subscription.isPremium}
-        timezoneCount={timezoneSettings.length}
-      />
+        minTimezones={2}
+        currentTimezones={timezoneSettings.length}
+      >
+        <MeetingTimeSuggestions timezoneCount={timezoneSettings.length} />
+      </PremiumFeature>
 
       {/* Add Timezone Dialog */}
       <AddTimezoneDialog
