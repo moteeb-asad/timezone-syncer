@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Meetings collection - authenticated users can manage their own meetings
+    match /meetings/{meetingId} {
+      // Allow read if user is authenticated and owns the meeting
+      allow read: if request.auth != null && 
+                   resource.data.userId == request.auth.uid;
+      
+      // Allow create if user is authenticated and sets their own userId
+      allow create: if request.auth != null && 
+                     request.resource.data.userId == request.auth.uid;
+      
+      // Allow update if user is authenticated and owns the meeting
+      allow update: if request.auth != null && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Allow delete if user is authenticated and owns the meeting
+      allow delete: if request.auth != null && 
+                     resource.data.userId == request.auth.uid;
+    }
+    
+    // Add other collection rules here as needed
+    // Example: User profiles, timezone settings, etc.
+  }
+}

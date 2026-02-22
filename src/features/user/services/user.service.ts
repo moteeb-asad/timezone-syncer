@@ -6,8 +6,13 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
+import type { User as FirebaseUser } from "firebase/auth";
+import type { TimezoneState } from "../../timezone/types";
 
-export const createOrUpdateUser = async (user: any, timezones?: any) => {
+export const createOrUpdateUser = async (
+  user: FirebaseUser,
+  timezones?: TimezoneState
+) => {
   if (!user?.uid) return;
   if (!db) {
     console.warn("Firestore is not initialized. Skipping user update.");
@@ -20,11 +25,11 @@ export const createOrUpdateUser = async (user: any, timezones?: any) => {
   const existingDoc = await getDoc(ref);
   const isNewUser = !existingDoc.exists();
 
-  const userData: any = {
+  const userData: Record<string, unknown> = {
     uid: user.uid,
     email: user.email,
     displayName: user.displayName ?? null,
-    provider: user.providerData?.map((p: any) => p.providerId),
+    provider: user.providerData?.map((p) => p.providerId),
     updatedAt: serverTimestamp(),
     lastLoginAt: serverTimestamp(),
   };

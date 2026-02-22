@@ -40,7 +40,7 @@ const TimeInput = ({ value, onChange }: TimeInputProps) => {
     if (timeString !== value) {
       onChange(timeString);
     }
-  }, [hour, minute, period, value]);
+  }, [hour, minute, period, value, onChange]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
