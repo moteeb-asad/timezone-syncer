@@ -1,5 +1,6 @@
 import type { TimezoneManagerProps } from "../types";
 import { useTimezoneManager } from "../hooks/useTimezoneManager";
+import { useNavigate } from "react-router-dom";
 import CurrentTime from "./CurrentTime";
 import TimezoneSelect from "./TimezoneSelect";
 import TimeInput from "./TimeInput";
@@ -9,6 +10,7 @@ import { MeetingTimeSuggestions } from "@/features/scheduler/components/MeetingT
 import { PremiumFeature } from "@/components/premium/PremiumFeature";
 
 export const TimezoneManager = (_props: TimezoneManagerProps) => {
+  const navigate = useNavigate();
   const {
     baseTime,
     timezoneSettings,
@@ -50,6 +52,16 @@ export const TimezoneManager = (_props: TimezoneManagerProps) => {
             />
           </div>
         </div>
+        <button
+          onClick={() => navigate("/account?tab=meetings")}
+          className="px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5 rounded-lg transition-colors flex items-center gap-2 shrink-0"
+          title="View Meeting History"
+        >
+          <span className="material-symbols-outlined text-base">
+            event_note
+          </span>
+          <span className="hidden md:inline">Meeting History</span>
+        </button>
       </div>
 
       {/* Timezone List */}

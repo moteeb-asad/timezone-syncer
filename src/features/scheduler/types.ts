@@ -54,3 +54,10 @@ export interface MeetingSuggestionInput {
   meetingDuration?: number; // minutes, default 60
   slotIncrement?: number; // minutes, default 30
 }
+
+// Re-export meeting invitation types
+export type {
+  MeetingInvitationData,
+  SendMeetingInvitationProps,
+  TimezoneDisplayInfo,
+} from "./types/meetingInvitation";

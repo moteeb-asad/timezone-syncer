@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/utils/cn";
 
 interface ModalProps {
   isOpen: boolean;
@@ -61,7 +62,10 @@ export const Modal = ({
 
       {/* Modal Content */}
       <div
-        className={`relative w-full ${maxWidthClasses[maxWidth]} bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn z-10`}
+        className={cn(
+          "relative w-full bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn z-10",
+          maxWidthClasses[maxWidth]
+        )}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}

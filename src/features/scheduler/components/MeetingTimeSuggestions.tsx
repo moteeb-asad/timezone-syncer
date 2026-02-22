@@ -1,6 +1,12 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
 import { useMeetingSuggestions } from "../hooks/useMeetingSuggestions";
 import { SendMeetingInvitation } from "./SendMeetingInvitation";
+import { Toast } from "@/components/ui/Toast";
+import { meetingService } from "../services/meeting.service";
+import { convertTo12HourFormat } from "../utils/timezoneTimeCalculator";
+import type { MeetingTimeSlot } from "../types";
 
 interface MeetingTimeSuggestionsProps {
   timezoneCount: number;
@@ -11,7 +17,52 @@ export const MeetingTimeSuggestions = ({
 }: MeetingTimeSuggestionsProps) => {
   const { goldenWindow, secondaryOptions, hasEnoughData } =
     useMeetingSuggestions();
+  const { baseTime } = useSelector((state: RootState) => state.timezone);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<MeetingTimeSlot | null>(
+    null
+  );
+  const [showToast, setShowToast] = useState(false);
+  const [currentMeetingId, setCurrentMeetingId] = useState<string | null>(null);
+
+  const handleOpenModal = (slot: MeetingTimeSlot) => {
+    setSelectedSlot(slot);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedSlot(null);
+  };
+
+  const handleMeetingCreated = (meetingId: string) => {
+    // Close modal
+    handleCloseModal();
+
+    // Show toast after a short delay
+    setTimeout(() => {
+      setCurrentMeetingId(meetingId);
+      setShowToast(true);
+    }, 500);
+  };
+
+  const handleToastConfirm = async () => {
+    if (currentMeetingId) {
+      try {
+        await meetingService.confirmMeetingSent(currentMeetingId);
+        setShowToast(false);
+        setCurrentMeetingId(null);
+      } catch (error) {
+        console.error("Error confirming meeting:", error);
+      }
+    }
+  };
+
+  const handleToastDismiss = () => {
+    setShowToast(false);
+    setCurrentMeetingId(null);
+  };
 
   if (!hasEnoughData) {
     return null;
@@ -47,7 +98,8 @@ export const MeetingTimeSuggestions = ({
                       Golden Window
                     </p>
                     <p className="text-xl font-bold text-slate-900">
-                      {goldenWindow.startTime} - {goldenWindow.endTime}
+                      {convertTo12HourFormat(goldenWindow.startTime)} -{" "}
+                      {convertTo12HourFormat(goldenWindow.endTime)}
                     </p>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
@@ -63,7 +115,7 @@ export const MeetingTimeSuggestions = ({
                   100% Availability across {timezoneCount} timezones
                 </div>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => handleOpenModal(goldenWindow)}
                   className="w-full bg-primary-accent hover:bg-[#ef5a46] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary-accent/20"
                 >
                   <span className="material-symbols-outlined text-sm">
@@ -92,8 +144,8 @@ export const MeetingTimeSuggestions = ({
                       Secondary Option
                     </p>
                     <p className="text-xl font-bold text-slate-900">
-                      {secondaryOptions[0].startTime} -{" "}
-                      {secondaryOptions[0].endTime}
+                      {convertTo12HourFormat(secondaryOptions[0].startTime)} -{" "}
+                      {convertTo12HourFormat(secondaryOptions[0].endTime)}
                     </p>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
@@ -112,7 +164,7 @@ export const MeetingTimeSuggestions = ({
                     " • Early start for some"}
                 </div>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => handleOpenModal(secondaryOptions[0])}
                   className="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span className="material-symbols-outlined text-sm">
@@ -146,7 +198,20 @@ export const MeetingTimeSuggestions = ({
 
       <SendMeetingInvitation
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
+        meetingSlot={selectedSlot}
+        baseTimezone={baseTime.timezone}
+        onMeetingCreated={handleMeetingCreated}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        message="Calendar opened. Did you send the invite?"
+        isVisible={showToast}
+        onConfirm={handleToastConfirm}
+        onDismiss={handleToastDismiss}
+        confirmLabel="Yes, I sent it"
+        dismissLabel="I'll send later"
       />
     </div>
   );

@@ -18,15 +18,23 @@ export const useTimezoneCore = () => {
 
   // Derived values
   const isPremium = plan === "premium";
-  const maxTimezones = limits?.maxTimezones ?? 3;
+  // Patch: guarantee maxTimezones defaults to 3
+  const maxTimezones =
+    typeof limits?.maxTimezones === "number" && limits.maxTimezones > 0
+      ? limits.maxTimezones
+      : 3;
+  // Patch: guarantee currentTimezones defaults to 0
+  const currentTimezones = Array.isArray(timezoneSettings)
+    ? timezoneSettings.length
+    : 0;
 
   const subscription: UserSubscription = useMemo(
     () => ({
       isPremium,
       maxTimezones,
-      currentTimezones: timezoneSettings.length,
+      currentTimezones,
     }),
-    [isPremium, maxTimezones, timezoneSettings.length]
+    [isPremium, maxTimezones, currentTimezones]
   );
 
   const baseTimezoneOption = useMemo(

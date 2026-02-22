@@ -1,11 +1,11 @@
 import { cn } from "@/utils/cn";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
 }
 
-export function Input({ label, error, className, ...props }: InputProps) {
+export function Textarea({ label, error, className, ...props }: TextareaProps) {
   return (
     <div className="space-y-2">
       {label && (
@@ -13,10 +13,10 @@ export function Input({ label, error, className, ...props }: InputProps) {
           {label}
         </label>
       )}
-      <input
+      <textarea
         {...props}
         className={cn(
-          "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary outline-none",
+          "w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary outline-none resize-none",
           className
         )}
       />

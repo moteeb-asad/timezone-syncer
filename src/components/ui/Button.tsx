@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
+import { cn } from "@/utils/cn";
 
 type ButtonVariant = "primary" | "outline";
 
@@ -14,19 +15,18 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 export const Button = ({
   variant = "primary",
-  className = "",
+  className,
   type = "button",
   ...props
 }: ButtonProps) => {
   return (
     <button
       type={type}
-      className={
-        "inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed " +
-        variantClasses[variant] +
-        " " +
+      className={cn(
+        "inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed",
+        variantClasses[variant],
         className
-      }
+      )}
       {...props}
     />
   );

@@ -49,12 +49,15 @@ export const authService = {
     };
   },
 
-  linkGoogleCredential(user: any, credential: any) {
-    return linkWithCredential(user, credential);
+  linkGoogleCredential(user: unknown, credential: unknown) {
+    return linkWithCredential(
+      user as Parameters<typeof linkWithCredential>[0],
+      credential as Parameters<typeof linkWithCredential>[1]
+    );
   },
 
-  async updateUserName(user: any, firstName: string, lastName: string) {
-    return updateProfile(user, {
+  async updateUserName(user: unknown, firstName: string, lastName: string) {
+    return updateProfile(user as Parameters<typeof updateProfile>[0], {
       displayName: `${firstName} ${lastName}`,
     });
   },

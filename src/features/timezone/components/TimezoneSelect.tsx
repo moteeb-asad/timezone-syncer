@@ -26,10 +26,12 @@ const TimezoneSelect = ({ value, onChange }: TimezoneSelectProps) => {
     ) {
       onChange(matchingOption);
     }
-  }, [value, options]);
+  }, [value, options, onChange]);
 
   const FlagIcon = ({ countryCode }: { countryCode: string }) => {
-    const FlagComponent = (flags as any)[countryCode];
+    const FlagComponent = (
+      flags as Record<string, React.ComponentType<{ className?: string }>>
+    )[countryCode];
 
     if (!FlagComponent) {
       return <span className="text-lg">🌐</span>;

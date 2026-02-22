@@ -131,14 +131,29 @@ const getLocalTimeInTimezone = (
 };
 
 /**
+ * Get current time in minutes since midnight for a given timezone
+ */
+const getCurrentMinutesInTimezone = (timezone: string): number => {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString("en-US", {
+    timeZone: timezone,
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return timeToMinutes(timeString);
+};
+
+/**
  * Calculate meeting time slots and availability
  *
  * Algorithm:
  * 1. Generate all possible time slots (30-min increments)
- * 2. For each slot, calculate local time in all timezones
- * 3. Check working hours availability for each timezone
- * 4. Score slots based on availability and time quality
- * 5. Return sorted suggestions
+ * 2. Filter out times that have already passed today
+ * 3. For each slot, calculate local time in all timezones
+ * 4. Check working hours availability for each timezone
+ * 5. Score slots based on availability and time quality
+ * 6. Return sorted suggestions
  */
 export const calculateMeetingSlots = (
   baseTimezone: string,
@@ -150,8 +165,15 @@ export const calculateMeetingSlots = (
   const slots: MeetingTimeSlot[] = [];
   const totalParticipants = selectedTimezones.length;
 
+  // Get current time in base timezone to filter out past times
+  const currentMinutesInBase = getCurrentMinutesInTimezone(baseTimezone);
+
   // Generate time slots for 24 hours
   for (let minutes = 0; minutes < 24 * 60; minutes += slotIncrement) {
+    // Skip if this time has already passed today
+    if (minutes <= currentMinutesInBase) {
+      continue;
+    }
     const startTime = minutesToTime(minutes);
     const endTime = minutesToTime(minutes + meetingDuration);
 
