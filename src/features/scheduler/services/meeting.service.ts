@@ -133,25 +133,10 @@ export const meetingService = {
     return allMeetings.filter((meeting) => {
       if (meeting.status !== "user_confirmed_sent") return false;
 
-      // Use meeting end time for comparison
+      // Use meeting start time for comparison (previous logic)
       const now = new Date();
       const meetingStart = this.parseMeetingDateTime(meeting);
-      // Calculate end time from start + duration
-      const durationMinutes =
-        meeting.meetingSlot &&
-        meeting.meetingSlot.endTime &&
-        meeting.meetingSlot.startTime
-          ? parseInt(meeting.meetingSlot.endTime.split(":")[0], 10) * 60 +
-            parseInt(meeting.meetingSlot.endTime.split(":")[1], 10) -
-            (parseInt(meeting.meetingSlot.startTime.split(":")[0], 10) * 60 +
-              parseInt(meeting.meetingSlot.startTime.split(":")[1], 10))
-          : 60;
-      const meetingEnd = new Date(
-        meetingStart.getTime() + durationMinutes * 60 * 1000
-      );
-
-      // Show meeting if it hasn't ended yet
-      return meetingEnd > now;
+      return meetingStart > now;
     });
   },
 
