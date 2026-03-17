@@ -78,7 +78,7 @@ export const TimezoneManager = (_props: TimezoneManagerProps) => {
         minTimezones={2}
         currentTimezones={timezoneSettings.length}
       >
-        <MeetingTimeSuggestions timezoneCount={timezoneSettings.length} />
+        <MeetingTimeSuggestions />
       </PremiumFeature>
 
       {/* Add Timezone Dialog */}

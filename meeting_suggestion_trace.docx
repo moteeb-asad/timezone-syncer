@@ -1,0 +1,85 @@
+# Deep Code Trace: Meeting Suggestion Logic (timezone-syncer)
+
+## 1. Core Functions
+
+### timeToMinutes(time: string): number
+- Converts a time string (e.g., "09:00") to minutes since midnight.
+- Returns 0 if input is invalid.
+
+### isInWorkingHours(time: string, workingHours: WorkingHours): boolean
+- Returns true if `time` is within the inclusive range of `workingHours.start` and `workingHours.end`.
+
+### getLocalTimeInTimezone(baseTime, baseTimezone, targetTimezone): string
+- Converts `baseTime` in `baseTimezone` to the local time in `targetTimezone`.
+- Returns a string in 24-hour format (e.g., "10:00").
+
+### calculateMeetingSlots(baseTimezone, selectedTimezones, workingHoursPreferences, meetingDuration, slotIncrement)
+- For each 30-min slot in 24 hours:
+  1. Skips slots before the current time in baseTimezone.
+  2. For each participant:
+     - Converts slot time to their local time.
+     - Gets their working hours (custom or default).
+     - Checks if local time is in working hours (isInWorkingHours).
+     - Checks if local time is optimal (10:00–16:00).
+     - Checks if local time is night (22:00–06:00) or early (06:00–09:00).
+  3. Computes:
+     - participantsAvailable: count of those in working hours.
+     - availabilityPercentage: (participantsAvailable / total) * 100.
+     - optimalTimeCount, participantsInNightTime, participantsInEarlyMorning.
+     - Weighted score: 50% availability, 30% optimal, -20% penalty for night/early.
+  4. Returns sorted slots by score.
+
+## 2. Step-by-Step Example: 06:00 AM Karachi Time
+
+### Participants (all working hours 09:00–18:00):
+- Karachi (Asia/Karachi)
+- London (Europe/London)
+- Dubai (Asia/Dubai)
+- New York (America/New_York)
+- Tokyo (Asia/Tokyo)
+
+### Slot: 06:00 AM Karachi
+
+| Participant | Local Time         | Working Hours | Available? | Why?                |
+|-------------|--------------------|---------------|-----------|---------------------|
+| Karachi     | 06:00              | 09–18         | No        | Before 09:00        |
+| London      | 02:00              | 09–18         | No        | Before 09:00        |
+| Dubai       | 07:00              | 09–18         | No        | Before 09:00        |
+| New York    | 21:00 (prev day)   | 09–18         | No        | Before 09:00        |
+| Tokyo       | 10:00              | 09–18         | Yes       | 10:00 is in window  |
+
+- participantsAvailable = 1
+- totalParticipants = 5
+- availabilityPercentage = (1/5) * 100 = 20%
+
+### Score Calculation
+- availabilityScore = 20% * 0.5 = 10
+- optimalScore = (1/5) * 30 = 6
+- penaltyScore = (night/early count / 5) * -20
+  - Karachi: night+early (yes)
+  - London: night (yes)
+  - Dubai: early (yes)
+  - New York: night (yes)
+  - Tokyo: none
+  - participantsInNightTime + participantsInEarlyMorning = 4 (night) + 2 (early, some overlap)
+  - Penalty = (6/5) * -20 = -24
+- Final score = 10 + 6 - 24 = -8
+
+## 3. Why "75% availability" Might Appear (Bug)
+- If the code returns 75% for this slot, it means 4/5 are being marked as available, which is incorrect.
+- Possible causes:
+  - getLocalTimeInTimezone returns wrong local time.
+  - Working hours are not being checked per participant.
+  - Default working hours are used for all, ignoring overrides.
+  - Invalid time strings default to 0 (midnight), which may be inside working hours for some.
+
+## 4. Logical Flaws
+- Strict working hours: no fuzzy logic.
+- Penalties for night/early are arbitrary.
+- If time conversion fails, baseTime is used, which may be wrong.
+- No partial credit for being close to working hours.
+- If working hours are not set per participant, logic is wrong.
+
+---
+
+**This document can be shared with ChatGPT or any LLM for further analysis.**

@@ -14,7 +14,14 @@ const DEFAULT_WORKING_HOURS: WorkingHours = {
  * Converts time string to minutes since midnight
  */
 const timeToMinutes = (time: string): number => {
+  if (!time || typeof time !== "string" || !time.includes(":")) {
+    // Invalid input, fallback to 0
+    return 0;
+  }
   const [hours, minutes] = time.split(":").map(Number);
+  if (isNaN(hours) || isNaN(minutes)) {
+    return 0;
+  }
   return hours * 60 + minutes;
 };
 
@@ -30,16 +37,6 @@ const minutesToTime = (minutes: number): string => {
 /**
  * Check if time is within working hours
  */
-const isInWorkingHours = (
-  time: string,
-  workingHours: WorkingHours
-): boolean => {
-  const timeMinutes = timeToMinutes(time);
-  const startMinutes = timeToMinutes(workingHours.start);
-  const endMinutes = timeToMinutes(workingHours.end);
-
-  return timeMinutes >= startMinutes && timeMinutes <= endMinutes;
-};
 
 /**
  * Check if time is in optimal collaboration window (10am-4pm)
@@ -55,18 +52,10 @@ const isOptimalTime = (time: string): boolean => {
 /**
  * Check if time is in night/sleep hours (10pm-6am)
  */
-const isNightTime = (time: string): boolean => {
-  const minutes = timeToMinutes(time);
-  return minutes >= 22 * 60 || minutes < 6 * 60;
-};
 
 /**
  * Check if time is early morning (6am-9am)
  */
-const isEarlyMorning = (time: string): boolean => {
-  const minutes = timeToMinutes(time);
-  return minutes >= 6 * 60 && minutes < 9 * 60;
-};
 
 /**
  * Get working hours for a specific timezone
@@ -79,11 +68,26 @@ const getWorkingHoursForTimezone = (
     return DEFAULT_WORKING_HOURS;
   }
 
-  return (
-    preferences.timezoneOverrides?.[timezone] ||
-    preferences.defaultHours ||
-    DEFAULT_WORKING_HOURS
-  );
+  // Log all keys and the lookup timezone
+  if (preferences.timezoneOverrides) {
+    // eslint-disable-next-line no-console
+    console.log(
+      "[WorkingHoursOverrides keys]",
+      Object.keys(preferences.timezoneOverrides)
+    );
+    // eslint-disable-next-line no-console
+    console.log("[WorkingHours Lookup]", timezone);
+  }
+
+  // Use strict IANA timezone string for lookup
+  let workingHours = preferences.timezoneOverrides?.[timezone];
+  if (!workingHours || !workingHours.start || !workingHours.end) {
+    workingHours = preferences.defaultHours;
+  }
+  if (!workingHours || !workingHours.start || !workingHours.end) {
+    workingHours = DEFAULT_WORKING_HOURS;
+  }
+  return workingHours;
 };
 
 /**
@@ -168,6 +172,26 @@ export const calculateMeetingSlots = (
   // Get current time in base timezone to filter out past times
   const currentMinutesInBase = getCurrentMinutesInTimezone(baseTimezone);
 
+  // Calculate current availability for comparison
+  const currentTime = minutesToTime(currentMinutesInBase);
+  let currentParticipantsAvailable = 0;
+  {
+    const currentDetails = selectedTimezones.map((tz) => {
+      const localTime = getLocalTimeInTimezone(currentTime, baseTimezone, tz);
+      const workingHours = getWorkingHoursForTimezone(
+        tz,
+        workingHoursPreferences
+      );
+      const start = workingHours.start || DEFAULT_WORKING_HOURS.start;
+      const end = workingHours.end || DEFAULT_WORKING_HOURS.end;
+      const timeMinutes = timeToMinutes(localTime);
+      const startMinutes = timeToMinutes(start);
+      const endMinutes = timeToMinutes(end);
+      return timeMinutes >= startMinutes && timeMinutes <= endMinutes;
+    });
+    currentParticipantsAvailable = currentDetails.filter(Boolean).length;
+  }
+
   // Generate time slots for 24 hours
   for (let minutes = 0; minutes < 24 * 60; minutes += slotIncrement) {
     // Skip if this time has already passed today
@@ -177,10 +201,15 @@ export const calculateMeetingSlots = (
     const startTime = minutesToTime(minutes);
     const endTime = minutesToTime(minutes + meetingDuration);
 
-    let participantsAvailable = 0;
     let participantsInNightTime = 0;
     let participantsInEarlyMorning = 0;
     let optimalTimeCount = 0;
+
+    // Explanation metadata
+    const available: string[] = [];
+    const early: string[] = [];
+    const late: string[] = [];
+    const night: string[] = [];
 
     const timezoneDetails = selectedTimezones.map((tz) => {
       const localTime = getLocalTimeInTimezone(startTime, baseTimezone, tz);
@@ -188,28 +217,52 @@ export const calculateMeetingSlots = (
         tz,
         workingHoursPreferences
       );
-      const isWorking = isInWorkingHours(localTime, workingHours);
+      const start = workingHours.start || DEFAULT_WORKING_HOURS.start;
+      const end = workingHours.end || DEFAULT_WORKING_HOURS.end;
+      const timeMinutes = timeToMinutes(localTime);
+      const startMinutes = timeToMinutes(start);
+      const endMinutes = timeToMinutes(end);
+      const isWorking =
+        timeMinutes >= startMinutes && timeMinutes <= endMinutes;
       const isOptimal = isOptimalTime(localTime);
 
-      if (isWorking) participantsAvailable++;
+      // UI status logic (EARLY, WORKING, LATE, NIGHT)
+      let uiStatus = "working";
+      if (timeMinutes < startMinutes) uiStatus = "early";
+      else if (timeMinutes > endMinutes) uiStatus = "late";
+      else if (timeMinutes >= 22 * 60 || timeMinutes < 6 * 60)
+        uiStatus = "night";
+
+      // Explanation arrays
+      if (isWorking) available.push(tz);
+      if (uiStatus === "early") early.push(tz);
+      if (uiStatus === "late") late.push(tz);
+      if (uiStatus === "night") night.push(tz);
+
+      // Scoring signals
       if (isOptimal) optimalTimeCount++;
-      if (isNightTime(localTime)) participantsInNightTime++;
-      if (isEarlyMorning(localTime)) participantsInEarlyMorning++;
+      if (uiStatus === "night") participantsInNightTime++;
+      if (uiStatus === "early") participantsInEarlyMorning++;
 
       return {
         timezone: tz,
         localTime,
         isWorkingHours: isWorking,
         isOptimalTime: isOptimal,
+        uiStatus,
       };
     });
 
+    // Strictly count only participants inside working hours
+    const participantsAvailable = timezoneDetails.filter(
+      (p) => p.isWorkingHours === true
+    ).length;
     const availabilityPercentage =
       (participantsAvailable / totalParticipants) * 100;
 
     // Calculate weighted score
     // Factors: availability (50%), optimal time (30%), avoiding night/early (20%)
-    const availabilityScore = availabilityPercentage * 0.5;
+    const availabilityScore = (participantsAvailable / totalParticipants) * 50;
     const optimalScore = (optimalTimeCount / totalParticipants) * 30;
     const penaltyScore =
       ((participantsInNightTime + participantsInEarlyMorning) /
@@ -217,6 +270,19 @@ export const calculateMeetingSlots = (
       -20;
 
     const score = availabilityScore + optimalScore + penaltyScore;
+
+    // Explanation metadata
+    const explanation = {
+      available,
+      unavailable: {
+        early,
+        late,
+        night,
+      },
+    };
+
+    // Improvement calculation
+    const improvement = participantsAvailable - currentParticipantsAvailable;
 
     slots.push({
       startTime,
@@ -227,6 +293,8 @@ export const calculateMeetingSlots = (
       participantsInEarlyMorning,
       score,
       timezoneDetails,
+      explanation,
+      improvement,
     });
   }
 

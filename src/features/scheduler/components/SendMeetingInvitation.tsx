@@ -54,7 +54,7 @@ export const SendMeetingInvitation = ({
       console.error("User not authenticated");
       return;
     }
-    
+
     await handleSubmit(userId);
   };
 
@@ -86,7 +86,7 @@ export const SendMeetingInvitation = ({
               </div>
             ))}
             <input
-              className="flex-1 bg-transparent border-none focus:ring-0 text-sm p-0 h-6 min-w-[100px]"
+              className="flex-1 bg-transparent border-none focus-visible:outline-none text-sm p-0 h-6 min-w-[100px]"
               placeholder="Add email..."
               type="email"
               value={newRecipient}

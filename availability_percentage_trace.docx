@@ -1,0 +1,94 @@
+# Data Flow and UI Display of Availability Percentage in Timezone Syncer
+
+## 1. Where are the variables calculated?
+
+**In `timeSlotCalculator.ts`:**
+- `participantsAvailable`, `participantsInNightTime`, `participantsInEarlyMorning`, `optimalTimeCount`  
+  → All are initialized and incremented in the `calculateMeetingSlots` function.
+- `availabilityPercentage`  
+  → Calculated as `(participantsAvailable / totalParticipants) * 100`.
+- `score`  
+  → Weighted sum of availability, optimal, and penalty scores.
+
+**Returned in each slot object:**
+```
+{
+  startTime,
+  endTime,
+  availabilityPercentage,
+  participantsAvailable,
+  participantsInNightTime,
+  participantsInEarlyMorning,
+  score,
+  timezoneDetails,
+}
+```
+
+---
+
+## 2. Data flow: Calculation to UI
+
+**Chain:**
+1. **`calculateMeetingSlots`** (timeSlotCalculator.ts)  
+   → Returns array of slot objects with all the above variables.
+2. **`findBestMeetingTimes`** (timeSlotCalculator.ts)  
+   → Calls `calculateMeetingSlots`, filters for golden/secondary options, returns `{ goldenWindow, secondaryOptions, allSlots }`.
+3. **`useMeetingSuggestions`** (hooks/useMeetingSuggestions.ts)  
+   → Calls `findBestMeetingTimes` in a `useMemo`, returns the result to components.
+4. **`MeetingTimeSuggestions`** (components/MeetingTimeSuggestions.tsx)  
+   → Uses `useMeetingSuggestions` to get `secondaryOptions` and `goldenWindow`.
+5. **UI Display:**  
+   - **100%:**  
+     `100% Availability across {timezoneCount} timezones`
+   - **Secondary:**  
+     `{Math.round(secondaryOptions[0].availabilityPercentage)}% availability`
+
+---
+
+## 3. Is the UI displaying the actual value?
+
+- **YES:**  
+  The UI directly displays `availabilityPercentage` from the slot object, which is calculated as  
+  `participantsAvailable / totalParticipants * 100`.
+- **NO transformation or normalization** is applied before display, except for rounding.
+
+---
+
+## 4. Clear Chain Example
+
+```
+calculateMeetingSlots (timeSlotCalculator.ts)
+  ↓ returns array of slot objects with availabilityPercentage, etc.
+findBestMeetingTimes (timeSlotCalculator.ts)
+  ↓ filters for goldenWindow and secondaryOptions
+useMeetingSuggestions (hooks/useMeetingSuggestions.ts)
+  ↓ returns { goldenWindow, secondaryOptions, allSlots }
+MeetingTimeSuggestions (components/MeetingTimeSuggestions.tsx)
+  ↓
+UI: {Math.round(secondaryOptions[0].availabilityPercentage)}% availability
+```
+
+---
+
+## 5. Any mismatch?
+
+- **No mismatch:**  
+  The displayed percentage is exactly `participantsAvailable / totalParticipants * 100` for the slot.
+- **If you see a mismatch in the UI,** it would be due to a bug in the calculation or in how participants are counted as available, not in the display logic.
+
+---
+
+## Summary Table
+
+| Variable                  | Where Calculated                | Where Used in UI                |
+|---------------------------|---------------------------------|---------------------------------|
+| participantsAvailable     | calculateMeetingSlots           | Used in availabilityPercentage  |
+| availabilityPercentage    | calculateMeetingSlots           | Displayed directly in UI        |
+| score                     | calculateMeetingSlots           | Used for sorting, not displayed |
+| optimalTimeCount          | calculateMeetingSlots           | Used in score, not displayed    |
+| participantsInNightTime   | calculateMeetingSlots           | Displayed as “Early start” note |
+| participantsInEarlyMorning| calculateMeetingSlots           | Displayed as “Early start” note |
+
+---
+
+**If you want to check for bugs, focus on how `participantsAvailable` is incremented and how local times are calculated for each participant.**

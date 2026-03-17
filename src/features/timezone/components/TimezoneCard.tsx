@@ -5,12 +5,21 @@ import {
   getStatusIcon,
   getStatusStyles,
 } from "../utils";
+import { getCurrentTimeInTimezone } from "../utils/time";
 
 export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
   const styles = getStatusStyles(setting.status);
   const icon = getStatusIcon(setting.status);
-  const timeDiff = calculateTimeDiff(setting.timezone.name);
   const gmtOffset = getGMTOffset(setting.timezone.name);
+  // Always show current local time
+  const currentLocalTime = getCurrentTimeInTimezone(setting.timezone.name);
+  // Context: early/late/working
+  const timeDiff = calculateTimeDiff(setting.timezone.name);
+  // Context: ahead/behind
+  let contextMsg = "";
+  if (timeDiff.includes("ahead")) contextMsg = "(ahead)";
+  else if (timeDiff.includes("behind")) contextMsg = "(behind)";
+  else contextMsg = "(same time)";
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-5 group hover:border-slate-300 transition-colors">
@@ -40,10 +49,10 @@ export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
         <div className="flex items-center justify-between">
           <div className="text-left">
             <p className="text-2xl font-bold text-slate-900">
-              {setting.localTime}
+              {currentLocalTime}
             </p>
             <p className="text-[10px] font-bold text-slate-400 uppercase">
-              {timeDiff}
+              {setting.status} {contextMsg}
             </p>
           </div>
           <div
@@ -112,10 +121,10 @@ export const TimezoneCard = ({ setting, onRemove }: TimezoneCardProps) => {
         <div className="flex items-center gap-8">
           <div className="text-right">
             <p className="text-lg font-bold text-slate-900">
-              {setting.localTime}
+              {currentLocalTime}
             </p>
             <p className="text-[10px] font-bold text-slate-400 uppercase">
-              {timeDiff}
+              {setting.status} {contextMsg}
             </p>
           </div>
           <button

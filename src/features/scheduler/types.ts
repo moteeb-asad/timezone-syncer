@@ -14,7 +14,17 @@ export interface MeetingTimeSlot {
     localTime: string;
     isWorkingHours: boolean;
     isOptimalTime: boolean; // 10am-4pm
+    uiStatus?: string;
   }>;
+  explanation?: {
+    available: string[];
+    unavailable: {
+      early: string[];
+      late: string[];
+      night: string[];
+    };
+  };
+  improvement?: number;
 }
 
 /**

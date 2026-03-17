@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import {
+  getUserWorkingHours,
+  saveUserWorkingHours,
+} from "@/features/user/services/workingHours.service";
+import { WorkingHoursModal } from "./WorkingHoursModal";
+import type { WorkingHoursPreferences } from "./WorkingHoursModal";
 import type { RootState } from "@/store";
 import { useMeetingSuggestions } from "../hooks/useMeetingSuggestions";
 import { SendMeetingInvitation } from "./SendMeetingInvitation";
@@ -9,44 +15,54 @@ import { convertTo12HourFormat } from "../utils/timezoneTimeCalculator";
 import type { MeetingTimeSlot } from "../types";
 
 interface MeetingTimeSuggestionsProps {
+  // timezoneCount is derived from timezoneSettings.length in the hook, but we can pass it as a prop for clarity in the UI layer
   timezoneCount: number;
 }
-
 export const MeetingTimeSuggestions = ({
-  timezoneCount,
-}: MeetingTimeSuggestionsProps) => {
-  const { goldenWindow, secondaryOptions, hasEnoughData } =
-    useMeetingSuggestions();
-  const { baseTime } = useSelector((state: RootState) => state.timezone);
+// ...existing code...
+}: Omit<MeetingTimeSuggestionsProps, 'timezoneCount'>) => {
+  const userState = useSelector((state: RootState) => state.user);
+  const timezoneState = useSelector((state: RootState) => state.timezone);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const user = userState.user;
+  const baseTime = timezoneState.baseTime;
+  const timezoneSettings = timezoneState.timezoneSettings;
+
+  const [workingHoursPrefs, setWorkingHoursPrefs] =
+    useState<WorkingHoursPreferences | null>(null);
+  const [isWHModalOpen, setIsWHModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<MeetingTimeSlot | null>(
     null
   );
   const [showToast, setShowToast] = useState(false);
   const [currentMeetingId, setCurrentMeetingId] = useState<string | null>(null);
 
-  const handleOpenModal = (slot: MeetingTimeSlot) => {
-    setSelectedSlot(slot);
-    setIsModalOpen(true);
-  };
+  // Load working hours preferences from Firestore
+  useEffect(() => {
+    if (!user?.uid) return;
+    getUserWorkingHours(user.uid).then((prefs) => setWorkingHoursPrefs(prefs));
+  }, [user?.uid]);
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  // Meeting suggestions with working hours
+  const { goldenWindow, secondaryOptions, hasEnoughData } =
+    useMeetingSuggestions(workingHoursPrefs || undefined);
+
+  const handleOpenInviteModal = (slot: MeetingTimeSlot) => {
+    setSelectedSlot(slot);
+    setIsInviteModalOpen(true);
+  };
+  const handleCloseInviteModal = () => {
+    setIsInviteModalOpen(false);
     setSelectedSlot(null);
   };
-
   const handleMeetingCreated = (meetingId: string) => {
-    // Close modal
-    handleCloseModal();
-
-    // Show toast after a short delay
+    handleCloseInviteModal();
     setTimeout(() => {
       setCurrentMeetingId(meetingId);
       setShowToast(true);
     }, 500);
   };
-
   const handleToastConfirm = async () => {
     if (currentMeetingId) {
       try {
@@ -58,15 +74,19 @@ export const MeetingTimeSuggestions = ({
       }
     }
   };
-
   const handleToastDismiss = () => {
     setShowToast(false);
     setCurrentMeetingId(null);
   };
 
-  if (!hasEnoughData) {
-    return null;
-  }
+  // Save working hours preferences
+  const handleSaveWorkingHours = async (prefs: WorkingHoursPreferences) => {
+    if (!user?.uid) return;
+    await saveUserWorkingHours(user.uid, prefs);
+    setWorkingHoursPrefs(prefs);
+  };
+
+  if (!hasEnoughData) return null;
 
   return (
     <div className="space-y-4 animate-fadeIn">
@@ -108,14 +128,40 @@ export const MeetingTimeSuggestions = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-medium text-slate-500">
+                {/* <div className="flex items-center gap-2 text-[10px] font-medium text-slate-500">
                   <span className="material-symbols-outlined text-sm">
                     groups
                   </span>
-                  100% Availability across {timezoneCount} timezones
-                </div>
+                  {goldenWindow.participantsAvailable} of {timezoneCount}{" "}
+                  participants available
+                  <br />
+                  <span>
+                    Available: {goldenWindow.explanation?.available.join(", ")}
+                  </span>
+                  {goldenWindow.explanation?.unavailable.early.length > 0 && (
+                    <span>
+                      {" "}
+                      • Early:{" "}
+                      {goldenWindow.explanation.unavailable.early.join(", ")}
+                    </span>
+                  )}
+                  {goldenWindow.explanation?.unavailable.late.length > 0 && (
+                    <span>
+                      {" "}
+                      • Late:{" "}
+                      {goldenWindow.explanation.unavailable.late.join(", ")}
+                    </span>
+                  )}
+                  {goldenWindow.explanation?.unavailable.night.length > 0 && (
+                    <span>
+                      {" "}
+                      • Night:{" "}
+                      {goldenWindow.explanation.unavailable.night.join(", ")}
+                    </span>
+                  )}
+                </div> */}
                 <button
-                  onClick={() => handleOpenModal(goldenWindow)}
+                  onClick={() => handleOpenInviteModal(goldenWindow)}
                   className="w-full bg-primary-accent hover:bg-[#ef5a46] text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary-accent/20"
                 >
                   <span className="material-symbols-outlined text-sm">
@@ -154,17 +200,75 @@ export const MeetingTimeSuggestions = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-medium text-slate-500">
+                {/* <div className="flex items-center gap-2 text-[10px] font-medium text-slate-500">
                   <span className="material-symbols-outlined text-sm">
                     info
                   </span>
-                  {Math.round(secondaryOptions[0].availabilityPercentage)}%
-                  availability
-                  {secondaryOptions[0].participantsInEarlyMorning > 0 &&
-                    " • Early start for some"}
-                </div>
+                  {secondaryOptions[0].participantsAvailable} of {timezoneCount}{" "}
+                  participants available
+                  <br />
+                  <span>
+                    Available:{" "}
+                    {secondaryOptions[0].explanation &&
+                    Array.isArray(secondaryOptions[0].explanation.available)
+                      ? secondaryOptions[0].explanation.available.join(", ")
+                      : "-"}
+                  </span>
+                  {secondaryOptions[0].explanation &&
+                    secondaryOptions[0].explanation.unavailable &&
+                    Array.isArray(
+                      secondaryOptions[0].explanation.unavailable.early
+                    ) &&
+                    secondaryOptions[0].explanation.unavailable.early.length >
+                      0 && (
+                      <span>
+                        {" "}
+                        • Early:{" "}
+                        {secondaryOptions[0].explanation.unavailable.early.join(
+                          ", "
+                        )}
+                      </span>
+                    )}
+                  {secondaryOptions[0].explanation &&
+                    secondaryOptions[0].explanation.unavailable &&
+                    Array.isArray(
+                      secondaryOptions[0].explanation.unavailable.late
+                    ) &&
+                    secondaryOptions[0].explanation.unavailable.late.length >
+                      0 && (
+                      <span>
+                        {" "}
+                        • Late:{" "}
+                        {secondaryOptions[0].explanation.unavailable.late.join(
+                          ", "
+                        )}
+                      </span>
+                    )}
+                  {secondaryOptions[0].explanation &&
+                    secondaryOptions[0].explanation.unavailable &&
+                    Array.isArray(
+                      secondaryOptions[0].explanation.unavailable.night
+                    ) &&
+                    secondaryOptions[0].explanation.unavailable.night.length >
+                      0 && (
+                      <span>
+                        {" "}
+                        • Night:{" "}
+                        {secondaryOptions[0].explanation.unavailable.night.join(
+                          ", "
+                        )}
+                      </span>
+                    )}
+                  {typeof secondaryOptions[0].improvement === "number" && (
+                    <span>
+                      {" "}
+                      • Improves availability by{" "}
+                      {secondaryOptions[0].improvement}
+                    </span>
+                  )}
+                </div> */}
                 <button
-                  onClick={() => handleOpenModal(secondaryOptions[0])}
+                  onClick={() => handleOpenInviteModal(secondaryOptions[0])}
                   className="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span className="material-symbols-outlined text-sm">
@@ -187,21 +291,34 @@ export const MeetingTimeSuggestions = ({
         </div>
         <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
           <p className="text-[11px] text-slate-500 font-medium">
-            Suggestions are calculated based on a 9:00 AM - 6:00 PM working
-            window.
+            Suggestions are calculated based on{" "}
+            {workingHoursPrefs?.defaultHours.start ?? "09:00"} -{" "}
+            {workingHoursPrefs?.defaultHours.end ?? "18:00"} working window.
           </p>
-          <button className="text-xs font-bold text-primary-accent hover:underline whitespace-nowrap">
+          <button
+            className="text-xs font-bold text-primary-accent hover:underline whitespace-nowrap"
+            onClick={() => setIsWHModalOpen(true)}
+          >
             Customize Working Hours
           </button>
         </div>
       </div>
 
       <SendMeetingInvitation
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isInviteModalOpen}
+        onClose={handleCloseInviteModal}
         meetingSlot={selectedSlot}
         baseTimezone={baseTime.timezone}
         onMeetingCreated={handleMeetingCreated}
+      />
+
+      {/* Working Hours Modal */}
+      <WorkingHoursModal
+        isOpen={isWHModalOpen}
+        onClose={() => setIsWHModalOpen(false)}
+        onSave={handleSaveWorkingHours}
+        initial={workingHoursPrefs || undefined}
+        timezones={timezoneSettings.map((tz) => tz.timezone.name)}
       />
 
       {/* Toast Notification */}
