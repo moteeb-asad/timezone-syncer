@@ -125,9 +125,7 @@ export const MeetingHistoryContent = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-            <p className="text-sm text-slate-500 mt-4">
-              Loading meetingssss...
-            </p>
+            <p className="text-sm text-slate-500 mt-4">Loading meetings...</p>
           </div>
         ) : meetings.length === 0 ? (
           <div className="text-center py-12">
@@ -144,8 +142,13 @@ export const MeetingHistoryContent = () => {
             <p className="text-xs text-red-500 mt-2">
               Meetings not found. Please check your account or try again later.
               <br />
-              If you believe meetings should be shown, contact support or check
-              the console for debug info.
+              If you believe meetings should be shown, contact support at{" "}
+              <a
+                href="mailto:support@timezonesyncer.com"
+                className="text-primary-accent font-bold hover:underline"
+              >
+                support@timezonesyncer.com
+              </a>
             </p>
           </div>
         ) : (

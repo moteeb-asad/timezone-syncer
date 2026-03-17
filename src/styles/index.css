@@ -188,9 +188,20 @@ body {
     #1e293b 100%
   );
 }
-
+.shadow-floating {
+    --tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -1px var(--tw-shadow-color), 0 10px 15px -3px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
 .pro-badge-gradient {
   background: linear-gradient(135deg, #ff6b57 0%, #ff8e7e 100%);
+}
+.bg-brand-navy {
+    --tw-bg-opacity: 1;
+    background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1));
+}
+.hero-gradient {
+    background: radial-gradient(circle at top right, rgba(251, 126, 81, 0.08), transparent 40%), radial-gradient(circle at bottom left, rgba(30, 41, 59, 0.03), transparent 40%);
 }
 /* Custom Scrollbar Styles */
 @layer utilities {
