@@ -4,10 +4,7 @@ import {
   isValidEmail,
   validateMeetingInvitation,
 } from "../validation/meetingInvitation.schema";
-import {
-  calculateTimeRange,
-  formatTimeRange,
-} from "../utils/timezoneTimeCalculator";
+import { calculateTimeRange, formatTimeRange } from "../../../utils/timeUtils";
 import { meetingService } from "../services/meeting.service";
 import type { MeetingTimeSlot } from "../types";
 

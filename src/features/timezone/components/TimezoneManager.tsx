@@ -6,8 +6,8 @@ import TimezoneSelect from "./TimezoneSelect";
 import TimeInput from "./TimeInput";
 import { TimezoneList } from "./TimezoneList";
 import { AddTimezoneDialog } from "./AddTimezoneDialog";
-import { MeetingTimeSuggestions } from "@/features/scheduler/components/MeetingTimeSuggestions";
 import { PremiumFeature } from "@/components/premium/PremiumFeature";
+import { MeetingTimeSuggestions } from "../../scheduler/components/MeetingTimeSuggestions/MeetingTimeSuggestions";
 
 export const TimezoneManager = (_props: TimezoneManagerProps) => {
   const navigate = useNavigate();

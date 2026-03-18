@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { meetingService } from "../services/meeting.service";
-import type { Meeting } from "../types/meeting";
+import { meetingService } from "../../../scheduler/services/meeting.service";
+import type { Meeting } from "../../../scheduler/types/meeting";
 import type { RootState } from "@/store";
 import { auth } from "@/lib/firebase";
 import { MeetingCard } from "./MeetingCard";

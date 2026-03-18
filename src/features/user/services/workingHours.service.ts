@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
-import type { WorkingHoursPreferences } from "@/features/scheduler/components/WorkingHoursModal";
+import type { WorkingHoursPreferences } from "../../../features/scheduler/types/workinghours";
 
 export const getUserWorkingHours = async (
   userId: string

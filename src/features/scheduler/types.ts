@@ -25,6 +25,9 @@ export interface MeetingTimeSlot {
     };
   };
   improvement?: number;
+  totalParticipants: number;
+  baselineParticipantsAvailable: number;
+  isPerfectOverlap: boolean;
 }
 
 /**
@@ -51,6 +54,7 @@ export interface UserWorkingHoursPreference {
 export interface MeetingSuggestion {
   goldenWindow: MeetingTimeSlot | null; // 100% availability
   secondaryOptions: MeetingTimeSlot[]; // 75%+ availability, sorted by score
+  fallbackOption?: MeetingTimeSlot | null; // Best available slot if no golden/secondary
   allSlots: MeetingTimeSlot[]; // For advanced UI (heatmap, etc.)
 }
 

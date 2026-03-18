@@ -1,14 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
-import { convertTo12HourFormat } from "../utils/timezoneTimeCalculator";
-import type { Meeting } from "../types/meeting";
-
-interface MeetingCardProps {
-  meeting: Meeting;
-  isExpanded: boolean;
-  onToggleExpand: (meetingId: string) => void;
-  onConfirmSent: (meetingId: string) => void;
-  onDelete: (meetingId: string) => void;
-}
+import { convertTo12HourFormat } from "../../../../utils/timeUtils";
+import type { MeetingCardProps } from "../../../scheduler/types/meeting";
 
 const getStatusBadge = (status: string) => {
   switch (status) {

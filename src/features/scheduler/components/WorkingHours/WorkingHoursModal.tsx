@@ -1,24 +1,9 @@
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
-
-export interface WorkingHours {
-  start: string;
-  end: string;
-}
-
-export interface WorkingHoursPreferences {
-  enabled: boolean;
-  defaultHours: WorkingHours;
-  timezoneOverrides?: Record<string, WorkingHours>;
-}
-
-interface WorkingHoursModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (prefs: WorkingHoursPreferences) => void;
-  initial?: WorkingHoursPreferences;
-  timezones: string[];
-}
+import type {
+  WorkingHours,
+  WorkingHoursModalProps,
+} from "../../../scheduler/types/workinghours";
 
 export const WorkingHoursModal = ({
   isOpen,
@@ -68,55 +53,65 @@ export const WorkingHoursModal = ({
       title="Customize Working Hours"
       maxWidth="md"
     >
-      <div className="p-6 space-y-6">
-        <div>
-          <label className="flex items-center gap-2">
+      <div className="p-6 space-y-7">
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
             <input
               type="checkbox"
               checked={enabled}
               onChange={(e) => setEnabled(e.target.checked)}
+              className="accent-primary-accent"
             />
             Enable custom working hours
           </label>
         </div>
-        <div className="flex gap-4 items-center">
-          <label className="font-semibold">Default Hours:</label>
+        <div className="flex gap-4 items-center bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <label className="font-semibold text-slate-700 text-[12px]">
+            Default Hours:
+          </label>
           <input
             type="time"
             value={defaultStart}
             onChange={(e) => setDefaultStart(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="border border-slate-300 rounded px-2 py-1 text-[12px] focus:ring-primary-accent focus:border-primary-accent"
           />
-          <span>-</span>
+          <span className="text-slate-400">-</span>
           <input
             type="time"
             value={defaultEnd}
             onChange={(e) => setDefaultEnd(e.target.value)}
-            className="border rounded px-2 py-1"
+            className="border border-slate-300 rounded px-2 py-1 text-[12px] focus:ring-primary-accent focus:border-primary-accent"
           />
         </div>
         <div>
-          <label className="font-semibold">Per-Timezone Overrides:</label>
+          <label className="font-semibold text-slate-700 text-[12px]">
+            Per-Timezone Overrides:
+          </label>
           <div className="space-y-2 mt-2">
             {timezones.map((tz) => (
-              <div key={tz} className="flex gap-2 items-center">
-                <span className="w-40 truncate">{tz}</span>
+              <div
+                key={tz}
+                className="flex gap-2 items-center bg-slate-50 border border-slate-200 rounded-lg p-2"
+              >
+                <span className="w-40 truncate text-[11px] text-slate-500 font-medium">
+                  {tz}
+                </span>
                 <input
                   type="time"
                   value={overrides[tz]?.start ?? defaultStart}
                   onChange={(e) =>
                     handleOverrideChange(tz, "start", e.target.value)
                   }
-                  className="border rounded px-2 py-1"
+                  className="border border-slate-300 rounded px-2 py-1 text-[12px] focus:ring-primary-accent focus:border-primary-accent"
                 />
-                <span>-</span>
+                <span className="text-slate-400">-</span>
                 <input
                   type="time"
                   value={overrides[tz]?.end ?? defaultEnd}
                   onChange={(e) =>
                     handleOverrideChange(tz, "end", e.target.value)
                   }
-                  className="border rounded px-2 py-1"
+                  className="border border-slate-300 rounded px-2 py-1 text-[12px] focus:ring-primary-accent focus:border-primary-accent"
                 />
               </div>
             ))}
@@ -125,13 +120,13 @@ export const WorkingHoursModal = ({
         <div className="flex justify-end gap-2 pt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded bg-slate-100 hover:bg-slate-200"
+            className="px-4 py-2 rounded bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-500 border border-slate-200"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 rounded bg-primary-accent text-white hover:bg-primary-accent/90"
+            className="px-4 py-2 rounded bg-primary-accent text-white hover:bg-primary-accent/90 text-xs font-bold border border-primary-accent"
           >
             Save
           </button>
