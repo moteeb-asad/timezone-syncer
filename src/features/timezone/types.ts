@@ -121,4 +121,5 @@ export interface AddTimezoneDialogProps {
 export interface TimezoneState {
   baseTime: BaseTime;
   timezoneSettings: TimezoneSetting[];
+  isLoggedIn: boolean;
 }

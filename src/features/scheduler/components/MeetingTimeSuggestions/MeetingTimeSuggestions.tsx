@@ -30,6 +30,11 @@ export const MeetingTimeSuggestions = () => {
   const [showToast, setShowToast] = useState(false);
   const [currentMeetingId, setCurrentMeetingId] = useState<string | null>(null);
 
+  const timezoneStateInRedux = useSelector(
+    (state: RootState) => state.timezone
+  );
+  console.log("Timezone In Redux slice:", timezoneStateInRedux);
+
   // Load working hours preferences from Firestore
   useEffect(() => {
     if (!user?.uid) return;

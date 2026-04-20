@@ -27,20 +27,13 @@ const TimeInput = ({ value, onChange }: TimeInputProps) => {
     .toString()
     .padStart(2, "0")} ${period}`;
 
-  // Update parent when time changes
-  useEffect(() => {
-    const hour24 =
-      period === "PM" ? (hour === 12 ? 12 : hour + 12) : hour === 12 ? 0 : hour;
-
-    const timeString = `${hour24.toString().padStart(2, "0")}:${minute
+  // Helper to compute 24-hour time string
+  const getTimeString = (h: number, m: number, p: string) => {
+    const hour24 = p === "PM" ? (h === 12 ? 12 : h + 12) : h === 12 ? 0 : h;
+    return `${hour24.toString().padStart(2, "0")}:${m
       .toString()
       .padStart(2, "0")}`;
-
-    // Only call onChange if the value has actually changed
-    if (timeString !== value) {
-      onChange(timeString);
-    }
-  }, [hour, minute, period, value, onChange]);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,6 +79,7 @@ const TimeInput = ({ value, onChange }: TimeInputProps) => {
                     key={h}
                     onClick={() => {
                       setHour(h);
+                      onChange(getTimeString(h, minute, period));
                     }}
                     className={`w-full px-2 py-1 text-left hover:bg-gray-100 rounded ${
                       hour === h ? "bg-primary/10 text-primary" : ""
@@ -108,6 +102,7 @@ const TimeInput = ({ value, onChange }: TimeInputProps) => {
                     key={m}
                     onClick={() => {
                       setMinute(m);
+                      onChange(getTimeString(hour, m, period));
                     }}
                     className={`w-full px-2 py-1 text-left hover:bg-gray-100 rounded ${
                       minute === m ? "bg-primary/10 text-primary" : ""
@@ -130,6 +125,7 @@ const TimeInput = ({ value, onChange }: TimeInputProps) => {
                     key={p}
                     onClick={() => {
                       setPeriod(p);
+                      onChange(getTimeString(hour, minute, p));
                     }}
                     className={`w-full px-2 py-1 text-left hover:bg-gray-100 rounded ${
                       period === p ? "bg-primary/10 text-primary" : ""

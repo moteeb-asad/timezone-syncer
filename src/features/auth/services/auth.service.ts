@@ -5,60 +5,45 @@ import {
   GoogleAuthProvider,
   updateProfile,
   linkWithCredential,
-  sendPasswordResetEmail,
-  confirmPasswordReset,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { auth } from "../../../lib/firebase";
+import { confirmPasswordReset, sendPasswordResetEmail } from "firebase/auth";
+
+function getAuthOrThrow() {
+  if (!auth) throw new Error("Firebase Auth is not initialized.");
+  return auth;
+}
 
 export const authService = {
   loginWithEmail(email: string, password: string) {
-    if (!auth) throw new Error("Firebase not initialized");
-    return signInWithEmailAndPassword(auth, email, password);
+    return signInWithEmailAndPassword(getAuthOrThrow(), email, password);
   },
-
   registerWithEmail(email: string, password: string) {
-    if (!auth) throw new Error("Firebase not initialized");
-    return createUserWithEmailAndPassword(auth, email, password);
+    return createUserWithEmailAndPassword(getAuthOrThrow(), email, password);
   },
-
-  requestPasswordReset(email: string) {
-    if (!auth) throw new Error("Firebase not initialized");
-    return sendPasswordResetEmail(auth, email, {
-      url: `${window.location.origin}/reset-password`,
-      handleCodeInApp: false,
-    });
-  },
-
-  confirmPasswordReset(oobCode: string, newPassword: string) {
-    if (!auth) throw new Error("Firebase not initialized");
-    return confirmPasswordReset(auth, oobCode, newPassword);
-  },
-
   async loginWithGoogle() {
-    if (!auth) throw new Error("Firebase not initialized");
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
-    const result = await signInWithPopup(auth, provider);
-
-    // Capture the credential for manual account linking if needed
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-
-    return {
-      ...result,
-      credential, // Include the credential in the result
-    };
+    provider.addScope("email");
+    provider.addScope("profile");
+    return await signInWithPopup(getAuthOrThrow(), provider);
   },
-
-  linkGoogleCredential(user: unknown, credential: unknown) {
-    return linkWithCredential(
-      user as Parameters<typeof linkWithCredential>[0],
-      credential as Parameters<typeof linkWithCredential>[1]
-    );
+  async linkGoogleCredential(user: any, credential: any) {
+    return await linkWithCredential(user, credential);
   },
-
-  async updateUserName(user: unknown, firstName: string, lastName: string) {
-    return updateProfile(user as Parameters<typeof updateProfile>[0], {
+  async updateUserName(user: any, firstName: string, lastName: string) {
+    return updateProfile(user, {
       displayName: `${firstName} ${lastName}`,
     });
+  },
+  async getSignInMethods(email: string) {
+    return fetchSignInMethodsForEmail(getAuthOrThrow(), email);
+  },
+  async confirmPasswordReset(oobCode: string, newPassword: string) {
+    return confirmPasswordReset(getAuthOrThrow(), oobCode, newPassword);
+  },
+  async requestPasswordReset(email: string) {
+    return sendPasswordResetEmail(getAuthOrThrow(), email);
   },
 };

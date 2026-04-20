@@ -1,3 +1,9 @@
+// Return type for login hooks
+export interface LoginResult {
+  user: any | null;
+  error: { message: string; code?: string } | null;
+  email: string;
+}
 import { useDispatch } from "react-redux";
 import { setAuthenticated, setGuest } from "../../user/slice";
 import {
@@ -11,34 +17,28 @@ import {
   fetchUserPlanData,
 } from "../../../utils/mapFirebaseUser";
 import { mapFirebaseError } from "../../../utils/mapFirebaseError";
-import { auth } from "../../../lib/firebase";
+import { auth, db } from "../../../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { createOrUpdateUser } from "../../user/services/user.service";
 import * as timezoneService from "../../timezone/services/timezone.service";
 
 export const useLogin = () => {
   const dispatch = useDispatch();
 
-  // Load timezones after login: Only use Firestore data, ignore guest localStorage
   const syncTimezonesAfterLogin = async (userId: string) => {
     try {
-      // Get Firestore timezones only
       const firestoreTimezones = await timezoneService.getUserTimezones(userId);
-
-      // Load Firestore timezones into Redux (without triggering localStorage save)
       dispatch(loadTimezoneState(firestoreTimezones));
-
-      // Clear localStorage (discard guest data)
       timezoneService.clearLocalStorage();
-
-      // Set storage mode to logged-in (disable localStorage writes)
-      setTimezoneStorageMode(true);
-
-      // Pass timezones to user document
+      dispatch(setTimezoneStorageMode(true));
       return firestoreTimezones;
     } catch (error) {
       console.error("Error syncing timezones after login:", error);
-      // On error, just return empty to avoid blocking login
-      return { baseTime: { time: "", timezone: "" }, timezoneSettings: [] };
+      return {
+        baseTime: { time: "", timezone: "" },
+        timezoneSettings: [],
+        isLoggedIn: false,
+      };
     }
   };
 
@@ -46,12 +46,8 @@ export const useLogin = () => {
     try {
       const result = await authService.loginWithEmail(email, password);
       const token = await result.user.getIdToken();
-
-      // Sync timezones before creating/updating user
       const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-
       await createOrUpdateUser(result.user, mergedTimezones);
-
       const planData = await fetchUserPlanData(result.user.uid);
       dispatch(
         setAuthenticated({
@@ -60,69 +56,53 @@ export const useLogin = () => {
           ...planData,
         })
       );
-
-      return { user: result.user };
+      return { user: result.user, error: null, email: result.user.email ?? "" };
     } catch (error: any) {
-      console.error("Firebase Login Error:", error);
-      console.error("Error code:", error?.code);
-      console.error("Error message:", error?.message);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      return { error: mapFirebaseError(error) };
+      console.error("Login error:", error);
+      return { user: null, error: mapFirebaseError(error), email: email ?? "" };
     }
   };
 
+  // Blocking approach — check methods BEFORE signing in
   const signInWithGoogle = async () => {
     try {
+      console.log("signInWithGoogle");
       const result = await authService.loginWithGoogle();
+      const user = result.user;
+      const email =
+        user.email ||
+        (user.providerData.length > 0 ? user.providerData[0].email : "");
+      console.log("About to query Firestore for email:", email);
 
-      // Get the email from the Google account
-      const googleEmail = result.user.email;
+      const userDocRef = doc(db!, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      console.log("Firestore user doc snapshot:", userDocSnap.data());
 
-      // Check if this user only has Google provider (no other providers linked)
-      const hasOnlyGoogle =
-        result.user.providerData.length === 1 &&
-        result.user.providerData[0].providerId === "google.com";
+      if (userDocSnap.exists()) {
+        const existingUser = userDocSnap.data();
+        console.log("Existing user data from Firestore:", existingUser);
+        const providers: string[] = existingUser.provider || [];
 
-      // If this is a new Google-only account, manually check if email/password account exists
-      if (hasOnlyGoogle && googleEmail) {
-        // Try to sign in as that email with a dummy password to see if it's registered
-        try {
-          // This will fail if the account doesn't exist or password is wrong,
-          // but we just want to check if the email exists as a password account
-          await authService.loginWithEmail(
-            googleEmail,
-            "check-only-do-not-use"
-          );
-        } catch (checkError: any) {
-          // If the error is "wrong-password", it means the email/password account EXISTS
-          if (checkError.code === "auth/wrong-password") {
-            // Sign out the Google account we just created
-            if (auth) {
-              await auth.signOut();
-            }
+        console.log("Firestore providers found for:", email, providers);
 
-            // Return special flag to trigger linking UI
-            return {
-              error: "ACCOUNT_EXISTS",
-              email: googleEmail,
-              credential: result.credential || result.user,
-              message: "Manual detection of existing email/password account",
-            };
-          }
-          // If it's "user-not-found", the email/password account doesn't exist - proceed normally
-          if (checkError.code === "auth/user-not-found") {
-            // No action needed - proceed with Google sign-in
-          }
+        if (providers.includes("password")) {
+          console.log("Blocking — password account exists in Firestore");
+          await auth!.signOut();
+          return {
+            user: null,
+            error: {
+              code: "USE_PASSWORD",
+              message: "Password account exists. Please sign in with password.",
+            },
+            email: email ?? "",
+          };
         }
       }
 
+      // No password account found — proceed normally
       const token = await result.user.getIdToken();
-
-      // For existing users, ignore guest data
       const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-
       await createOrUpdateUser(result.user, mergedTimezones);
-
       const planData = await fetchUserPlanData(result.user.uid);
       dispatch(
         setAuthenticated({
@@ -132,82 +112,22 @@ export const useLogin = () => {
         })
       );
 
-      return { user: result.user };
+      return { user: result.user, error: null, email: email ?? "" };
     } catch (error: any) {
-      console.error("Firebase Google Sign-In Error:", error);
-      console.error("Error code:", error.code);
-      console.error("Error message:", error.message);
-      console.error("Error customData:", error.customData);
-      console.error("Full error object:", JSON.stringify(error, null, 2));
-
-      // Check for account-exists-with-different-credential error
-      if (error.code === "auth/account-exists-with-different-credential") {
-        return {
-          error: "ACCOUNT_EXISTS",
-          email: error.customData?.email,
-          credential: error.customData?.credential,
-        };
-      }
-
-      // Check for other auth errors that might indicate provider conflict
-      if (error.code === "auth/user-disabled") {
-        return {
-          error: "User account has been disabled",
-        };
-      }
-
-      return { error: mapFirebaseError(error) };
-    }
-  };
-
-  const linkGoogleProvider = async (
-    email: string,
-    password: string,
-    credential: any
-  ) => {
-    try {
-      const result = await authService.loginWithEmail(email, password);
-      await authService.linkGoogleCredential(result.user, credential);
-
-      // Load existing user timezones (ignore guest data)
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-
-      await createOrUpdateUser(result.user, mergedTimezones);
-
-      const token = await result.user.getIdToken();
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...(await fetchUserPlanData(result.user.uid)),
-        })
-      );
-    } catch (error) {
-      console.error("Firebase Link Google Account Error:", error);
-      throw error;
+      return { user: null, error: mapFirebaseError(error), email: "" };
     }
   };
 
   const logout = async () => {
-    // Clear timezone settings from Redux
-    dispatch(clearTimezoneSettings());
-
-    // Reset storage mode to anonymous (enable localStorage writes)
-    setTimezoneStorageMode(false);
-
-    // Reset user to guest state
-    dispatch(setGuest());
-
-    // Sign out from Firebase
-    if (auth) {
-      await auth.signOut();
+    try {
+      dispatch(clearTimezoneSettings());
+      dispatch(setTimezoneStorageMode(false));
+      dispatch(setGuest());
+      if (auth) await auth.signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
-  return {
-    loginWithEmail,
-    signInWithGoogle,
-    linkGoogleProvider,
-    logout,
-  };
+  return { loginWithEmail, signInWithGoogle, logout };
 };

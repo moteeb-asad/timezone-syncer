@@ -3,8 +3,10 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import react from "eslint-plugin-react";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import tseslint from "typescript-eslint";
-import { globalIgnores } from "eslint/config";
+import pkg from "eslint/config";
+const { globalIgnores, configCompat } = pkg;
 
 export default tseslint.config([
   globalIgnores(["dist"]),
@@ -15,9 +17,11 @@ export default tseslint.config([
       tseslint.configs.recommended,
       reactHooks.configs["recommended-latest"],
       reactRefresh.configs.vite,
+      reactYouMightNotNeedAnEffect.configs["recommended"],
     ],
     plugins: {
       react,
+      "react-you-might-not-need-an-effect": reactYouMightNotNeedAnEffect,
     },
     languageOptions: {
       ecmaVersion: 2020,
