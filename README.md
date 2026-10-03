@@ -20,7 +20,6 @@ Timezone Syncer solves this by:
 - Live time comparison across multiple time zones
 - Base time reference for consistent scheduling
 - Working-hours status (working, early, late)
-- Meeting history and suggestions (premium)
 - Authentication with Google and email/password
 - Responsive layout for desktop and mobile
 - Free and premium plan limits
@@ -33,7 +32,6 @@ Results look like.
    <img src="docs/screenshots/home.png" alt="Home" />
    <img src="docs/screenshots/dashboard.png" alt="Dashboard"  />
    <img src="docs/screenshots/profile.png" alt="Profile"  />
-   <img src="docs/screenshots/meeting-history.png" alt="Meeting History"  />
 </p>
 
 ## Tech Stack

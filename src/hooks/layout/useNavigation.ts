@@ -16,14 +16,6 @@ export const useNavigation = (pathname: string, user: User | null) => {
       });
     }
 
-    // About - available to all users
-    items.push({
-      name: "About",
-      href: "/about",
-      current: pathname === "/about",
-      requiresAuth: false,
-    });
-
     // Premium - available to all users
     items.push({
       name: "Premium",

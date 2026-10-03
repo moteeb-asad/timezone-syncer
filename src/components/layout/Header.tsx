@@ -78,12 +78,6 @@ const Header = ({
                       PRO
                     </span>
                   </Link>
-                  <Link className={getMenuClass("/about")} to="/about">
-                    About
-                  </Link>
-                  <Link className={getMenuClass("/contact")} to="/contact">
-                    Contact
-                  </Link>
                 </>
               ) : (
                 <>
@@ -101,12 +95,6 @@ const Header = ({
                     <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
                       PRO
                     </span>
-                  </Link>
-                  <Link className={getMenuClass("/about")} to="/about">
-                    About
-                  </Link>
-                  <Link className={getMenuClass("/contact")} to="/contact">
-                    Contact
                   </Link>
                 </>
               )}
