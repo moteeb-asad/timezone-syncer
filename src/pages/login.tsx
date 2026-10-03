@@ -17,7 +17,6 @@ export const Login = () => {
   const from = state?.from ?? "/dashboard";
   const initialEmail = state?.email ?? "";
   const initialMessage = state?.message ?? "";
-  const pendingCredential = state?.pendingCredential;
 
   const handleSuccess = () => {
     navigate(from, { replace: true });
@@ -29,7 +28,6 @@ export const Login = () => {
         onSuccess={handleSuccess}
         initialEmail={initialEmail}
         initialMessage={initialMessage}
-        pendingCredential={pendingCredential}
       />
 
       {/* Toggle to Signup */}

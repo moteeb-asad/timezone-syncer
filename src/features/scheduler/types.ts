@@ -14,7 +14,20 @@ export interface MeetingTimeSlot {
     localTime: string;
     isWorkingHours: boolean;
     isOptimalTime: boolean; // 10am-4pm
+    uiStatus?: string;
   }>;
+  explanation?: {
+    available: string[];
+    unavailable: {
+      early: string[];
+      late: string[];
+      night: string[];
+    };
+  };
+  improvement?: number;
+  totalParticipants: number;
+  baselineParticipantsAvailable: number;
+  isPerfectOverlap: boolean;
 }
 
 /**
@@ -41,6 +54,7 @@ export interface UserWorkingHoursPreference {
 export interface MeetingSuggestion {
   goldenWindow: MeetingTimeSlot | null; // 100% availability
   secondaryOptions: MeetingTimeSlot[]; // 75%+ availability, sorted by score
+  fallbackOption?: MeetingTimeSlot | null; // Best available slot if no golden/secondary
   allSlots: MeetingTimeSlot[]; // For advanced UI (heatmap, etc.)
 }
 

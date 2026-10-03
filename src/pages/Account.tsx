@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import type { RootState } from "../store";
 import { FREE_TIER_LIMIT } from "../features/timezone/types";
 import { auth } from "../lib/firebase";
-import { MeetingHistory } from "../features/scheduler/components/MeetingHistory";
+import { MeetingHistory } from "../features/settings/components/meeting-history/MeetingHistory";
 
 export const Account = () => {
   const location = useLocation();

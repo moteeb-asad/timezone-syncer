@@ -1,4 +1,4 @@
-import type { MeetingTimeSlot } from "../types";
+import type { MeetingTimeSlot } from "../../../features/scheduler/types";
 import type { Timestamp } from "firebase/firestore";
 
 /**
@@ -60,4 +60,12 @@ export interface MeetingListItem {
   status: MeetingStatus;
   createdAt: Date;
   confirmedAt?: Date;
+}
+
+export interface MeetingCardProps {
+  meeting: Meeting;
+  isExpanded: boolean;
+  onToggleExpand: (meetingId: string) => void;
+  onConfirmSent: (meetingId: string) => void;
+  onDelete: (meetingId: string) => void;
 }

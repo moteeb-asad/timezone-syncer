@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignup } from "../hooks/useSignup";
+import { useSignup, type SignupResult } from "../hooks/useSignup";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { signupSchema, type SignupSchema } from "../schemas/authSchemas";
@@ -10,7 +10,7 @@ interface SignupFormProps {
   onSuccess: () => void;
   onAccountExists: (
     email: string,
-    credential: any,
+    credential: null,
     message: string,
     from: string
   ) => void;
@@ -47,7 +47,7 @@ export const SignupForm = ({
     setError("");
 
     try {
-      const result = await registerWithEmail(
+      const result: SignupResult = await registerWithEmail(
         values.email,
         values.password,
         values.firstName,
@@ -69,19 +69,17 @@ export const SignupForm = ({
     setError("");
 
     try {
-      const result = await signInWithGoogle();
+      const result: SignupResult = await signInWithGoogle();
 
-      if (result.error === "ACCOUNT_EXISTS" && result.email) {
+      if (result.error?.code === "USE_PASSWORD") {
         onAccountExists(
-          result.email,
-          result.credential,
-          `An account already exists with ${result.email}. Please sign in to link your Google account.`,
+          result.error.email!,
+          null,
+          `This email is already registered. Please sign in with your password.`,
           from
         );
       } else if (result.error) {
-        setError(
-          typeof result.error === "string" ? result.error : result.error.message
-        );
+        setError(result.error.message);
       } else {
         onSuccess();
       }

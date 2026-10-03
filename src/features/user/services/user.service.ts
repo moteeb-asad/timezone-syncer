@@ -27,7 +27,9 @@ export const createOrUpdateUser = async (
 
   const userData: Record<string, unknown> = {
     uid: user.uid,
-    email: user.email,
+    email:
+      user.email ||
+      (user.providerData.length > 0 ? user.providerData[0].email : null),
     displayName: user.displayName ?? null,
     provider: user.providerData?.map((p) => p.providerId),
     updatedAt: serverTimestamp(),
@@ -37,6 +39,7 @@ export const createOrUpdateUser = async (
   // Only set default plan/limits for new users
   if (isNewUser) {
     userData.plan = "free";
+    userData.createdAt = serverTimestamp();
     userData.limits = {
       maxTimezones: 3,
     };
@@ -53,8 +56,12 @@ export const createOrUpdateUser = async (
   // Only include timezones and createdAt if timezones provided (for merge operation)
   if (timezones !== undefined) {
     userData.timezones = timezones;
-    userData.createdAt = serverTimestamp();
   }
+
+  console.log(
+    "user providers at save time:",
+    user.providerData?.map((p) => p.providerId)
+  );
 
   await setDoc(ref, userData, { merge: true });
 };

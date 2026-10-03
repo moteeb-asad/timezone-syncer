@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
+import { Contact } from "@/pages/Contact";
 
 export function AppRoutes() {
   const { status } = useSelector((state: RootState) => state.user);
@@ -29,6 +30,7 @@ export function AppRoutes() {
         <Route path="/" element={<TimezoneManager />} />
         <Route path="/about" element={<About />} />
         <Route path="/premium" element={<Premium />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Protected routes (require authentication) */}
         <Route element={<ProtectedRoute redirectTo="/login" />}>

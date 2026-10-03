@@ -11,7 +11,11 @@ export const getUserTimezones = async (
   try {
     if (!db) {
       console.warn("Firestore not initialized");
-      return { baseTime: { time: "", timezone: "" }, timezoneSettings: [] };
+      return {
+        baseTime: { time: "", timezone: "" },
+        timezoneSettings: [],
+        isLoggedIn: false,
+      };
     }
 
     const userRef = doc(db, "users", userId);
@@ -23,14 +27,23 @@ export const getUserTimezones = async (
         data.timezones || {
           baseTime: { time: "", timezone: "" },
           timezoneSettings: [],
+          isLoggedIn: false,
         }
       );
     }
 
-    return { baseTime: { time: "", timezone: "" }, timezoneSettings: [] };
+    return {
+      baseTime: { time: "", timezone: "" },
+      timezoneSettings: [],
+      isLoggedIn: false,
+    };
   } catch (error) {
     console.error("Error fetching user timezones:", error);
-    return { baseTime: { time: "", timezone: "" }, timezoneSettings: [] };
+    return {
+      baseTime: { time: "", timezone: "" },
+      timezoneSettings: [],
+      isLoggedIn: false,
+    };
   }
 };
 
@@ -85,6 +98,7 @@ export const mergeTimezones = (
       ? firestoreTimezones.baseTime
       : localTimezones.baseTime,
     timezoneSettings: mergedSettings,
+    isLoggedIn: false,
   };
 };
 
@@ -111,5 +125,9 @@ export const getLocalStorage = (): TimezoneState => {
   } catch (error) {
     console.error("Error reading localStorage:", error);
   }
-  return { baseTime: { time: "", timezone: "" }, timezoneSettings: [] };
+  return {
+    baseTime: { time: "", timezone: "" },
+    timezoneSettings: [],
+    isLoggedIn: false,
+  };
 };

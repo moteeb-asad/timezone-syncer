@@ -1,19 +1,19 @@
 import { useSelector } from "react-redux";
-import { Modal } from "../../../components/ui/Modal";
-import { Button } from "../../../components/ui/Button";
+import { Modal } from "../../../../components/ui/Modal";
+import { Button } from "../../../../components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { useMeetingInvitation } from "../hooks/useMeetingInvitation";
+import { useMeetingInvitation } from "../../hooks/useMeetingInvitation";
 import {
   calculateTimeRange,
   formatTimeRange,
   convertTo12HourFormat,
-} from "../utils/timezoneTimeCalculator";
-import type { SendMeetingInvitationProps } from "../types/meetingInvitation";
+} from "../../../../utils/timeUtils";
+import type { SendMeetingInvitationProps } from "../../types/meetingInvitation";
 import type { RootState } from "@/store";
 import { auth } from "@/lib/firebase";
 
-export const SendMeetingInvitation = ({
+export const MeetingInvitationModal = ({
   isOpen,
   onClose,
   meetingSlot,
@@ -54,7 +54,7 @@ export const SendMeetingInvitation = ({
       console.error("User not authenticated");
       return;
     }
-    
+
     await handleSubmit(userId);
   };
 
@@ -86,7 +86,7 @@ export const SendMeetingInvitation = ({
               </div>
             ))}
             <input
-              className="flex-1 bg-transparent border-none focus:ring-0 text-sm p-0 h-6 min-w-[100px]"
+              className="flex-1 bg-transparent border-none focus-visible:outline-none text-sm p-0 h-6 min-w-[100px]"
               placeholder="Add email..."
               type="email"
               value={newRecipient}

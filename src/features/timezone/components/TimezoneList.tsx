@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { TimezoneListProps } from "../types";
 import { TimezoneCard } from "./TimezoneCard";
 import { EmptyTimezoneState } from "./EmptyTimezoneState";
@@ -13,6 +13,8 @@ export const TimezoneList = ({
   const showCollapseToggle = settings.length > 5;
   const displayedSettings = isCollapsed ? settings.slice(0, 3) : settings;
 
+  const addBtnRef = useRef<HTMLButtonElement>(null);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between p-0 md:px-2">
@@ -24,8 +26,9 @@ export const TimezoneList = ({
             {subscription.currentTimezones}/{subscription.maxTimezones} Slots
           </span>
           <div className="h-1 w-1 rounded-full bg-slate-300"></div>
-          <div className="relative group">
+          <div>
             <button
+              ref={addBtnRef}
               onClick={onAdd}
               disabled={
                 subscription.currentTimezones >= subscription.maxTimezones
@@ -44,9 +47,8 @@ export const TimezoneList = ({
               </span>
             </button>
             {subscription.currentTimezones >= subscription.maxTimezones && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 max-w-[220px] px-3 py-2 bg-slate-900 text-white text-xs text-center leading-snug rounded shadow-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="mt-2 text-xs text-red-600 font-semibold text-center">
                 Free plan limit reached. Upgrade to Pro to add more.
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
               </div>
             )}
           </div>
