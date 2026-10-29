@@ -1,27 +1,49 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Meetings collection - authenticated users can manage their own meetings
+
+    // Only Google accounts and the shared demo account may use app data.
+    // Email/password accounts created by bots get no access.
+    // Replace DEMO_UID with the demo account's UID from Authentication > Users.
+    function isAppUser() {
+      return request.auth != null &&
+        (request.auth.token.firebase.sign_in_provider == "google.com" ||
+         request.auth.uid == "gJjHSsucBwfWieN1hWd1sHRndf52");
+    }
+
+    function isOwner(uid) {
+      return isAppUser() && request.auth.uid == uid;
+    }
+
+    // User profile, timezones and plan.
+    // plan and limits can only be changed from the Firebase console or a server.
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid) &&
+        request.resource.data.plan == "free" &&
+        request.resource.data.limits.maxTimezones == 3;
+
+      allow update: if isOwner(uid) &&
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(["plan", "limits"]);
+
+      allow delete: if false;
+    }
+
+    // Meetings collection - users can manage their own meetings
     match /meetings/{meetingId} {
-      // Allow read if user is authenticated and owns the meeting
-      allow read: if request.auth != null && 
+      allow read: if isAppUser() &&
                    resource.data.userId == request.auth.uid;
-      
-      // Allow create if user is authenticated and sets their own userId
-      allow create: if request.auth != null && 
+
+      allow create: if isAppUser() &&
                      request.resource.data.userId == request.auth.uid;
-      
-      // Allow update if user is authenticated and owns the meeting
-      allow update: if request.auth != null && 
+
+      allow update: if isAppUser() &&
                      resource.data.userId == request.auth.uid;
-      
-      // Allow delete if user is authenticated and owns the meeting
-      allow delete: if request.auth != null && 
+
+      allow delete: if isAppUser() &&
                      resource.data.userId == request.auth.uid;
     }
-    
-    // Add other collection rules here as needed
-    // Example: User profiles, timezone settings, etc.
   }
 }
