@@ -1,4 +1,5 @@
 import { useDispatch } from "react-redux";
+import type { User as FirebaseUser } from "firebase/auth";
 import { setAuthenticated, setGuest } from "../../user/slice";
 import {
   clearTimezoneSettings,
@@ -14,6 +15,13 @@ import { mapFirebaseError } from "../../../utils/mapFirebaseError";
 import { auth } from "../../../lib/firebase";
 import { createOrUpdateUser } from "../../user/services/user.service";
 import * as timezoneService from "../../timezone/services/timezone.service";
+
+export type LoginResult = { user: FirebaseUser } | { error: Error };
+
+const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL;
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
+
+export const isDemoAvailable = Boolean(DEMO_EMAIL && DEMO_PASSWORD);
 
 export const useLogin = () => {
   const dispatch = useDispatch();
@@ -42,149 +50,49 @@ export const useLogin = () => {
     }
   };
 
-  const loginWithEmail = async (email: string, password: string) => {
-    try {
-      const result = await authService.loginWithEmail(email, password);
-      const token = await result.user.getIdToken();
+  // Shared steps after Firebase has signed the user in
+  const completeSignIn = async (user: FirebaseUser) => {
+    const token = await user.getIdToken();
+    const timezones = await syncTimezonesAfterLogin(user.uid);
 
-      // Sync timezones before creating/updating user
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
+    await createOrUpdateUser(user, timezones);
 
-      await createOrUpdateUser(result.user, mergedTimezones);
-
-      const planData = await fetchUserPlanData(result.user.uid);
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...planData,
-        })
-      );
-
-      return { user: result.user };
-    } catch (error: any) {
-      console.error("Firebase Login Error:", error);
-      console.error("Error code:", error?.code);
-      console.error("Error message:", error?.message);
-      console.error("Error details:", JSON.stringify(error, null, 2));
-      return { error: mapFirebaseError(error) };
-    }
+    const planData = await fetchUserPlanData(user.uid);
+    dispatch(
+      setAuthenticated({
+        user: await mapFirebaseUser(user),
+        token,
+        ...planData,
+      })
+    );
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<LoginResult> => {
     try {
       const result = await authService.loginWithGoogle();
-
-      // Get the email from the Google account
-      const googleEmail = result.user.email;
-
-      // Check if this user only has Google provider (no other providers linked)
-      const hasOnlyGoogle =
-        result.user.providerData.length === 1 &&
-        result.user.providerData[0].providerId === "google.com";
-
-      // If this is a new Google-only account, manually check if email/password account exists
-      if (hasOnlyGoogle && googleEmail) {
-        // Try to sign in as that email with a dummy password to see if it's registered
-        try {
-          // This will fail if the account doesn't exist or password is wrong,
-          // but we just want to check if the email exists as a password account
-          await authService.loginWithEmail(
-            googleEmail,
-            "check-only-do-not-use"
-          );
-        } catch (checkError: any) {
-          // If the error is "wrong-password", it means the email/password account EXISTS
-          if (checkError.code === "auth/wrong-password") {
-            // Sign out the Google account we just created
-            if (auth) {
-              await auth.signOut();
-            }
-
-            // Return special flag to trigger linking UI
-            return {
-              error: "ACCOUNT_EXISTS",
-              email: googleEmail,
-              credential: result.credential || result.user,
-              message: "Manual detection of existing email/password account",
-            };
-          }
-          // If it's "user-not-found", the email/password account doesn't exist - proceed normally
-          if (checkError.code === "auth/user-not-found") {
-            // No action needed - proceed with Google sign-in
-          }
-        }
-      }
-
-      const token = await result.user.getIdToken();
-
-      // For existing users, ignore guest data
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-
-      await createOrUpdateUser(result.user, mergedTimezones);
-
-      const planData = await fetchUserPlanData(result.user.uid);
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...planData,
-        })
-      );
-
+      await completeSignIn(result.user);
       return { user: result.user };
-    } catch (error: any) {
-      console.error("Firebase Google Sign-In Error:", error);
-      console.error("Error code:", error.code);
-      console.error("Error message:", error.message);
-      console.error("Error customData:", error.customData);
-      console.error("Full error object:", JSON.stringify(error, null, 2));
-
-      // Check for account-exists-with-different-credential error
-      if (error.code === "auth/account-exists-with-different-credential") {
-        return {
-          error: "ACCOUNT_EXISTS",
-          email: error.customData?.email,
-          credential: error.customData?.credential,
-        };
-      }
-
-      // Check for other auth errors that might indicate provider conflict
-      if (error.code === "auth/user-disabled") {
-        return {
-          error: "User account has been disabled",
-        };
-      }
-
+    } catch (error) {
+      console.error("Google sign-in error:", error);
       return { error: mapFirebaseError(error) };
     }
   };
 
-  const linkGoogleProvider = async (
-    email: string,
-    password: string,
-    credential: any
-  ) => {
+  const signInAsDemo = async (): Promise<LoginResult> => {
+    if (!isDemoAvailable) {
+      return { error: new Error("The demo account is not available.") };
+    }
+
     try {
-      const result = await authService.loginWithEmail(email, password);
-      await authService.linkGoogleCredential(result.user, credential);
-
-      // Load existing user timezones (ignore guest data)
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-
-      await createOrUpdateUser(result.user, mergedTimezones);
-
-      const token = await result.user.getIdToken();
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...(await fetchUserPlanData(result.user.uid)),
-        })
+      const result = await authService.loginWithEmail(
+        DEMO_EMAIL as string,
+        DEMO_PASSWORD as string
       );
+      await completeSignIn(result.user);
+      return { user: result.user };
     } catch (error) {
-      console.error("Firebase Link Google Account Error:", error);
-      throw error;
+      console.error("Demo sign-in error:", error);
+      return { error: mapFirebaseError(error) };
     }
   };
 
@@ -205,9 +113,8 @@ export const useLogin = () => {
   };
 
   return {
-    loginWithEmail,
     signInWithGoogle,
-    linkGoogleProvider,
+    signInAsDemo,
     logout,
   };
 };

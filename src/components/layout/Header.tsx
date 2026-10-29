@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import type { HeaderProps } from "../../types/layout";
-import { setIsRegistering } from "../../features/user/slice";
 import Navigation from "./Navigation";
 import MobileMenu from "./MobileMenu";
 
@@ -12,15 +10,6 @@ const Header = ({
   onToggleMenu,
   onLogout,
 }: HeaderProps) => {
-  const dispatch = useDispatch();
-
-  const handleLoginClick = () => {
-    dispatch(setIsRegistering(false));
-  };
-
-  const handleSignUpClick = () => {
-    dispatch(setIsRegistering(true));
-  };
   return (
     <>
       <nav className="bg-white border-b border-slate-200 px-4 md:px-6 py-4">
@@ -87,22 +76,12 @@ const Header = ({
                   </details>
                 </>
               ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="hidden md:block text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                    onClick={handleLoginClick}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="hidden md:block bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
-                    onClick={handleSignUpClick}
-                  >
-                    Sign Up
-                  </Link>
-                </>
+                <Link
+                  to="/login"
+                  className="hidden md:block bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
+                >
+                  Sign in
+                </Link>
               )}
 
               {/* Mobile menu button */}
