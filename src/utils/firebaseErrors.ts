@@ -4,21 +4,18 @@
  */
 
 export const firebaseAuthErrors: { [key: string]: string } = {
-  "auth/email-already-in-use":
-    "An account with this email address already exists.",
-  "auth/invalid-email": "Please enter a valid email address.",
+  "auth/popup-closed-by-user": "Sign-in was cancelled. Please try again.",
+  "auth/cancelled-popup-request": "Sign-in was cancelled. Please try again.",
+  "auth/popup-blocked":
+    "Your browser blocked the sign-in window. Please allow pop-ups and try again.",
   "auth/operation-not-allowed":
-    "Email/password accounts are not enabled. Please contact support.",
-  "auth/weak-password":
-    "Please choose a stronger password. It should be at least 6 characters long.",
+    "This sign-in method is not available. Please contact support.",
   "auth/user-disabled":
     "This account has been disabled. Please contact support.",
-  "auth/user-not-found": "No account found with this email address.",
-  "auth/wrong-password": "Incorrect password. Please try again.",
   "auth/invalid-credential":
-    "Invalid login credentials. Please check and try again.",
+    "The demo account is not available right now. Please sign in with Google.",
   "auth/too-many-requests":
-    "Too many unsuccessful login attempts. Please try again later.",
+    "Too many sign-in attempts. Please try again later.",
   "auth/network-request-failed":
     "Network error. Please check your internet connection.",
 };

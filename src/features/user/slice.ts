@@ -10,7 +10,6 @@ const initialState: UserState = {
   limits: {
     maxTimezones: 3,
   },
-  isRegistering: false,
 };
 
 const userSlice = createSlice({
@@ -45,10 +44,6 @@ const userSlice = createSlice({
       state.limits = { maxTimezones: 3 };
     },
 
-    setIsRegistering(state, action) {
-      state.isRegistering = action.payload;
-    },
-
     updatePlan(state, action) {
       const { plan, maxTimezones } = action.payload;
       state.plan = plan;
@@ -61,7 +56,6 @@ export const {
   setGuest,
   setAuthenticated,
   clearUser,
-  setIsRegistering,
   updatePlan,
 } = userSlice.actions;
 

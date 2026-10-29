@@ -1,14 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "../pages/login";
-import Signup from "../pages/signup";
 import { Premium } from "../pages/Premium";
 import { About } from "../pages/About";
 import { ProtectedRoute, PublicRoute, Layout, Account } from "../components";
 import { TimezoneManager } from "../features/timezone/components";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
-import ForgotPassword from "../pages/ForgotPassword";
-import ResetPassword from "../pages/ResetPassword";
 
 export function AppRoutes() {
   const { status } = useSelector((state: RootState) => state.user);
@@ -18,10 +15,12 @@ export function AppRoutes() {
       {/* Auth routes (without Layout) */}
       <Route element={<PublicRoute redirectTo="/dashboard" />}>
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
+
+      {/* Old email sign-up and password reset links */}
+      <Route path="/signup" element={<Navigate to="/login" replace />} />
+      <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
+      <Route path="/reset-password" element={<Navigate to="/login" replace />} />
 
       {/* All other routes with Layout */}
       <Route element={<Layout />}>
