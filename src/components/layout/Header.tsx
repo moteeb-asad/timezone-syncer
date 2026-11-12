@@ -1,7 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import type { HeaderProps } from "../../types/layout";
-import { setIsRegistering } from "../../features/user/slice";
 import React from "react";
 import MobileMenu from "./MobileMenu";
 
@@ -12,15 +10,7 @@ const Header = ({
   onToggleMenu,
   onLogout,
 }: HeaderProps) => {
-  const dispatch = useDispatch();
   const location = useLocation();
-
-  const handleLoginClick = () => {
-    dispatch(setIsRegistering(false));
-  };
-  const handleSignUpClick = () => {
-    dispatch(setIsRegistering(true));
-  };
 
   // Dropdown state for user menu
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
@@ -169,17 +159,9 @@ const Header = ({
                   <div className="flex gap-2">
                     <Link
                       to="/login"
-                      className="hidden md:block text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                      onClick={handleLoginClick}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/signup"
                       className="hidden md:block bg-primary-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition-colors"
-                      onClick={handleSignUpClick}
                     >
-                      Sign Up
+                      Sign in
                     </Link>
                   </div>
                 </div>

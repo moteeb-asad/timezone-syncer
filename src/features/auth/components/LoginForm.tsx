@@ -1,114 +1,43 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLogin, type LoginResult } from "../hooks/useLogin";
+import { useState } from "react";
+import { useLogin, isDemoAvailable, type LoginResult } from "../hooks/useLogin";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { loginSchema, type LoginSchema } from "../schemas/authSchemas";
 
 interface LoginFormProps {
   onSuccess: () => void;
-  initialEmail?: string;
-  initialMessage?: string;
 }
 
-export const LoginForm = ({
-  onSuccess,
-  initialEmail = "",
-  initialMessage = "",
-}: LoginFormProps) => {
+export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [infoMessage, setInfoMessage] = useState(initialMessage);
+  const [loading, setLoading] = useState<"google" | "demo" | null>(null);
 
-  const { loginWithEmail, signInWithGoogle } = useLogin();
+  const { signInWithGoogle, signInAsDemo } = useLogin();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: initialEmail,
-      password: "",
-    },
-  });
-
-  useEffect(() => {
-    if (initialMessage) {
-      setInfoMessage(initialMessage);
-    }
-    if (initialEmail) {
-      setValue("email", initialEmail);
-    }
-  }, [initialEmail, initialMessage, setValue]);
-
-  const onSubmit = async (values: LoginSchema) => {
-    setLoading(true);
+  const handleSignIn = async (
+    method: "google" | "demo",
+    signIn: () => Promise<LoginResult>
+  ) => {
+    setLoading(method);
     setError("");
-    setInfoMessage("");
 
-    try {
-      const result = await loginWithEmail(values.email, values.password);
+    const result = await signIn();
 
-      if (result.error) {
-        setError(result.error.message);
-      } else {
-        onSuccess();
-      }
-    } catch (err) {
-      console.error(err);
-      setError(
-        "Failed to sign in. Please check your credentials and try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError("");
-    setInfoMessage("");
-
-    try {
-      const result: LoginResult = await signInWithGoogle();
-
-      if (result.error && result.error.code === "USE_PASSWORD") {
-        setValue("email", result.email);
-        setInfoMessage(
-          `This email is registered with a password. Please sign in with your password below.`
-        );
-      } else if (result.error) {
-        setError(result.error.message);
-      } else {
-        onSuccess();
-      }
-    } catch (err) {
-      console.error(err);
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
+    if ("error" in result) {
+      setError(result.error.message);
+      setLoading(null);
+    } else {
+      onSuccess();
     }
   };
 
   return (
     <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-8 md:p-10">
       {/* Title */}
-      <h2 className="text-xl font-bold text-slate-900 mb-2">Welcome back</h2>
+      <h2 className="text-xl font-bold text-slate-900 mb-2">
+        Sign in to Timezone Syncer
+      </h2>
       <p className="text-sm text-slate-500 mb-8">
-        Please enter your details to sign in.
+        New here? Continuing with Google creates your account.
       </p>
-
-      {/* Info Message */}
-      {infoMessage && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-700">{infoMessage}</p>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
@@ -117,79 +46,12 @@ export const LoginForm = ({
         </div>
       )}
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-        {/* Email Field */}
-        <Input
-          id="email"
-          type="text"
-          inputMode="email"
-          autoComplete="email"
-          label="Email Address"
-          placeholder="user@example.com"
-          error={errors.email?.message}
-          {...register("email")}
-        />
-
-        {/* Password Field */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label
-              htmlFor="password"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-400"
-            >
-              Password
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-xs font-semibold text-primary hover:underline"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            autoComplete="current-password"
-            error={errors.password?.message}
-            {...register("password")}
-          />
-        </div>
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3.5 text-sm"
-        >
-          {loading ? "Loading..." : "Log In"}
-          <span className="material-symbols-outlined text-lg">
-            arrow_forward
-          </span>
-        </Button>
-      </form>
-
-      {/* Divider */}
-      <div className="relative my-8">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-100"></div>
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-4 text-slate-400 font-bold tracking-widest">
-            Or continue with
-          </span>
-        </div>
-      </div>
-
-      {/* Social Button */}
       <div className="grid gap-4">
         <Button
           type="button"
-          variant="outline"
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-          className="py-2.5 px-4 text-sm"
+          onClick={() => handleSignIn("google", signInWithGoogle)}
+          disabled={loading !== null}
+          className="w-full py-3.5 text-sm"
         >
           <svg
             className="w-4 h-4"
@@ -201,19 +63,41 @@ export const LoginForm = ({
               fill="currentColor"
             ></path>
           </svg>
-          Google
+          {loading === "google" ? "Signing in..." : "Continue with Google"}
         </Button>
-      </div>
 
-      <p className="mt-8 text-center text-sm text-slate-500">
-        Don't have an account?{" "}
-        <Link
-          to="/signup"
-          className="text-primary font-semibold hover:underline"
-        >
-          Create an Account
-        </Link>
-      </p>
+        {isDemoAvailable && (
+          <>
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-100"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-4 text-slate-400 font-bold tracking-widest">
+                  Or
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleSignIn("demo", signInAsDemo)}
+              disabled={loading !== null}
+              className="w-full py-3 text-sm"
+            >
+              <span className="material-symbols-outlined text-lg">
+                play_circle
+              </span>
+              {loading === "demo" ? "Opening demo..." : "Try the demo"}
+            </Button>
+            <p className="text-xs text-center text-slate-400">
+              Shared demo account. Anything you add is visible to other
+              visitors.
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 };

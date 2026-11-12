@@ -15,5 +15,4 @@ export interface UserState {
   limits: {
     maxTimezones: number;
   };
-  isRegistering: boolean;
 }

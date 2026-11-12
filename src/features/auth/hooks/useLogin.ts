@@ -1,10 +1,5 @@
-// Return type for login hooks
-export interface LoginResult {
-  user: any | null;
-  error: { message: string; code?: string } | null;
-  email: string;
-}
 import { useDispatch } from "react-redux";
+import type { User as FirebaseUser } from "firebase/auth";
 import { setAuthenticated, setGuest } from "../../user/slice";
 import {
   clearTimezoneSettings,
@@ -17,23 +12,40 @@ import {
   fetchUserPlanData,
 } from "../../../utils/mapFirebaseUser";
 import { mapFirebaseError } from "../../../utils/mapFirebaseError";
-import { auth, db } from "../../../lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../../../lib/firebase";
 import { createOrUpdateUser } from "../../user/services/user.service";
 import * as timezoneService from "../../timezone/services/timezone.service";
+
+export type LoginResult = { user: FirebaseUser } | { error: Error };
+
+const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL;
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
+
+export const isDemoAvailable = Boolean(DEMO_EMAIL && DEMO_PASSWORD);
 
 export const useLogin = () => {
   const dispatch = useDispatch();
 
+  // Load timezones after login: Only use Firestore data, ignore guest localStorage
   const syncTimezonesAfterLogin = async (userId: string) => {
     try {
+      // Get Firestore timezones only
       const firestoreTimezones = await timezoneService.getUserTimezones(userId);
+
+      // Load Firestore timezones into Redux (without triggering localStorage save)
       dispatch(loadTimezoneState(firestoreTimezones));
+
+      // Clear localStorage (discard guest data)
       timezoneService.clearLocalStorage();
-      dispatch(setTimezoneStorageMode(true));
+
+      // Set storage mode to logged-in (disable localStorage writes)
+      setTimezoneStorageMode(true);
+
+      // Pass timezones to user document
       return firestoreTimezones;
     } catch (error) {
       console.error("Error syncing timezones after login:", error);
+      // On error, just return empty to avoid blocking login
       return {
         baseTime: { time: "", timezone: "" },
         timezoneSettings: [],
@@ -42,92 +54,71 @@ export const useLogin = () => {
     }
   };
 
-  const loginWithEmail = async (email: string, password: string) => {
+  // Shared steps after Firebase has signed the user in
+  const completeSignIn = async (user: FirebaseUser) => {
+    const token = await user.getIdToken();
+    const timezones = await syncTimezonesAfterLogin(user.uid);
+
+    await createOrUpdateUser(user, timezones);
+
+    const planData = await fetchUserPlanData(user.uid);
+    dispatch(
+      setAuthenticated({
+        user: await mapFirebaseUser(user),
+        token,
+        ...planData,
+      })
+    );
+  };
+
+  const signInWithGoogle = async (): Promise<LoginResult> => {
     try {
-      const result = await authService.loginWithEmail(email, password);
-      const token = await result.user.getIdToken();
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-      await createOrUpdateUser(result.user, mergedTimezones);
-      const planData = await fetchUserPlanData(result.user.uid);
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...planData,
-        })
-      );
-      return { user: result.user, error: null, email: result.user.email ?? "" };
-    } catch (error: any) {
-      console.error("Login error:", error);
-      return { user: null, error: mapFirebaseError(error), email: email ?? "" };
+      const result = await authService.loginWithGoogle();
+      await completeSignIn(result.user);
+      return { user: result.user };
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      return { error: mapFirebaseError(error) };
     }
   };
 
-  // Blocking approach — check methods BEFORE signing in
-  const signInWithGoogle = async () => {
+  const signInAsDemo = async (): Promise<LoginResult> => {
+    if (!isDemoAvailable) {
+      return { error: new Error("The demo account is not available.") };
+    }
+
     try {
-      console.log("signInWithGoogle");
-      const result = await authService.loginWithGoogle();
-      const user = result.user;
-      const email =
-        user.email ||
-        (user.providerData.length > 0 ? user.providerData[0].email : "");
-      console.log("About to query Firestore for email:", email);
-
-      const userDocRef = doc(db!, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
-      console.log("Firestore user doc snapshot:", userDocSnap.data());
-
-      if (userDocSnap.exists()) {
-        const existingUser = userDocSnap.data();
-        console.log("Existing user data from Firestore:", existingUser);
-        const providers: string[] = existingUser.provider || [];
-
-        console.log("Firestore providers found for:", email, providers);
-
-        if (providers.includes("password")) {
-          console.log("Blocking — password account exists in Firestore");
-          await auth!.signOut();
-          return {
-            user: null,
-            error: {
-              code: "USE_PASSWORD",
-              message: "Password account exists. Please sign in with password.",
-            },
-            email: email ?? "",
-          };
-        }
-      }
-
-      // No password account found — proceed normally
-      const token = await result.user.getIdToken();
-      const mergedTimezones = await syncTimezonesAfterLogin(result.user.uid);
-      await createOrUpdateUser(result.user, mergedTimezones);
-      const planData = await fetchUserPlanData(result.user.uid);
-      dispatch(
-        setAuthenticated({
-          user: await mapFirebaseUser(result.user),
-          token,
-          ...planData,
-        })
+      const result = await authService.loginWithEmail(
+        DEMO_EMAIL as string,
+        DEMO_PASSWORD as string
       );
-
-      return { user: result.user, error: null, email: email ?? "" };
-    } catch (error: any) {
-      return { user: null, error: mapFirebaseError(error), email: "" };
+      await completeSignIn(result.user);
+      return { user: result.user };
+    } catch (error) {
+      console.error("Demo sign-in error:", error);
+      return { error: mapFirebaseError(error) };
     }
   };
 
   const logout = async () => {
-    try {
-      dispatch(clearTimezoneSettings());
-      dispatch(setTimezoneStorageMode(false));
-      dispatch(setGuest());
-      if (auth) await auth.signOut();
-    } catch (error) {
-      console.error("Logout error:", error);
+    // Clear timezone settings from Redux
+    dispatch(clearTimezoneSettings());
+
+    // Reset storage mode to anonymous (enable localStorage writes)
+    setTimezoneStorageMode(false);
+
+    // Reset user to guest state
+    dispatch(setGuest());
+
+    // Sign out from Firebase
+    if (auth) {
+      await auth.signOut();
     }
   };
 
-  return { loginWithEmail, signInWithGoogle, logout };
+  return {
+    signInWithGoogle,
+    signInAsDemo,
+    logout,
+  };
 };

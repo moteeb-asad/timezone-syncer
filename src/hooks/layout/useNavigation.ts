@@ -51,23 +51,12 @@ export const useNavigation = (pathname: string, user: User | null) => {
       });
     }
 
-    // Login - only for non-authenticated users, mobile only
+    // Sign in - only for non-authenticated users, mobile only
     if (!user) {
       items.push({
-        name: "Login",
+        name: "Sign in",
         href: "/login",
         current: pathname === "/login",
-        requiresAuth: false,
-        mobileOnly: true,
-      });
-    }
-
-    // Signup - only for non-authenticated users, mobile only
-    if (!user) {
-      items.push({
-        name: "Signup",
-        href: "/signup",
-        current: pathname === "/signup",
         requiresAuth: false,
         mobileOnly: true,
       });
