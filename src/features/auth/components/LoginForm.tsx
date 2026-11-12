@@ -1,10 +1,26 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useLogin, isDemoAvailable, type LoginResult } from "../hooks/useLogin";
-import { Button } from "@/components/ui/Button";
+import { GoogleButton } from "./GoogleButton";
 
 interface LoginFormProps {
   onSuccess: () => void;
 }
+
+const CheckIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.25"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="mt-0.5 size-4 shrink-0 text-ok"
+    aria-hidden="true"
+  >
+    <path d="m5 12 4.5 4.5L19 7" />
+  </svg>
+);
 
 export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const [error, setError] = useState("");
@@ -30,74 +46,81 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-8 md:p-10">
-      {/* Title */}
-      <h2 className="text-xl font-bold text-slate-900 mb-2">
+    <>
+      <h1 className="text-3xl font-semibold tracking-tight text-ink">
         Sign in to Timezone Syncer
-      </h2>
-      <p className="text-sm text-slate-500 mb-8">
-        New here? Continuing with Google creates your account.
+      </h1>
+      <p className="mt-3 text-ink-2">
+        Use your Google account. New here? Your account is created the first
+        time you sign in.
       </p>
 
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-red-700">{error}</p>
+      <GoogleButton
+        className="mt-8"
+        loading={loading === "google"}
+        disabled={loading !== null}
+        onClick={() => handleSignIn("google", signInWithGoogle)}
+      />
+
+      {/* Kept in the page so screen readers announce new errors */}
+      <div role="alert">
+        {error && (
+          <p className="mt-3 rounded-lg border border-danger/20 bg-danger-soft px-3 py-2.5 text-sm text-danger">
+            {error}
+          </p>
+        )}
+      </div>
+
+      {isDemoAvailable && (
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => handleSignIn("demo", signInAsDemo)}
+            disabled={loading !== null}
+            className="inline-flex h-11 items-center rounded-lg px-3 text-sm font-medium text-coral-ink underline underline-offset-4 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-coral-ink disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading === "demo" ? "Opening demo…" : "Try the demo instead"}
+          </button>
+          <p className="text-xs text-muted">
+            Shared account: anything you add is visible to other visitors.
+          </p>
         </div>
       )}
 
-      <div className="grid gap-4">
-        <Button
-          type="button"
-          onClick={() => handleSignIn("google", signInWithGoogle)}
-          disabled={loading !== null}
-          className="w-full py-3.5 text-sm"
-        >
-          <svg
-            className="w-4 h-4"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12.48 10.92v3.28h7.84c-.24 1.84-.909 3.292-2.09 4.213-1.217.956-2.909 1.787-5.75 1.787-4.434 0-8.036-3.602-8.036-8.037 0-4.434 3.602-8.036 8.036-8.036 2.422 0 4.19.95 5.58 2.27l2.29-2.29C18.28 2.02 15.64 1 12.48 1 6.36 1 1.5 5.86 1.5 12s4.86 11 10.98 11c3.31 0 5.8-1.09 7.79-3.15 2-2.07 2.63-4.96 2.63-7.29 0-.46-.04-.9-.11-1.29h-8.32z"
-              fill="currentColor"
-            ></path>
-          </svg>
-          {loading === "google" ? "Signing in..." : "Continue with Google"}
-        </Button>
-
-        {isDemoAvailable && (
-          <>
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-100"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-4 text-slate-400 font-bold tracking-widest">
-                  Or
-                </span>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleSignIn("demo", signInAsDemo)}
-              disabled={loading !== null}
-              className="w-full py-3 text-sm"
-            >
-              <span className="material-symbols-outlined text-lg">
-                play_circle
-              </span>
-              {loading === "demo" ? "Opening demo..." : "Try the demo"}
-            </Button>
-            <p className="text-xs text-center text-slate-400">
-              Shared demo account. Anything you add is visible to other
-              visitors.
-            </p>
-          </>
-        )}
+      <div className="mt-8 rounded-xl border border-line bg-paper p-4">
+        <p className="text-label font-semibold uppercase text-muted">
+          What we use
+        </p>
+        <ul className="mt-3 space-y-2.5 text-sm text-ink-2">
+          <li className="flex gap-2.5">
+            <CheckIcon />
+            Your name, email and photo, to save your cities
+          </li>
+          <li className="flex gap-2.5">
+            <CheckIcon />
+            Your calendar only if you open timezone tax, read-only, and you
+            can disconnect it any time
+          </li>
+        </ul>
       </div>
-    </div>
+
+      <p className="mt-8 text-sm text-muted">
+        By continuing you agree to our{" "}
+        <Link
+          to="/terms"
+          className="font-medium text-coral-ink underline underline-offset-4"
+        >
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          className="font-medium text-coral-ink underline underline-offset-4"
+        >
+          Privacy policy
+        </Link>
+        .
+      </p>
+    </>
   );
 };
