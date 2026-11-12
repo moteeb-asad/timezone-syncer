@@ -181,6 +181,54 @@ export const findClosestHour = (
   return best!.result;
 };
 
+/** Hours between two timezones right now, the short way round the clock (0-12) */
+export const getHoursApart = (
+  date: Date,
+  timeZoneA: string,
+  timeZoneB: string
+): number => {
+  const diff =
+    (getLocalMinutes(date, timeZoneB) - getLocalMinutes(date, timeZoneA) + 1440) %
+    1440;
+  return Math.min(diff, 1440 - diff) / 60;
+};
+
+/** Gaps that make a useful comparison: some overlap, then little overlap */
+const COMPARISON_TARGETS = [5, 10];
+/** Skip cities closer than this to the base or to an earlier pick */
+const MIN_HOURS_APART = 3;
+
+/**
+ * Two cities from `pool` to compare against `baseTimeZone`: one about
+ * 5 hours away and one about 10, so the ruler always shows a partial
+ * overlap and a hard case. Ties go to the earlier city in the pool.
+ */
+export const pickComparisonCities = (
+  date: Date,
+  baseTimeZone: string,
+  pool: string[]
+): string[] => {
+  const picked: string[] = [];
+
+  for (const target of COMPARISON_TARGETS) {
+    let best: { city: string; miss: number } | null = null;
+
+    for (const city of pool) {
+      const tooClose = [baseTimeZone, ...picked].some(
+        (other) => getHoursApart(date, other, city) < MIN_HOURS_APART
+      );
+      if (tooClose) continue;
+
+      const miss = Math.abs(getHoursApart(date, baseTimeZone, city) - target);
+      if (!best || miss < best.miss) best = { city, miss };
+    }
+
+    if (best) picked.push(best.city);
+  }
+
+  return picked;
+};
+
 /** "Asia/Karachi" -> "Karachi", "America/New_York" -> "New York" */
 export const getCityName = (timeZone: string): string =>
   (timeZone.split("/").pop() ?? timeZone).replace(/_/g, " ");

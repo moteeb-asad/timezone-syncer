@@ -7,10 +7,23 @@ import {
   getCityName,
   getNowPercent,
   getRulerSpans,
+  pickComparisonCities,
   type ClosestHour,
 } from "@/features/timezone/utils/ruler";
 
-const SAMPLE_CITIES = ["Europe/London", "America/New_York", "Asia/Tokyo"];
+/** Well-known cities spread around the clock; the preview picks two */
+const CITY_POOL = [
+  "Europe/London",
+  "America/New_York",
+  "Asia/Tokyo",
+  "America/Los_Angeles",
+  "Asia/Dubai",
+  "Asia/Kolkata",
+  "Asia/Singapore",
+  "Australia/Sydney",
+  "Europe/Berlin",
+  "America/Sao_Paulo",
+];
 const COUNT_WORDS = ["zero", "one", "two", "three", "four", "five"];
 
 const getDeviceTimeZone = (): string => {
@@ -21,14 +34,24 @@ const getDeviceTimeZone = (): string => {
   }
 };
 
-/** The viewer's city plus two others that aren't theirs */
-const pickCities = (base: string): string[] => [
-  base,
-  ...SAMPLE_CITIES.filter((city) => city !== base).slice(0, 2),
-];
+/** "UTC" and "Etc/GMT+5" aren't places, so the viewer's row says "You" */
+const isCityZone = (timeZone: string) =>
+  timeZone.includes("/") && !timeZone.startsWith("Etc/");
 
-const describeNote = ({ timeZone, kind, hours }: ClosestHour["notes"][number]) => {
-  const city = getCityName(timeZone);
+const getLabel = (timeZone: string, base: string) =>
+  timeZone === base && !isCityZone(base) ? "You" : getCityName(timeZone);
+
+const describeNote = (
+  { timeZone, kind, hours }: ClosestHour["notes"][number],
+  base: string
+) => {
+  const city = getLabel(timeZone, base);
+  if (city === "You") {
+    const amount = hours === 1 ? "an hour" : `${hours} hours`;
+    if (kind === "early") return `you start ${amount} early`;
+    if (kind === "late") return `you finish ${amount} late`;
+    return "you're asleep";
+  }
   const amount = hours === 1 ? "an hour" : `${hours} hours`;
   if (kind === "early") return `${city} starts ${amount} early`;
   if (kind === "late") return `${city} finishes ${amount} late`;
@@ -39,7 +62,9 @@ const describeClosest = (closest: ClosestHour, base: string, count: number) => {
   const time = formatClock(closest.start, base);
   if (closest.allWorking) return `${time} fits everyone's working day.`;
   const howMany = COUNT_WORDS[count] ?? String(count);
-  const notes = closest.notes.map(describeNote).join(" and ");
+  const notes = closest.notes
+    .map((note) => describeNote(note, base))
+    .join(" and ");
   return `No hour fits all ${howMany} working days. Closest: ${time}, ${notes}.`;
 };
 
@@ -47,7 +72,11 @@ const describeClosest = (closest: ClosestHour, base: string, count: number) => {
 export const SignInPreview = () => {
   const now = useNow();
   const base = useMemo(getDeviceTimeZone, []);
-  const cities = useMemo(() => pickCities(base), [base]);
+  // Picked once per visit, so the rows don't reshuffle while the page is open
+  const cities = useMemo(
+    () => [base, ...pickComparisonCities(new Date(), base, CITY_POOL)],
+    [base]
+  );
 
   const nowPercent = getNowPercent(now, base);
   const closest = findClosestHour(now, base, cities);
@@ -73,7 +102,7 @@ export const SignInPreview = () => {
             Today, by your clock
           </figcaption>
           <span className="font-mono text-xs text-muted">
-            {getCityName(base)} {formatClock(now, base)}
+            {getLabel(base, base)} {formatClock(now, base)}
           </span>
         </div>
 
@@ -84,7 +113,7 @@ export const SignInPreview = () => {
               className="grid grid-cols-[6rem_minmax(0,1fr)] items-center gap-3"
             >
               <span className="truncate text-sm font-medium text-ink">
-                {getCityName(city)}
+                {getLabel(city, base)}
               </span>
               <HourRulerBar
                 spans={getRulerSpans(now, base, city)}

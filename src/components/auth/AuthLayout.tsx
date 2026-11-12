@@ -55,7 +55,6 @@ export const AuthLayout = ({ children, aside }: AuthLayoutProps) => (
         <div className="w-full max-w-sm">{children}</div>
       </main>
     </div>
-
     {aside}
   </div>
 );
