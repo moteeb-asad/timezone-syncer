@@ -64,6 +64,8 @@ Check the official docs before writing or changing code. Don't rely on memory: A
 | `npm install`     | Installs dependencies                                   |
 | `npm run dev`     | Starts the app on http://localhost:5173                 |
 | `npm run lint`    | Runs ESLint                                             |
+| `npm run format`  | Formats every file with Prettier                        |
+| `npm run format:check` | Fails if a file isn't formatted                    |
 | `npx tsc -b`      | Type check                                              |
 | `npm run build`   | Type check and production build                         |
 | `npm run preview` | Serves the production build                             |
@@ -160,10 +162,11 @@ Check every change against these five areas before calling it done.
 
 - Never work on `develop` or `main`. Before the first edit, create a branch from `develop`: `feat/<issue>-<short-name>`, `fix/...`, `chore/...`.
 - Changes reach `develop` only through a PR, and `develop` reaches `main` through a release PR.
-- Before every push, run these and push only if all three pass:
-  1. `npm run lint`
-  2. `npx tsc -b`
-  3. `npm run build`
+- Before every push, run these and push only if all four pass:
+  1. `npm run format:check`
+  2. `npm run lint`
+  3. `npx tsc -b`
+  4. `npm run build`
 - Tick the issue's checklist as items are done. Close an issue only when every item is done or reworded with a reason.
 
 ### Ask first
