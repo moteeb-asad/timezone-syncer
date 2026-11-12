@@ -98,8 +98,8 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           </li>
           <li className="flex gap-2.5">
             <CheckIcon />
-            Your calendar only if you open timezone tax, read-only, and you
-            can disconnect it any time
+            Your calendar only if you open timezone tax, read-only, and you can
+            disconnect it any time
           </li>
         </ul>
       </div>

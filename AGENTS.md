@@ -59,16 +59,16 @@ Check the official docs before writing or changing code. Don't rely on memory: A
 
 ## Commands
 
-| Command           | What it does                                            |
-| ----------------- | ------------------------------------------------------- |
-| `npm install`     | Installs dependencies                                   |
-| `npm run dev`     | Starts the app on http://localhost:5173                 |
-| `npm run lint`    | Runs ESLint                                             |
-| `npm run format`  | Formats every file with Prettier                        |
-| `npm run format:check` | Fails if a file isn't formatted                    |
-| `npx tsc -b`      | Type check                                              |
-| `npm run build`   | Type check and production build                         |
-| `npm run preview` | Serves the production build                             |
+| Command                | What it does                            |
+| ---------------------- | --------------------------------------- |
+| `npm install`          | Installs dependencies                   |
+| `npm run dev`          | Starts the app on http://localhost:5173 |
+| `npm run lint`         | Runs ESLint                             |
+| `npm run format`       | Formats every file with Prettier        |
+| `npm run format:check` | Fails if a file isn't formatted         |
+| `npx tsc -b`           | Type check                              |
+| `npm run build`        | Type check and production build         |
+| `npm run preview`      | Serves the production build             |
 
 Set `VITE_COMING_SOON=true` in `.env` to preview the coming-soon page locally. The live domain always shows it (see `src/main.tsx`).
 
@@ -202,17 +202,17 @@ Based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 **Type** (required):
 
-| Type       | Use for                                         |
-| ---------- | ----------------------------------------------- |
-| `feat`     | A new feature or screen the user can see        |
-| `fix`      | A bug fix                                       |
-| `refactor` | A code change that doesn't change behaviour     |
-| `perf`     | A change that makes something faster            |
-| `test`     | Adding or changing tests only                   |
-| `docs`     | Docs only: README, decisions, AGENTS.md         |
-| `ci`       | GitHub Actions workflows                        |
+| Type       | Use for                                          |
+| ---------- | ------------------------------------------------ |
+| `feat`     | A new feature or screen the user can see         |
+| `fix`      | A bug fix                                        |
+| `refactor` | A code change that doesn't change behaviour      |
+| `perf`     | A change that makes something faster             |
+| `test`     | Adding or changing tests only                    |
+| `docs`     | Docs only: README, decisions, AGENTS.md          |
+| `ci`       | GitHub Actions workflows                         |
 | `build`    | Build setup, Vite, Tailwind or TypeScript config |
-| `chore`    | Everything else: dependencies, tooling, cleanup |
+| `chore`    | Everything else: dependencies, tooling, cleanup  |
 
 **Scope** (optional): the area the change touches, in lowercase: `auth`, `timezone`, `scheduler`, `billing`, `ui`, `firestore`, `deps`. Leave it out when the change spans many areas.
 

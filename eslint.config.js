@@ -30,7 +30,8 @@ const firebasePatterns = [
 const servicePattern = {
   regex: "(^|/)services(/|$)",
   allowTypeImports: true,
-  message: "UI doesn't call services. Use a hook from features/<feature>/hooks.",
+  message:
+    "UI doesn't call services. Use a hook from features/<feature>/hooks.",
 };
 
 export default tseslint.config([
