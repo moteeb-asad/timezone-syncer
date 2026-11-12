@@ -8,8 +8,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-primary text-white shadow-md shadow-primary/20 hover:bg-opacity-90",
+  // Dark text on coral: white on coral is only 2.8:1
+  primary: "bg-coral text-ink shadow-card hover:bg-coral-hover",
   outline: "border border-slate-200 text-slate-700 hover:bg-slate-50",
 };
 
