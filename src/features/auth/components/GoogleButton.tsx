@@ -6,8 +6,9 @@ interface GoogleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * "Continue with Google", following Google's sign-in branding rules:
- * the standard four-colour G on white, light theme colours, unchanged logo.
+ * "Continue with Google": the standard four-colour G on white, unchanged,
+ * with a Roboto Medium label (Google's branding rules), and the design's
+ * light border.
  * https://developers.google.com/identity/branding-guidelines
  */
 export const GoogleButton = ({
@@ -21,7 +22,7 @@ export const GoogleButton = ({
     disabled={disabled || loading}
     aria-busy={loading}
     className={cn(
-      "flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-[#747775] bg-white font-google text-sm font-medium leading-5 tracking-[0.25px] text-[#1f1f1f] shadow-card transition-colors hover:bg-[#f8f9fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-ink disabled:cursor-not-allowed disabled:opacity-60",
+      "flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-line bg-card font-google text-sm font-medium leading-5 tracking-[0.25px] text-[#1f1f1f] shadow-card transition-colors hover:border-ink-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-ink disabled:cursor-not-allowed disabled:opacity-60",
       className
     )}
     {...props}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useLogin, isDemoAvailable, type LoginResult } from "../hooks/useLogin";
 import { GoogleButton } from "./GoogleButton";
 
@@ -102,6 +103,24 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           </li>
         </ul>
       </div>
+
+      <p className="mt-8 text-sm text-muted">
+        By continuing you agree to our{" "}
+        <Link
+          to="/terms"
+          className="font-medium text-coral-ink underline underline-offset-4"
+        >
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          className="font-medium text-coral-ink underline underline-offset-4"
+        >
+          Privacy policy
+        </Link>
+        .
+      </p>
     </>
   );
 };

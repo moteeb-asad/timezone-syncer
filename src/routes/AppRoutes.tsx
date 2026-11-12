@@ -7,6 +7,8 @@ import { TimezoneManager } from "../features/timezone/components";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { Contact } from "@/pages/Contact";
+import { Privacy } from "@/pages/Privacy";
+import { Terms } from "@/pages/Terms";
 
 export function AppRoutes() {
   const { status } = useSelector((state: RootState) => state.user);
@@ -30,6 +32,8 @@ export function AppRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
 
         {/* Protected routes (require authentication) */}
         <Route element={<ProtectedRoute redirectTo="/login" />}>
