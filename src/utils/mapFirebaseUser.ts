@@ -1,6 +1,9 @@
+import type { User } from "firebase/auth";
 import { getUserPlan } from "../features/user/services/user.service";
 
-export const mapFirebaseUser = async (user: any) => {
+export const mapFirebaseUser = async (
+  user: Pick<User, "uid" | "email" | "displayName">
+) => {
   const [firstName, ...rest] = (user.displayName || "").split(" ");
 
   return {
