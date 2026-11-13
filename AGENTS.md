@@ -8,7 +8,7 @@ Timezone Syncer shows your cities and working hours on one 24-hour ruler, sugges
 
 - Work is tracked in GitHub issues and the `timezone-syncer` project board. Every branch and PR belongs to an issue.
 - The redesign follows the HTML design export. Its tokens live in `tailwind.config.js`; don't invent new colours, fonts or shadows.
-- Decisions (for example #49, old meetings data) go in `docs/decisions/`, one file per decision.
+- Why things are built this way: [docs/decisions/](docs/decisions/). Read them before proposing structural changes.
 
 ## Stack
 
@@ -92,6 +92,15 @@ firestore.rules        the deployed Firestore rules
 
 ## Rules
 
+### Keep it simple: never over-engineer
+
+Build the smallest change that solves the problem in front of you.
+
+- Do only what was asked. No extra features, options, layers or abstractions "for later".
+- Prefer the existing pattern, file and helper over a new one.
+- No new Firestore collections, fields, rules, Cloud Functions, libraries or config unless the task truly needs them.
+- When a sturdier option exists, mention it (or note it under "Alternatives considered" in a decision record) instead of building it.
+
 ### Code
 
 - TypeScript strict. No `any`: use `unknown` and narrow it, or the real type (`import type { User } from "firebase/auth"`).
@@ -161,13 +170,32 @@ Check every change against these five areas before calling it done.
 ### Process
 
 - Never work on `develop` or `main`. Before the first edit, create a branch from `develop`: `feat/<issue>-<short-name>`, `fix/...`, `chore/...`.
-- Changes reach `develop` only through a PR, and `develop` reaches `main` through a release PR.
+- Every merge into `develop` goes through a pull request, always. Never merge locally into `develop` and push it, and never push commits straight to `develop`. The PR must pass the `check` job before it merges. `develop` reaches `main` the same way, through a release PR.
 - Before every push, run these and push only if all four pass:
   1. `npm run format:check`
   2. `npm run lint`
   3. `npx tsc -b`
   4. `npm run build`
 - Tick the issue's checklist as items are done. Close an issue only when every item is done or reworded with a reason.
+
+### Decision records: keep `docs/decisions/` up to date
+
+Record every bigger decision in `docs/decisions/`, both before building it (when the choice is being made) and after it is done (update the record with what was actually built).
+
+A decision counts as bigger when it is hard to reverse or would surprise someone reading the code, for example:
+
+- Firestore changes: new collections or fields, changes to `firestore.rules`, indexes
+- Cloud Functions, scheduled jobs or anything running outside the browser
+- a rule the app depends on (how working status or the closest hour is worked out, who can see what)
+- a new library, build or hosting change, or a pattern every screen should follow
+- changes to sign-in or accounts (providers, the demo account)
+
+How:
+
+- Copy the template in `docs/decisions/README.md` into `docs/decisions/NNNN-short-title.md`, using the next number, and add it to the index table there.
+- Fill in Context, Decision, Why, Alternatives considered and Consequences. Keep it short.
+- Commit it in the same branch and PR as the change it explains.
+- Never rewrite an old decision. When one changes, add a new record and mark the old one `Status: Superseded by NNNN`.
 
 ### Ask first
 
