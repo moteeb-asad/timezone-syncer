@@ -34,10 +34,12 @@ export const useAuthBootstrap = () => {
         if (firebaseUser) {
           try {
             const token = await firebaseUser.getIdToken();
-            const mappedUser = await mapFirebaseUser(firebaseUser);
             const { plan, maxTimezones } = await fetchUserPlanData(
               firebaseUser.uid
             );
+            // Map after the awaits: sign-in may still be setting the
+            // display name (demo account), and this reads the latest one.
+            const mappedUser = await mapFirebaseUser(firebaseUser);
 
             dispatch(
               setAuthenticated({

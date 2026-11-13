@@ -9,6 +9,7 @@ import { MeetingHistory } from "../features/settings/components/meeting-history/
 export const Account = () => {
   const location = useLocation();
   const { user, plan, limits } = useSelector((state: RootState) => state.user);
+  const fullName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim();
   const { timezoneSettings } = useSelector(
     (state: RootState) => state.timezone
   );
@@ -118,12 +119,13 @@ export const Account = () => {
                       Full Name
                     </label>
                     <input
+                      // Remount when the name arrives after sign-in, since
+                      // defaultValue is only read on the first render
+                      key={fullName}
                       className="w-full text-sm font-medium border-none border-slate-200 bg-slate-50/50 rounded-lg focus:ring-1 focus:ring-primary-accent px-4 py-2.5 outline-none"
                       type="text"
-                      defaultValue={
-                        `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
-                        "Your name"
-                      }
+                      defaultValue={fullName}
+                      placeholder="Your name"
                     />
                   </div>
                   <div className="space-y-2">
