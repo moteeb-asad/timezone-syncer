@@ -4,7 +4,13 @@ import { getUserPlan } from "../features/user/services/user.service";
 export const mapFirebaseUser = async (
   user: Pick<User, "uid" | "email" | "displayName">
 ) => {
-  const [firstName, ...rest] = (user.displayName || "").split(" ");
+  // No display name (an account made in the Firebase console): fall back
+  // to the part of the email before "@", so the header is never blank.
+  const emailName = (user.email ?? "").split("@")[0];
+  const fallbackName = emailName
+    ? emailName.charAt(0).toUpperCase() + emailName.slice(1)
+    : "";
+  const [firstName, ...rest] = (user.displayName || fallbackName).split(" ");
 
   return {
     uid: user.uid,
