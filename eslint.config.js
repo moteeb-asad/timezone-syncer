@@ -97,7 +97,7 @@ export default tseslint.config([
       "@typescript-eslint/explicit-module-boundary-types": "off",
 
       // General best practices
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "prefer-const": "warn",
     },
   },
