@@ -188,7 +188,9 @@ export const getHoursApart = (
   timeZoneB: string
 ): number => {
   const diff =
-    (getLocalMinutes(date, timeZoneB) - getLocalMinutes(date, timeZoneA) + 1440) %
+    (getLocalMinutes(date, timeZoneB) -
+      getLocalMinutes(date, timeZoneA) +
+      1440) %
     1440;
   return Math.min(diff, 1440 - diff) / 60;
 };

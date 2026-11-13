@@ -6,9 +6,9 @@ export const Terms = () => (
     <section>
       <h2>Using Timezone Syncer</h2>
       <p>
-        Timezone Syncer helps you compare times across cities and plan
-        meetings. By signing in or using the app, you agree to these terms and
-        to our <Link to="/privacy">privacy policy</Link>.
+        Timezone Syncer helps you compare times across cities and plan meetings.
+        By signing in or using the app, you agree to these terms and to our{" "}
+        <Link to="/privacy">privacy policy</Link>.
       </p>
     </section>
 
@@ -18,8 +18,8 @@ export const Terms = () => (
         <li>You sign in with your own Google account.</li>
         <li>You are responsible for what you add, including guest emails.</li>
         <li>
-          The demo account is shared with other visitors. Don't put personal
-          or confidential information in it.
+          The demo account is shared with other visitors. Don't put personal or
+          confidential information in it.
         </li>
       </ul>
     </section>
@@ -48,19 +48,18 @@ export const Terms = () => (
     <section>
       <h2>Times and suggestions</h2>
       <p>
-        We work hard to get time zones and daylight saving right, but the app
-        is provided as it is. Check important meeting times before you rely
-        on them. We aren't liable for missed or mistimed meetings.
+        We work hard to get time zones and daylight saving right, but the app is
+        provided as it is. Check important meeting times before you rely on
+        them. We aren't liable for missed or mistimed meetings.
       </p>
     </section>
 
     <section>
       <h2>Changes and ending</h2>
       <p>
-        We may change these terms or the service; the date at the top shows
-        the latest version. You can stop using the app and ask us to delete
-        your account at any time through the{" "}
-        <Link to="/contact">contact page</Link>.
+        We may change these terms or the service; the date at the top shows the
+        latest version. You can stop using the app and ask us to delete your
+        account at any time through the <Link to="/contact">contact page</Link>.
       </p>
     </section>
   </LegalPage>

@@ -22,8 +22,14 @@ export function AppRoutes() {
 
       {/* Old email sign-up and password reset links */}
       <Route path="/signup" element={<Navigate to="/login" replace />} />
-      <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
-      <Route path="/reset-password" element={<Navigate to="/login" replace />} />
+      <Route
+        path="/forgot-password"
+        element={<Navigate to="/login" replace />}
+      />
+      <Route
+        path="/reset-password"
+        element={<Navigate to="/login" replace />}
+      />
 
       {/* All other routes with Layout */}
       <Route element={<Layout />}>

@@ -1,6 +1,9 @@
+import type { User } from "firebase/auth";
 import { getUserPlan } from "../features/user/services/user.service";
 
-export const mapFirebaseUser = async (user: any) => {
+export const mapFirebaseUser = async (
+  user: Pick<User, "uid" | "email" | "displayName">
+) => {
   // No display name (an account made in the Firebase console): fall back
   // to the part of the email before "@", so the header is never blank.
   const emailName = (user.email ?? "").split("@")[0];

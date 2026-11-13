@@ -11,18 +11,18 @@ export const Privacy = () => (
           address and profile photo.
         </li>
         <li>
-          <strong>What you add:</strong> your cities, your base time and
-          working hours, and the meetings you plan (subject, guest email
-          addresses, time, timezone and any note you write).
+          <strong>What you add:</strong> your cities, your base time and working
+          hours, and the meetings you plan (subject, guest email addresses,
+          time, timezone and any note you write).
         </li>
         <li>
           <strong>Your plan:</strong> whether you are on Free or Pro.
         </li>
         <li>
           <strong>Your calendar, only if you open timezone tax:</strong>{" "}
-          read-only access to your Google Calendar events, used in your
-          browser to count meetings outside your working hours. We store
-          only the monthly totals, never your event titles or guests.
+          read-only access to your Google Calendar events, used in your browser
+          to count meetings outside your working hours. We store only the
+          monthly totals, never your event titles or guests.
         </li>
       </ul>
     </section>
@@ -30,8 +30,8 @@ export const Privacy = () => (
     <section>
       <h2>Without an account</h2>
       <p>
-        If you use Timezone Syncer without signing in, your cities stay in
-        your browser's local storage. Nothing is sent to us.
+        If you use Timezone Syncer without signing in, your cities stay in your
+        browser's local storage. Nothing is sent to us.
       </p>
     </section>
 
@@ -48,8 +48,8 @@ export const Privacy = () => (
       <h2>Where it is stored</h2>
       <p>
         Your account and data are stored with Google Firebase (Authentication
-        and Cloud Firestore). The site is hosted on Vercel. Both process data
-        on our behalf only to provide the service.
+        and Cloud Firestore). The site is hosted on Vercel. Both process data on
+        our behalf only to provide the service.
       </p>
     </section>
 
@@ -66,8 +66,8 @@ export const Privacy = () => (
       <ul>
         <li>Remove cities and meetings at any time.</li>
         <li>
-          Disconnect Google Calendar from your account, or revoke access in
-          your Google account settings.
+          Disconnect Google Calendar from your account, or revoke access in your
+          Google account settings.
         </li>
         <li>
           Ask us to delete your account and all its data through the{" "}

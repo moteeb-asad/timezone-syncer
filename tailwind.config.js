@@ -37,7 +37,13 @@ export default {
       },
       fontFamily: {
         sans: ['"Instrument Sans"', "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+        mono: [
+          '"JetBrains Mono"',
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "monospace",
+        ],
         // Google sign-in button only
         google: ["Roboto", "arial", "sans-serif"],
       },
