@@ -58,11 +58,6 @@ export const createOrUpdateUser = async (
     userData.timezones = timezones;
   }
 
-  console.log(
-    "user providers at save time:",
-    user.providerData?.map((p) => p.providerId)
-  );
-
   await setDoc(ref, userData, { merge: true });
 };
 
