@@ -4,11 +4,12 @@ service cloud.firestore {
 
     // Only Google accounts and the shared demo account may use app data.
     // Email/password accounts created by bots get no access.
-    // Replace DEMO_UID with the demo account's UID from Authentication > Users.
+    // The UID below is the demo account (demo@timezonesyncer.com) from
+    // Authentication > Users. If the demo user is recreated, update it here.
     function isAppUser() {
       return request.auth != null &&
         (request.auth.token.firebase.sign_in_provider == "google.com" ||
-         request.auth.uid == "gJjHSsucBwfWieN1hWd1sHRndf52");
+         request.auth.uid == "47ylB5KVmUVW3lxOnVzDdrCjouy2");
     }
 
     function isOwner(uid) {
